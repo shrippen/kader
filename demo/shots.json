@@ -47,5 +47,9 @@
         }
       ]
     }
-  ]
+  ],
+  "page": {
+    "placeholder-labels.svg": "gallery",
+    "placeholder-strategies.svg": "editor"
+  }
 }

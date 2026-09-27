@@ -120,6 +120,8 @@
    "color": "#d65d0e",
    "clash_color": "#fe8019",
    "city": "Hamburg-Altona",
+   "country": "DE",
+   "vat_id": "DE318204417",
    "kind": {
     "de": "Produktionsfirma",
     "en": "Production company"
@@ -131,6 +133,8 @@
    "color": "#689d6a",
    "clash_color": "#8ec07c",
    "city": "Hamburg-HafenCity",
+   "country": "DE",
+   "vat_id": "",
    "kind": {
     "de": "Stiftung",
     "en": "Foundation"
@@ -142,6 +146,8 @@
    "color": "#458588",
    "clash_color": "#83a598",
    "city": "Hamburg-Wilhelmsburg",
+   "country": "DE",
+   "vat_id": "DE294117820",
    "kind": {
     "de": "Fahrradmanufaktur",
     "en": "Bicycle maker"
@@ -153,9 +159,24 @@
    "color": "#a89984",
    "clash_color": "#a89984",
    "city": "Hamburg-Ottensen",
+   "country": "DE",
+   "vat_id": "",
    "kind": {
     "de": "Intern",
     "en": "Internal"
+   }
+  },
+  {
+   "id": "donaulicht",
+   "name": "Donaulicht Film",
+   "color": "#d79921",
+   "clash_color": "#fabd2f",
+   "city": "Wien",
+   "country": "AT",
+   "vat_id": "",
+   "kind": {
+    "de": "Koproduzent in Österreich",
+    "en": "Co-producer in Austria"
    }
   }
  ],
@@ -211,6 +232,19 @@
    "clash_color": "#b16286",
    "hourly_rate": 0,
    "billable": false
+  },
+  {
+   "id": "trailer",
+   "customer": "donaulicht",
+   "name": {
+    "de": "Trailer Donaulicht",
+    "en": "Donaulicht trailer"
+   },
+   "short": "Donaulicht",
+   "color": "#d79921",
+   "clash_color": "#fabd2f",
+   "hourly_rate": 90,
+   "billable": true
   },
   {
    "id": "admin",
@@ -400,6 +434,17 @@
       {
        "de": "Rohschnitt-Abnahme Elbgrün",
        "en": "Rough cut review with Elbgrün"
+      }
+     ],
+     [
+      4,
+      "trailer",
+      "edit",
+      "14:45",
+      "17:30",
+      {
+       "de": "Trailer-Schnitt für Donaulicht",
+       "en": "Trailer edit for Donaulicht"
       }
      ]
     ],
@@ -2741,6 +2786,20 @@
    "id": 30
   },
   {
+   "user": "mara",
+   "project": "trailer",
+   "activity": "edit",
+   "day": -52,
+   "start": "14:45",
+   "end": "17:30",
+   "description": {
+    "de": "Trailer-Schnitt für Donaulicht",
+    "en": "Trailer edit for Donaulicht"
+   },
+   "exported": true,
+   "id": 31
+  },
+  {
    "user": "jonas",
    "project": "spring",
    "activity": "prep",
@@ -2752,24 +2811,10 @@
     "en": "Test the lighting setup"
    },
    "exported": true,
-   "id": 31
-  },
-  {
-   "user": "lena",
-   "project": "admin",
-   "activity": "meeting",
-   "day": -49,
-   "start": "09:00",
-   "end": "09:45",
-   "description": {
-    "de": "Wochenplanung mit dem Team",
-    "en": "Weekly planning with the team"
-   },
-   "exported": false,
    "id": 32
   },
   {
-   "user": "mara",
+   "user": "lena",
    "project": "admin",
    "activity": "meeting",
    "day": -49,
@@ -2783,6 +2828,20 @@
    "id": 33
   },
   {
+   "user": "mara",
+   "project": "admin",
+   "activity": "meeting",
+   "day": -49,
+   "start": "09:00",
+   "end": "09:45",
+   "description": {
+    "de": "Wochenplanung mit dem Team",
+    "en": "Weekly planning with the team"
+   },
+   "exported": false,
+   "id": 34
+  },
+  {
    "user": "selin",
    "project": "harbour",
    "activity": "edit",
@@ -2794,7 +2853,7 @@
     "en": "Edit episode 4"
    },
    "exported": true,
-   "id": 34
+   "id": 35
   },
   {
    "user": "lena",
@@ -2808,7 +2867,7 @@
     "en": "Call sheet for the workshop shoot"
    },
    "exported": true,
-   "id": 35
+   "id": 36
   },
   {
    "user": "mara",
@@ -2822,7 +2881,7 @@
     "en": "Casting the bike courier"
    },
    "exported": true,
-   "id": 36
+   "id": 37
   },
   {
    "user": "theo",
@@ -2836,7 +2895,7 @@
     "en": "Sound design for the spot"
    },
    "exported": true,
-   "id": 37
+   "id": 38
   },
   {
    "user": "jonas",
@@ -2850,7 +2909,7 @@
     "en": "Shoot at the Speiche workshop"
    },
    "exported": true,
-   "id": 38
+   "id": 39
   },
   {
    "user": "lena",
@@ -2864,7 +2923,7 @@
     "en": "Set management"
    },
    "exported": true,
-   "id": 39
+   "id": 40
   },
   {
    "user": "mara",
@@ -2878,7 +2937,7 @@
     "en": "Shoot at the Speiche workshop"
    },
    "exported": true,
-   "id": 40
+   "id": 41
   },
   {
    "user": "selin",
@@ -2892,7 +2951,7 @@
     "en": "Edit episode 4"
    },
    "exported": true,
-   "id": 41
+   "id": 42
   },
   {
    "user": "jonas",
@@ -2906,7 +2965,7 @@
     "en": "Shoot on the harbour ferry"
    },
    "exported": true,
-   "id": 42
+   "id": 43
   },
   {
    "user": "lena",
@@ -2920,7 +2979,7 @@
     "en": "Drive to the Northlight office"
    },
    "exported": true,
-   "id": 43
+   "id": 44
   },
   {
    "user": "lena",
@@ -2934,7 +2993,7 @@
     "en": "Production meeting"
    },
    "exported": true,
-   "id": 44
+   "id": 45
   },
   {
    "user": "mara",
@@ -2948,7 +3007,7 @@
     "en": "Interview questions for the foundation"
    },
    "exported": true,
-   "id": 45
+   "id": 46
   },
   {
    "user": "selin",
@@ -2962,7 +3021,7 @@
     "en": "Fine cut"
    },
    "exported": true,
-   "id": 46
+   "id": 47
   },
   {
    "user": "theo",
@@ -2976,7 +3035,7 @@
     "en": "Mix episode 3"
    },
    "exported": true,
-   "id": 47
+   "id": 48
   },
   {
    "user": "mara",
@@ -2990,7 +3049,7 @@
     "en": "Invoices for Northlight"
    },
    "exported": false,
-   "id": 48
+   "id": 49
   },
   {
    "user": "lena",
@@ -3004,7 +3063,7 @@
     "en": "HafenCity permit"
    },
    "exported": true,
-   "id": 49
+   "id": 50
   },
   {
    "user": "selin",
@@ -3018,7 +3077,7 @@
     "en": "Showreel edit"
    },
    "exported": false,
-   "id": 50
+   "id": 51
   },
   {
    "user": "mara",
@@ -3032,7 +3091,7 @@
     "en": "Call sheet episode 5"
    },
    "exported": true,
-   "id": 51
+   "id": 52
   },
   {
    "user": "jonas",
@@ -3046,7 +3105,7 @@
     "en": "Shoot in HafenCity"
    },
    "exported": true,
-   "id": 52
+   "id": 53
   },
   {
    "user": "theo",
@@ -3060,7 +3119,7 @@
     "en": "Location sound in HafenCity"
    },
    "exported": true,
-   "id": 53
+   "id": 54
   },
   {
    "user": "mara",
@@ -3074,7 +3133,7 @@
     "en": "Shoot in HafenCity"
    },
    "exported": true,
-   "id": 54
+   "id": 55
   },
   {
    "user": "mara",
@@ -3088,7 +3147,7 @@
     "en": "Edit version 1"
    },
    "exported": true,
-   "id": 55
+   "id": 56
   },
   {
    "user": "jonas",
@@ -3102,7 +3161,7 @@
     "en": "Night shoot in Speicherstadt"
    },
    "exported": true,
-   "id": 56
+   "id": 57
   },
   {
    "user": "jonas",
@@ -3116,24 +3175,10 @@
     "en": "Camera check and lens test"
    },
    "exported": true,
-   "id": 57
-  },
-  {
-   "user": "lena",
-   "project": "admin",
-   "activity": "meeting",
-   "day": -42,
-   "start": "09:00",
-   "end": "09:45",
-   "description": {
-    "de": "Wochenplanung mit dem Team",
-    "en": "Weekly planning with the team"
-   },
-   "exported": false,
    "id": 58
   },
   {
-   "user": "mara",
+   "user": "lena",
    "project": "admin",
    "activity": "meeting",
    "day": -42,
@@ -3147,6 +3192,20 @@
    "id": 59
   },
   {
+   "user": "mara",
+   "project": "admin",
+   "activity": "meeting",
+   "day": -42,
+   "start": "09:00",
+   "end": "09:45",
+   "description": {
+    "de": "Wochenplanung mit dem Team",
+    "en": "Weekly planning with the team"
+   },
+   "exported": false,
+   "id": 60
+  },
+  {
    "user": "selin",
    "project": "tidenhub",
    "activity": "edit",
@@ -3158,7 +3217,7 @@
     "en": "Review footage"
    },
    "exported": true,
-   "id": 60
+   "id": 61
   },
   {
    "user": "lena",
@@ -3172,7 +3231,7 @@
     "en": "Shooting permits"
    },
    "exported": true,
-   "id": 61
+   "id": 62
   },
   {
    "user": "mara",
@@ -3186,7 +3245,7 @@
     "en": "Align shooting schedule for episode 4"
    },
    "exported": true,
-   "id": 62
+   "id": 63
   },
   {
    "user": "selin",
@@ -3200,7 +3259,7 @@
     "en": "Cut the interviews"
    },
    "exported": true,
-   "id": 63
+   "id": 64
   },
   {
    "user": "mara",
@@ -3214,7 +3273,7 @@
     "en": "Storyboard sign-off with Speiche"
    },
    "exported": true,
-   "id": 64
+   "id": 65
   },
   {
    "user": "jonas",
@@ -3228,7 +3287,7 @@
     "en": "Shoot at Landungsbrücken"
    },
    "exported": true,
-   "id": 65
+   "id": 66
   },
   {
    "user": "lena",
@@ -3242,7 +3301,7 @@
     "en": "Set management"
    },
    "exported": true,
-   "id": 66
+   "id": 67
   },
   {
    "user": "mara",
@@ -3256,7 +3315,7 @@
     "en": "Shoot at Landungsbrücken"
    },
    "exported": true,
-   "id": 67
+   "id": 68
   },
   {
    "user": "theo",
@@ -3270,7 +3329,7 @@
     "en": "Location sound at Landungsbrücken"
    },
    "exported": true,
-   "id": 68
+   "id": 69
   },
   {
    "user": "selin",
@@ -3284,7 +3343,7 @@
     "en": "Edit episode 3"
    },
    "exported": true,
-   "id": 69
+   "id": 70
   },
   {
    "user": "jonas",
@@ -3298,7 +3357,7 @@
     "en": "Shoot at the fish market"
    },
    "exported": true,
-   "id": 70
+   "id": 71
   },
   {
    "user": "lena",
@@ -3312,7 +3371,7 @@
     "en": "Travel expenses"
    },
    "exported": false,
-   "id": 71
+   "id": 72
   },
   {
    "user": "mara",
@@ -3326,7 +3385,7 @@
     "en": "Fine cut of the interviews"
    },
    "exported": true,
-   "id": 72
+   "id": 73
   },
   {
    "user": "selin",
@@ -3340,7 +3399,7 @@
     "en": "Edit episode 3"
    },
    "exported": true,
-   "id": 73
+   "id": 74
   },
   {
    "user": "mara",
@@ -3354,7 +3413,7 @@
     "en": "Location scout at the workshop"
    },
    "exported": true,
-   "id": 74
+   "id": 75
   },
   {
    "user": "theo",
@@ -3368,7 +3427,7 @@
     "en": "Sound mix of the interviews"
    },
    "exported": true,
-   "id": 75
+   "id": 76
   },
   {
    "user": "mara",
@@ -3382,7 +3441,7 @@
     "en": "Match receipts"
    },
    "exported": false,
-   "id": 76
+   "id": 77
   },
   {
    "user": "lena",
@@ -3396,7 +3455,7 @@
     "en": "Set management"
    },
    "exported": true,
-   "id": 77
+   "id": 78
   },
   {
    "user": "jonas",
@@ -3410,7 +3469,7 @@
     "en": "Shoot at Övelgönne"
    },
    "exported": true,
-   "id": 78
+   "id": 79
   },
   {
    "user": "mara",
@@ -3424,7 +3483,7 @@
     "en": "Shoot at Övelgönne"
    },
    "exported": true,
-   "id": 79
+   "id": 80
   },
   {
    "user": "theo",
@@ -3438,7 +3497,7 @@
     "en": "Location sound at Övelgönne"
    },
    "exported": true,
-   "id": 80
+   "id": 81
   },
   {
    "user": "selin",
@@ -3452,7 +3511,7 @@
     "en": "Colour grading the spot"
    },
    "exported": true,
-   "id": 81
+   "id": 82
   },
   {
    "user": "lena",
@@ -3466,7 +3525,7 @@
     "en": "Source props"
    },
    "exported": true,
-   "id": 82
+   "id": 83
   },
   {
    "user": "jonas",
@@ -3480,7 +3539,7 @@
     "en": "Review the camera reel"
    },
    "exported": false,
-   "id": 83
+   "id": 84
   },
   {
    "user": "mara",
@@ -3494,7 +3553,7 @@
     "en": "Showreel: new scenes"
    },
    "exported": false,
-   "id": 84
+   "id": 85
   },
   {
    "user": "theo",
@@ -3508,7 +3567,7 @@
     "en": "Score: Nebelhorn"
    },
    "exported": true,
-   "id": 85
+   "id": 86
   },
   {
    "user": "mara",
@@ -3522,7 +3581,21 @@
     "en": "Rough cut review with Elbgrün"
    },
    "exported": true,
-   "id": 86
+   "id": 87
+  },
+  {
+   "user": "mara",
+   "project": "trailer",
+   "activity": "edit",
+   "day": -38,
+   "start": "14:45",
+   "end": "17:30",
+   "description": {
+    "de": "Trailer-Schnitt für Donaulicht",
+    "en": "Trailer edit for Donaulicht"
+   },
+   "exported": true,
+   "id": 88
   },
   {
    "user": "jonas",
@@ -3536,7 +3609,7 @@
     "en": "Test the lighting setup"
    },
    "exported": true,
-   "id": 87
+   "id": 89
   },
   {
    "user": "lena",
@@ -3550,7 +3623,7 @@
     "en": "Weekly planning with the team"
    },
    "exported": false,
-   "id": 88
+   "id": 90
   },
   {
    "user": "mara",
@@ -3564,7 +3637,7 @@
     "en": "Weekly planning with the team"
    },
    "exported": false,
-   "id": 89
+   "id": 91
   },
   {
    "user": "selin",
@@ -3578,7 +3651,7 @@
     "en": "Edit episode 4"
    },
    "exported": true,
-   "id": 90
+   "id": 92
   },
   {
    "user": "lena",
@@ -3592,7 +3665,7 @@
     "en": "Call sheet for the workshop shoot"
    },
    "exported": true,
-   "id": 91
+   "id": 93
   },
   {
    "user": "mara",
@@ -3606,7 +3679,7 @@
     "en": "Casting the bike courier"
    },
    "exported": true,
-   "id": 92
+   "id": 94
   },
   {
    "user": "theo",
@@ -3620,7 +3693,7 @@
     "en": "Sound design for the spot"
    },
    "exported": true,
-   "id": 93
+   "id": 95
   },
   {
    "user": "jonas",
@@ -3628,34 +3701,6 @@
    "activity": "shoot",
    "day": -34,
    "start": "07:30",
-   "end": "16:30",
-   "description": {
-    "de": "Dreh Speiche-Werkstatt",
-    "en": "Shoot at the Speiche workshop"
-   },
-   "exported": true,
-   "id": 94
-  },
-  {
-   "user": "lena",
-   "project": "spring",
-   "activity": "shoot",
-   "day": -34,
-   "start": "07:30",
-   "end": "16:30",
-   "description": {
-    "de": "Set-Aufnahmeleitung",
-    "en": "Set management"
-   },
-   "exported": true,
-   "id": 95
-  },
-  {
-   "user": "mara",
-   "project": "spring",
-   "activity": "shoot",
-   "day": -34,
-   "start": "08:00",
    "end": "16:30",
    "description": {
     "de": "Dreh Speiche-Werkstatt",
@@ -3665,6 +3710,34 @@
    "id": 96
   },
   {
+   "user": "lena",
+   "project": "spring",
+   "activity": "shoot",
+   "day": -34,
+   "start": "07:30",
+   "end": "16:30",
+   "description": {
+    "de": "Set-Aufnahmeleitung",
+    "en": "Set management"
+   },
+   "exported": true,
+   "id": 97
+  },
+  {
+   "user": "mara",
+   "project": "spring",
+   "activity": "shoot",
+   "day": -34,
+   "start": "08:00",
+   "end": "16:30",
+   "description": {
+    "de": "Dreh Speiche-Werkstatt",
+    "en": "Shoot at the Speiche workshop"
+   },
+   "exported": true,
+   "id": 98
+  },
+  {
    "user": "selin",
    "project": "harbour",
    "activity": "edit",
@@ -3676,7 +3749,7 @@
     "en": "Edit episode 4"
    },
    "exported": true,
-   "id": 97
+   "id": 99
   },
   {
    "user": "jonas",
@@ -3690,7 +3763,7 @@
     "en": "Shoot on the harbour ferry"
    },
    "exported": true,
-   "id": 98
+   "id": 100
   },
   {
    "user": "lena",
@@ -3704,7 +3777,7 @@
     "en": "Drive to the Northlight office"
    },
    "exported": true,
-   "id": 99
+   "id": 101
   },
   {
    "user": "lena",
@@ -3718,7 +3791,7 @@
     "en": "Production meeting"
    },
    "exported": true,
-   "id": 100
+   "id": 102
   },
   {
    "user": "mara",
@@ -3732,7 +3805,7 @@
     "en": "Interview questions for the foundation"
    },
    "exported": true,
-   "id": 101
+   "id": 103
   },
   {
    "user": "selin",
@@ -3746,7 +3819,7 @@
     "en": "Fine cut"
    },
    "exported": true,
-   "id": 102
+   "id": 104
   },
   {
    "user": "theo",
@@ -3760,7 +3833,7 @@
     "en": "Mix episode 3"
    },
    "exported": true,
-   "id": 103
+   "id": 105
   },
   {
    "user": "mara",
@@ -3774,7 +3847,7 @@
     "en": "Invoices for Northlight"
    },
    "exported": false,
-   "id": 104
+   "id": 106
   },
   {
    "user": "lena",
@@ -3788,7 +3861,7 @@
     "en": "HafenCity permit"
    },
    "exported": true,
-   "id": 105
+   "id": 107
   },
   {
    "user": "mara",
@@ -3802,7 +3875,7 @@
     "en": "Call sheet episode 5"
    },
    "exported": true,
-   "id": 106
+   "id": 108
   },
   {
    "user": "jonas",
@@ -3816,7 +3889,7 @@
     "en": "Shoot in HafenCity"
    },
    "exported": true,
-   "id": 107
+   "id": 109
   },
   {
    "user": "theo",
@@ -3830,7 +3903,7 @@
     "en": "Location sound in HafenCity"
    },
    "exported": true,
-   "id": 108
+   "id": 110
   },
   {
    "user": "mara",
@@ -3844,7 +3917,7 @@
     "en": "Shoot in HafenCity"
    },
    "exported": true,
-   "id": 109
+   "id": 111
   },
   {
    "user": "mara",
@@ -3858,7 +3931,7 @@
     "en": "Edit version 1"
    },
    "exported": true,
-   "id": 110
+   "id": 112
   },
   {
    "user": "jonas",
@@ -3872,7 +3945,7 @@
     "en": "Night shoot in Speicherstadt"
    },
    "exported": true,
-   "id": 111
+   "id": 113
   },
   {
    "user": "jonas",
@@ -3886,7 +3959,7 @@
     "en": "Camera check and lens test"
    },
    "exported": true,
-   "id": 112
+   "id": 114
   },
   {
    "user": "lena",
@@ -3900,7 +3973,7 @@
     "en": "Weekly planning with the team"
    },
    "exported": false,
-   "id": 113
+   "id": 115
   },
   {
    "user": "mara",
@@ -3914,7 +3987,7 @@
     "en": "Weekly planning with the team"
    },
    "exported": false,
-   "id": 114
+   "id": 116
   },
   {
    "user": "lena",
@@ -3928,7 +4001,7 @@
     "en": "Shooting permits"
    },
    "exported": true,
-   "id": 115
+   "id": 117
   },
   {
    "user": "mara",
@@ -3942,7 +4015,7 @@
     "en": "Align shooting schedule for episode 4"
    },
    "exported": true,
-   "id": 116
+   "id": 118
   },
   {
    "user": "mara",
@@ -3956,7 +4029,7 @@
     "en": "Storyboard sign-off with Speiche"
    },
    "exported": true,
-   "id": 117
+   "id": 119
   },
   {
    "user": "jonas",
@@ -3970,7 +4043,7 @@
     "en": "Shoot at Landungsbrücken"
    },
    "exported": true,
-   "id": 118
+   "id": 120
   },
   {
    "user": "lena",
@@ -3984,7 +4057,7 @@
     "en": "Set management"
    },
    "exported": true,
-   "id": 119
+   "id": 121
   },
   {
    "user": "mara",
@@ -3998,7 +4071,7 @@
     "en": "Shoot at Landungsbrücken"
    },
    "exported": true,
-   "id": 120
+   "id": 122
   },
   {
    "user": "theo",
@@ -4012,7 +4085,7 @@
     "en": "Location sound at Landungsbrücken"
    },
    "exported": true,
-   "id": 121
+   "id": 123
   },
   {
    "user": "jonas",
@@ -4026,7 +4099,7 @@
     "en": "Shoot at the fish market"
    },
    "exported": true,
-   "id": 122
+   "id": 124
   },
   {
    "user": "lena",
@@ -4040,7 +4113,7 @@
     "en": "Travel expenses"
    },
    "exported": false,
-   "id": 123
+   "id": 125
   },
   {
    "user": "mara",
@@ -4054,7 +4127,7 @@
     "en": "Fine cut of the interviews"
    },
    "exported": true,
-   "id": 124
+   "id": 126
   },
   {
    "user": "mara",
@@ -4068,7 +4141,7 @@
     "en": "Location scout at the workshop"
    },
    "exported": true,
-   "id": 125
+   "id": 127
   },
   {
    "user": "theo",
@@ -4082,7 +4155,7 @@
     "en": "Sound mix of the interviews"
    },
    "exported": true,
-   "id": 126
+   "id": 128
   },
   {
    "user": "mara",
@@ -4096,7 +4169,7 @@
     "en": "Match receipts"
    },
    "exported": false,
-   "id": 127
+   "id": 129
   },
   {
    "user": "lena",
@@ -4110,7 +4183,7 @@
     "en": "Set management"
    },
    "exported": true,
-   "id": 128
+   "id": 130
   },
   {
    "user": "jonas",
@@ -4124,7 +4197,7 @@
     "en": "Shoot at Övelgönne"
    },
    "exported": true,
-   "id": 129
+   "id": 131
   },
   {
    "user": "mara",
@@ -4138,7 +4211,7 @@
     "en": "Shoot at Övelgönne"
    },
    "exported": true,
-   "id": 130
+   "id": 132
   },
   {
    "user": "theo",
@@ -4152,7 +4225,7 @@
     "en": "Location sound at Övelgönne"
    },
    "exported": true,
-   "id": 131
+   "id": 133
   },
   {
    "user": "selin",
@@ -4166,7 +4239,7 @@
     "en": "Colour grading the spot"
    },
    "exported": true,
-   "id": 132
+   "id": 134
   },
   {
    "user": "lena",
@@ -4180,7 +4253,7 @@
     "en": "Source props"
    },
    "exported": true,
-   "id": 133
+   "id": 135
   },
   {
    "user": "jonas",
@@ -4194,7 +4267,7 @@
     "en": "Review the camera reel"
    },
    "exported": false,
-   "id": 134
+   "id": 136
   },
   {
    "user": "mara",
@@ -4208,7 +4281,7 @@
     "en": "Showreel: new scenes"
    },
    "exported": false,
-   "id": 135
+   "id": 137
   },
   {
    "user": "theo",
@@ -4222,7 +4295,7 @@
     "en": "Score: Nebelhorn"
    },
    "exported": true,
-   "id": 136
+   "id": 138
   },
   {
    "user": "mara",
@@ -4236,7 +4309,21 @@
     "en": "Rough cut review with Elbgrün"
    },
    "exported": true,
-   "id": 137
+   "id": 139
+  },
+  {
+   "user": "mara",
+   "project": "trailer",
+   "activity": "edit",
+   "day": -24,
+   "start": "14:45",
+   "end": "17:30",
+   "description": {
+    "de": "Trailer-Schnitt für Donaulicht",
+    "en": "Trailer edit for Donaulicht"
+   },
+   "exported": true,
+   "id": 140
   },
   {
    "user": "jonas",
@@ -4250,7 +4337,7 @@
     "en": "Test the lighting setup"
    },
    "exported": false,
-   "id": 138
+   "id": 141
   },
   {
    "user": "lena",
@@ -4264,7 +4351,7 @@
     "en": "Weekly planning with the team"
    },
    "exported": false,
-   "id": 139
+   "id": 142
   },
   {
    "user": "mara",
@@ -4278,7 +4365,7 @@
     "en": "Weekly planning with the team"
    },
    "exported": false,
-   "id": 140
+   "id": 143
   },
   {
    "user": "selin",
@@ -4292,7 +4379,7 @@
     "en": "Edit episode 4"
    },
    "exported": false,
-   "id": 141
+   "id": 144
   },
   {
    "user": "lena",
@@ -4306,7 +4393,7 @@
     "en": "Call sheet for the workshop shoot"
    },
    "exported": false,
-   "id": 142
+   "id": 145
   },
   {
    "user": "mara",
@@ -4320,7 +4407,7 @@
     "en": "Casting the bike courier"
    },
    "exported": false,
-   "id": 143
+   "id": 146
   },
   {
    "user": "theo",
@@ -4334,7 +4421,7 @@
     "en": "Sound design for the spot"
    },
    "exported": false,
-   "id": 144
+   "id": 147
   },
   {
    "user": "jonas",
@@ -4348,7 +4435,7 @@
     "en": "Shoot at the Speiche workshop"
    },
    "exported": false,
-   "id": 145
+   "id": 148
   },
   {
    "user": "lena",
@@ -4362,7 +4449,7 @@
     "en": "Set management"
    },
    "exported": false,
-   "id": 146
+   "id": 149
   },
   {
    "user": "mara",
@@ -4376,7 +4463,7 @@
     "en": "Shoot at the Speiche workshop"
    },
    "exported": false,
-   "id": 147
+   "id": 150
   },
   {
    "user": "selin",
@@ -4390,7 +4477,7 @@
     "en": "Edit episode 4"
    },
    "exported": false,
-   "id": 148
+   "id": 151
   },
   {
    "user": "jonas",
@@ -4404,7 +4491,7 @@
     "en": "Shoot on the harbour ferry"
    },
    "exported": false,
-   "id": 149
+   "id": 152
   },
   {
    "user": "lena",
@@ -4418,7 +4505,7 @@
     "en": "Drive to the Northlight office"
    },
    "exported": false,
-   "id": 150
+   "id": 153
   },
   {
    "user": "lena",
@@ -4432,7 +4519,7 @@
     "en": "Production meeting"
    },
    "exported": false,
-   "id": 151
+   "id": 154
   },
   {
    "user": "mara",
@@ -4446,7 +4533,7 @@
     "en": "Interview questions for the foundation"
    },
    "exported": false,
-   "id": 152
+   "id": 155
   },
   {
    "user": "selin",
@@ -4460,7 +4547,7 @@
     "en": "Fine cut"
    },
    "exported": false,
-   "id": 153
+   "id": 156
   },
   {
    "user": "theo",
@@ -4474,7 +4561,7 @@
     "en": "Mix episode 3"
    },
    "exported": false,
-   "id": 154
+   "id": 157
   },
   {
    "user": "mara",
@@ -4488,7 +4575,7 @@
     "en": "Invoices for Northlight"
    },
    "exported": false,
-   "id": 155
+   "id": 158
   },
   {
    "user": "lena",
@@ -4502,7 +4589,7 @@
     "en": "HafenCity permit"
    },
    "exported": false,
-   "id": 156
+   "id": 159
   },
   {
    "user": "selin",
@@ -4516,7 +4603,7 @@
     "en": "Showreel edit"
    },
    "exported": false,
-   "id": 157
+   "id": 160
   },
   {
    "user": "mara",
@@ -4530,7 +4617,7 @@
     "en": "Call sheet episode 5"
    },
    "exported": false,
-   "id": 158
+   "id": 161
   },
   {
    "user": "jonas",
@@ -4544,7 +4631,7 @@
     "en": "Shoot in HafenCity"
    },
    "exported": false,
-   "id": 159
+   "id": 162
   },
   {
    "user": "theo",
@@ -4558,7 +4645,7 @@
     "en": "Location sound in HafenCity"
    },
    "exported": false,
-   "id": 160
+   "id": 163
   },
   {
    "user": "mara",
@@ -4572,7 +4659,7 @@
     "en": "Shoot in HafenCity"
    },
    "exported": false,
-   "id": 161
+   "id": 164
   },
   {
    "user": "mara",
@@ -4586,7 +4673,7 @@
     "en": "Edit version 1"
    },
    "exported": false,
-   "id": 162
+   "id": 165
   },
   {
    "user": "jonas",
@@ -4600,7 +4687,7 @@
     "en": "Night shoot in Speicherstadt"
    },
    "exported": false,
-   "id": 163
+   "id": 166
   },
   {
    "user": "jonas",
@@ -4614,74 +4701,32 @@
     "en": "Camera check and lens test"
    },
    "exported": false,
-   "id": 164
-  },
-  {
-   "user": "lena",
-   "project": "admin",
-   "activity": "meeting",
-   "day": -14,
-   "start": "09:00",
-   "end": "09:45",
-   "description": {
-    "de": "Wochenplanung mit dem Team",
-    "en": "Weekly planning with the team"
-   },
-   "exported": false,
-   "id": 165
-  },
-  {
-   "user": "mara",
-   "project": "admin",
-   "activity": "meeting",
-   "day": -14,
-   "start": "09:00",
-   "end": "09:45",
-   "description": {
-    "de": "Wochenplanung mit dem Team",
-    "en": "Weekly planning with the team"
-   },
-   "exported": false,
-   "id": 166
-  },
-  {
-   "user": "selin",
-   "project": "tidenhub",
-   "activity": "edit",
-   "day": -14,
-   "start": "09:00",
-   "end": "13:00",
-   "description": {
-    "de": "Material sichten",
-    "en": "Review footage"
-   },
-   "exported": false,
    "id": 167
   },
   {
    "user": "lena",
-   "project": "harbour",
-   "activity": "prep",
+   "project": "admin",
+   "activity": "meeting",
    "day": -14,
-   "start": "10:00",
-   "end": "17:00",
+   "start": "09:00",
+   "end": "09:45",
    "description": {
-    "de": "Drehgenehmigungen",
-    "en": "Shooting permits"
+    "de": "Wochenplanung mit dem Team",
+    "en": "Weekly planning with the team"
    },
    "exported": false,
    "id": 168
   },
   {
    "user": "mara",
-   "project": "harbour",
-   "activity": "prep",
+   "project": "admin",
+   "activity": "meeting",
    "day": -14,
-   "start": "10:00",
-   "end": "13:00",
+   "start": "09:00",
+   "end": "09:45",
    "description": {
-    "de": "Drehplan Folge 4 abstimmen",
-    "en": "Align shooting schedule for episode 4"
+    "de": "Wochenplanung mit dem Team",
+    "en": "Weekly planning with the team"
    },
    "exported": false,
    "id": 169
@@ -4691,6 +4736,48 @@
    "project": "tidenhub",
    "activity": "edit",
    "day": -14,
+   "start": "09:00",
+   "end": "13:00",
+   "description": {
+    "de": "Material sichten",
+    "en": "Review footage"
+   },
+   "exported": false,
+   "id": 170
+  },
+  {
+   "user": "lena",
+   "project": "harbour",
+   "activity": "prep",
+   "day": -14,
+   "start": "10:00",
+   "end": "17:00",
+   "description": {
+    "de": "Drehgenehmigungen",
+    "en": "Shooting permits"
+   },
+   "exported": false,
+   "id": 171
+  },
+  {
+   "user": "mara",
+   "project": "harbour",
+   "activity": "prep",
+   "day": -14,
+   "start": "10:00",
+   "end": "13:00",
+   "description": {
+    "de": "Drehplan Folge 4 abstimmen",
+    "en": "Align shooting schedule for episode 4"
+   },
+   "exported": false,
+   "id": 172
+  },
+  {
+   "user": "selin",
+   "project": "tidenhub",
+   "activity": "edit",
+   "day": -14,
    "start": "13:30",
    "end": "16:30",
    "description": {
@@ -4698,7 +4785,7 @@
     "en": "Cut the interviews"
    },
    "exported": false,
-   "id": 170
+   "id": 173
   },
   {
    "user": "mara",
@@ -4712,7 +4799,7 @@
     "en": "Storyboard sign-off with Speiche"
    },
    "exported": false,
-   "id": 171
+   "id": 174
   },
   {
    "user": "jonas",
@@ -4726,7 +4813,7 @@
     "en": "Shoot at Landungsbrücken"
    },
    "exported": false,
-   "id": 172
+   "id": 175
   },
   {
    "user": "lena",
@@ -4740,7 +4827,7 @@
     "en": "Set management"
    },
    "exported": false,
-   "id": 173
+   "id": 176
   },
   {
    "user": "mara",
@@ -4754,7 +4841,7 @@
     "en": "Shoot at Landungsbrücken"
    },
    "exported": false,
-   "id": 174
+   "id": 177
   },
   {
    "user": "theo",
@@ -4768,7 +4855,7 @@
     "en": "Location sound at Landungsbrücken"
    },
    "exported": false,
-   "id": 175
+   "id": 178
   },
   {
    "user": "selin",
@@ -4782,7 +4869,7 @@
     "en": "Edit episode 3"
    },
    "exported": false,
-   "id": 176
+   "id": 179
   },
   {
    "user": "jonas",
@@ -4796,7 +4883,7 @@
     "en": "Shoot at the fish market"
    },
    "exported": false,
-   "id": 177
+   "id": 180
   },
   {
    "user": "lena",
@@ -4810,7 +4897,7 @@
     "en": "Travel expenses"
    },
    "exported": false,
-   "id": 178
+   "id": 181
   },
   {
    "user": "mara",
@@ -4824,7 +4911,7 @@
     "en": "Fine cut of the interviews"
    },
    "exported": false,
-   "id": 179
+   "id": 182
   },
   {
    "user": "selin",
@@ -4838,7 +4925,7 @@
     "en": "Edit episode 3"
    },
    "exported": false,
-   "id": 180
+   "id": 183
   },
   {
    "user": "mara",
@@ -4852,7 +4939,7 @@
     "en": "Location scout at the workshop"
    },
    "exported": false,
-   "id": 181
+   "id": 184
   },
   {
    "user": "theo",
@@ -4866,7 +4953,7 @@
     "en": "Sound mix of the interviews"
    },
    "exported": false,
-   "id": 182
+   "id": 185
   },
   {
    "user": "mara",
@@ -4880,7 +4967,7 @@
     "en": "Match receipts"
    },
    "exported": false,
-   "id": 183
+   "id": 186
   },
   {
    "user": "lena",
@@ -4894,7 +4981,7 @@
     "en": "Set management"
    },
    "exported": false,
-   "id": 184
+   "id": 187
   },
   {
    "user": "jonas",
@@ -4908,7 +4995,7 @@
     "en": "Shoot at Övelgönne"
    },
    "exported": false,
-   "id": 185
+   "id": 188
   },
   {
    "user": "mara",
@@ -4922,7 +5009,7 @@
     "en": "Shoot at Övelgönne"
    },
    "exported": false,
-   "id": 186
+   "id": 189
   },
   {
    "user": "theo",
@@ -4936,7 +5023,7 @@
     "en": "Location sound at Övelgönne"
    },
    "exported": false,
-   "id": 187
+   "id": 190
   },
   {
    "user": "selin",
@@ -4950,7 +5037,7 @@
     "en": "Colour grading the spot"
    },
    "exported": false,
-   "id": 188
+   "id": 191
   },
   {
    "user": "lena",
@@ -4964,7 +5051,7 @@
     "en": "Source props"
    },
    "exported": false,
-   "id": 189
+   "id": 192
   },
   {
    "user": "jonas",
@@ -4978,7 +5065,7 @@
     "en": "Review the camera reel"
    },
    "exported": false,
-   "id": 190
+   "id": 193
   },
   {
    "user": "mara",
@@ -4992,7 +5079,7 @@
     "en": "Showreel: new scenes"
    },
    "exported": false,
-   "id": 191
+   "id": 194
   },
   {
    "user": "theo",
@@ -5006,7 +5093,7 @@
     "en": "Score: Nebelhorn"
    },
    "exported": false,
-   "id": 192
+   "id": 195
   },
   {
    "user": "mara",
@@ -5020,7 +5107,21 @@
     "en": "Rough cut review with Elbgrün"
    },
    "exported": false,
-   "id": 193
+   "id": 196
+  },
+  {
+   "user": "mara",
+   "project": "trailer",
+   "activity": "edit",
+   "day": -10,
+   "start": "14:45",
+   "end": "17:30",
+   "description": {
+    "de": "Trailer-Schnitt für Donaulicht",
+    "en": "Trailer edit for Donaulicht"
+   },
+   "exported": false,
+   "id": 197
   },
   {
    "user": "jonas",
@@ -5034,7 +5135,7 @@
     "en": "Test the lighting setup"
    },
    "exported": false,
-   "id": 194
+   "id": 198
   },
   {
    "user": "lena",
@@ -5048,7 +5149,7 @@
     "en": "Weekly planning with the team"
    },
    "exported": false,
-   "id": 195
+   "id": 199
   },
   {
    "user": "mara",
@@ -5062,7 +5163,7 @@
     "en": "Weekly planning with the team"
    },
    "exported": false,
-   "id": 196
+   "id": 200
   },
   {
    "user": "selin",
@@ -5076,7 +5177,7 @@
     "en": "Edit episode 4"
    },
    "exported": false,
-   "id": 197
+   "id": 201
   },
   {
    "user": "lena",
@@ -5090,7 +5191,7 @@
     "en": "Call sheet for the workshop shoot"
    },
    "exported": false,
-   "id": 198
+   "id": 202
   },
   {
    "user": "mara",
@@ -5104,7 +5205,7 @@
     "en": "Casting the bike courier"
    },
    "exported": false,
-   "id": 199
+   "id": 203
   },
   {
    "user": "theo",
@@ -5118,7 +5219,7 @@
     "en": "Sound design for the spot"
    },
    "exported": false,
-   "id": 200
+   "id": 204
   },
   {
    "user": "jonas",
@@ -5132,7 +5233,7 @@
     "en": "Shoot at the Speiche workshop"
    },
    "exported": false,
-   "id": 201
+   "id": 205
   },
   {
    "user": "lena",
@@ -5146,7 +5247,7 @@
     "en": "Set management"
    },
    "exported": false,
-   "id": 202
+   "id": 206
   },
   {
    "user": "mara",
@@ -5160,7 +5261,7 @@
     "en": "Shoot at the Speiche workshop"
    },
    "exported": false,
-   "id": 203
+   "id": 207
   },
   {
    "user": "selin",
@@ -5174,7 +5275,7 @@
     "en": "Edit episode 4"
    },
    "exported": false,
-   "id": 204
+   "id": 208
   },
   {
    "user": "jonas",
@@ -5188,7 +5289,7 @@
     "en": "Shoot on the harbour ferry"
    },
    "exported": false,
-   "id": 205
+   "id": 209
   },
   {
    "user": "lena",
@@ -5202,7 +5303,7 @@
     "en": "Drive to the Northlight office"
    },
    "exported": false,
-   "id": 206
+   "id": 210
   },
   {
    "user": "lena",
@@ -5216,7 +5317,7 @@
     "en": "Production meeting"
    },
    "exported": false,
-   "id": 207
+   "id": 211
   },
   {
    "user": "mara",
@@ -5230,7 +5331,7 @@
     "en": "Interview questions for the foundation"
    },
    "exported": false,
-   "id": 208
+   "id": 212
   },
   {
    "user": "selin",
@@ -5244,7 +5345,7 @@
     "en": "Fine cut"
    },
    "exported": false,
-   "id": 209
+   "id": 213
   },
   {
    "user": "theo",
@@ -5258,7 +5359,7 @@
     "en": "Mix episode 3"
    },
    "exported": false,
-   "id": 210
+   "id": 214
   },
   {
    "user": "mara",
@@ -5272,7 +5373,7 @@
     "en": "Invoices for Northlight"
    },
    "exported": false,
-   "id": 211
+   "id": 215
   },
   {
    "user": "lena",
@@ -5286,7 +5387,7 @@
     "en": "HafenCity permit"
    },
    "exported": false,
-   "id": 212
+   "id": 216
   },
   {
    "user": "selin",
@@ -5300,7 +5401,7 @@
     "en": "Showreel edit"
    },
    "exported": false,
-   "id": 213
+   "id": 217
   },
   {
    "user": "mara",
@@ -5314,7 +5415,7 @@
     "en": "Call sheet episode 5"
    },
    "exported": false,
-   "id": 214
+   "id": 218
   },
   {
    "user": "jonas",
@@ -5328,7 +5429,7 @@
     "en": "Shoot in HafenCity"
    },
    "exported": false,
-   "id": 215
+   "id": 219
   },
   {
    "user": "theo",
@@ -5342,7 +5443,7 @@
     "en": "Location sound in HafenCity"
    },
    "exported": false,
-   "id": 216
+   "id": 220
   },
   {
    "user": "mara",
@@ -5356,7 +5457,7 @@
     "en": "Shoot in HafenCity"
    },
    "exported": false,
-   "id": 217
+   "id": 221
   },
   {
    "user": "mara",
@@ -5370,7 +5471,7 @@
     "en": "Edit version 1"
    },
    "exported": false,
-   "id": 218
+   "id": 222
   },
   {
    "user": "jonas",
@@ -5384,7 +5485,7 @@
     "en": "Night shoot in Speicherstadt"
    },
    "exported": false,
-   "id": 219
+   "id": 223
   },
   {
    "user": "jonas",
@@ -5398,7 +5499,7 @@
     "en": "Camera check and lens test"
    },
    "exported": false,
-   "id": 220
+   "id": 224
   },
   {
    "user": "lena",
@@ -5412,7 +5513,7 @@
     "en": "Weekly planning with the team"
    },
    "exported": false,
-   "id": 221
+   "id": 225
   },
   {
    "user": "mara",
@@ -5426,7 +5527,7 @@
     "en": "Weekly planning with the team"
    },
    "exported": false,
-   "id": 222
+   "id": 226
   },
   {
    "user": "selin",
@@ -5440,7 +5541,7 @@
     "en": "Review footage"
    },
    "exported": false,
-   "id": 223
+   "id": 227
   },
   {
    "user": "lena",
@@ -5454,7 +5555,7 @@
     "en": "Shooting permits"
    },
    "exported": false,
-   "id": 224
+   "id": 228
   },
   {
    "user": "mara",
@@ -5468,7 +5569,7 @@
     "en": "Align shooting schedule for episode 4"
    },
    "exported": false,
-   "id": 225
+   "id": 229
   },
   {
    "user": "selin",
@@ -5482,7 +5583,7 @@
     "en": "Cut the interviews"
    },
    "exported": false,
-   "id": 226
+   "id": 230
   },
   {
    "user": "mara",
@@ -5496,7 +5597,7 @@
     "en": "Storyboard sign-off with Speiche"
    },
    "exported": false,
-   "id": 227
+   "id": 231
   },
   {
    "user": "jonas",
@@ -5510,7 +5611,7 @@
     "en": "Shoot at Landungsbrücken"
    },
    "exported": false,
-   "id": 228
+   "id": 232
   },
   {
    "user": "lena",
@@ -5524,7 +5625,7 @@
     "en": "Set management"
    },
    "exported": false,
-   "id": 229
+   "id": 233
   },
   {
    "user": "mara",
@@ -5538,7 +5639,7 @@
     "en": "Shoot at Landungsbrücken"
    },
    "exported": false,
-   "id": 230
+   "id": 234
   },
   {
    "user": "theo",
@@ -5552,7 +5653,7 @@
     "en": "Location sound at Landungsbrücken"
    },
    "exported": false,
-   "id": 231
+   "id": 235
   },
   {
    "user": "selin",
@@ -5566,7 +5667,7 @@
     "en": "Edit episode 3"
    },
    "exported": false,
-   "id": 232
+   "id": 236
   },
   {
    "user": "jonas",
@@ -5580,7 +5681,7 @@
     "en": "Shoot at the fish market"
    },
    "exported": false,
-   "id": 233
+   "id": 237
   },
   {
    "user": "lena",
@@ -5594,7 +5695,7 @@
     "en": "Travel expenses"
    },
    "exported": false,
-   "id": 234
+   "id": 238
   },
   {
    "user": "mara",
@@ -5608,7 +5709,7 @@
     "en": "Fine cut of the interviews"
    },
    "exported": false,
-   "id": 235
+   "id": 239
   },
   {
    "user": "selin",
@@ -5622,7 +5723,7 @@
     "en": "Edit episode 3"
    },
    "exported": false,
-   "id": 236
+   "id": 240
   },
   {
    "user": "mara",
@@ -5636,7 +5737,7 @@
     "en": "Location scout at the workshop"
    },
    "exported": false,
-   "id": 237
+   "id": 241
   },
   {
    "user": "theo",
@@ -5650,7 +5751,7 @@
     "en": "Sound mix of the interviews"
    },
    "exported": false,
-   "id": 238
+   "id": 242
   },
   {
    "user": "mara",
@@ -5664,7 +5765,7 @@
     "en": "Match receipts"
    },
    "exported": false,
-   "id": 239
+   "id": 243
   },
   {
    "user": "lena",
@@ -5678,7 +5779,7 @@
     "en": "Set management"
    },
    "exported": false,
-   "id": 240
+   "id": 244
   },
   {
    "user": "jonas",
@@ -5692,7 +5793,7 @@
     "en": "Shoot at Övelgönne"
    },
    "exported": false,
-   "id": 241
+   "id": 245
   },
   {
    "user": "mara",
@@ -5706,7 +5807,7 @@
     "en": "Shoot at Övelgönne"
    },
    "exported": false,
-   "id": 242
+   "id": 246
   },
   {
    "user": "selin",
@@ -5720,7 +5821,7 @@
     "en": "Colour grading the spot"
    },
    "exported": false,
-   "id": 243
+   "id": 247
   },
   {
    "user": "lena",
@@ -5734,7 +5835,7 @@
     "en": "Source props"
    },
    "exported": false,
-   "id": 244
+   "id": 248
   },
   {
    "user": "jonas",
@@ -5748,7 +5849,7 @@
     "en": "Review the camera reel"
    },
    "exported": false,
-   "id": 245
+   "id": 249
   },
   {
    "user": "mara",
@@ -5762,7 +5863,7 @@
     "en": "Showreel: new scenes"
    },
    "exported": false,
-   "id": 246
+   "id": 250
   },
   {
    "user": "mara",
@@ -5776,7 +5877,21 @@
     "en": "Rough cut review with Elbgrün"
    },
    "exported": false,
-   "id": 247
+   "id": 251
+  },
+  {
+   "user": "mara",
+   "project": "trailer",
+   "activity": "edit",
+   "day": 4,
+   "start": "14:45",
+   "end": "17:30",
+   "description": {
+    "de": "Trailer-Schnitt für Donaulicht",
+    "en": "Trailer edit for Donaulicht"
+   },
+   "exported": false,
+   "id": 252
   },
   {
    "user": "jonas",
@@ -5790,7 +5905,7 @@
     "en": "Test the lighting setup"
    },
    "exported": false,
-   "id": 248
+   "id": 253
   },
   {
    "user": "lena",
@@ -5804,7 +5919,7 @@
     "en": "Weekly planning with the team"
    },
    "exported": false,
-   "id": 249
+   "id": 254
   },
   {
    "user": "mara",
@@ -5818,7 +5933,7 @@
     "en": "Weekly planning with the team"
    },
    "exported": false,
-   "id": 250
+   "id": 255
   },
   {
    "user": "selin",
@@ -5832,7 +5947,7 @@
     "en": "Edit episode 4"
    },
    "exported": false,
-   "id": 251
+   "id": 256
   },
   {
    "user": "lena",
@@ -5846,7 +5961,7 @@
     "en": "Call sheet for the workshop shoot"
    },
    "exported": false,
-   "id": 252
+   "id": 257
   },
   {
    "user": "mara",
@@ -5860,7 +5975,7 @@
     "en": "Casting the bike courier"
    },
    "exported": false,
-   "id": 253
+   "id": 258
   },
   {
    "user": "theo",
@@ -5874,7 +5989,7 @@
     "en": "Sound design for the spot"
    },
    "exported": false,
-   "id": 254
+   "id": 259
   },
   {
    "user": "jonas",
@@ -5888,7 +6003,7 @@
     "en": "Shoot at the Speiche workshop"
    },
    "exported": false,
-   "id": 255
+   "id": 260
   },
   {
    "user": "lena",
@@ -5902,7 +6017,7 @@
     "en": "Set management"
    },
    "exported": false,
-   "id": 256
+   "id": 261
   },
   {
    "user": "mara",
@@ -5916,7 +6031,7 @@
     "en": "Shoot at the Speiche workshop"
    },
    "exported": false,
-   "id": 257
+   "id": 262
   },
   {
    "user": "selin",
@@ -5930,7 +6045,7 @@
     "en": "Edit episode 4"
    },
    "exported": false,
-   "id": 258
+   "id": 263
   },
   {
    "user": "jonas",
@@ -5944,7 +6059,7 @@
     "en": "Shoot on the harbour ferry"
    },
    "exported": false,
-   "id": 259
+   "id": 264
   },
   {
    "user": "lena",
@@ -5958,7 +6073,7 @@
     "en": "Drive to the Northlight office"
    },
    "exported": false,
-   "id": 260
+   "id": 265
   },
   {
    "user": "lena",
@@ -5972,7 +6087,7 @@
     "en": "Production meeting"
    },
    "exported": false,
-   "id": 261
+   "id": 266
   },
   {
    "user": "mara",
@@ -5986,7 +6101,7 @@
     "en": "Interview questions for the foundation"
    },
    "exported": false,
-   "id": 262
+   "id": 267
   },
   {
    "user": "selin",
@@ -6000,7 +6115,7 @@
     "en": "Fine cut"
    },
    "exported": false,
-   "id": 263
+   "id": 268
   },
   {
    "user": "theo",
@@ -6014,7 +6129,7 @@
     "en": "Mix episode 3"
    },
    "exported": false,
-   "id": 264
+   "id": 269
   },
   {
    "user": "mara",
@@ -6028,7 +6143,7 @@
     "en": "Invoices for Northlight"
    },
    "exported": false,
-   "id": 265
+   "id": 270
   },
   {
    "user": "lena",
@@ -6042,7 +6157,7 @@
     "en": "HafenCity permit"
    },
    "exported": false,
-   "id": 266
+   "id": 271
   },
   {
    "user": "mara",
@@ -6056,7 +6171,7 @@
     "en": "Call sheet episode 5"
    },
    "exported": false,
-   "id": 267
+   "id": 272
   },
   {
    "user": "jonas",
@@ -6070,7 +6185,7 @@
     "en": "Shoot in HafenCity"
    },
    "exported": false,
-   "id": 268
+   "id": 273
   },
   {
    "user": "theo",
@@ -6084,7 +6199,7 @@
     "en": "Location sound in HafenCity"
    },
    "exported": false,
-   "id": 269
+   "id": 274
   },
   {
    "user": "mara",
@@ -6098,7 +6213,7 @@
     "en": "Shoot in HafenCity"
    },
    "exported": false,
-   "id": 270
+   "id": 275
   },
   {
    "user": "mara",
@@ -6112,7 +6227,7 @@
     "en": "Edit version 1"
    },
    "exported": false,
-   "id": 271
+   "id": 276
   },
   {
    "user": "jonas",
@@ -6126,7 +6241,7 @@
     "en": "Night shoot in Speicherstadt"
    },
    "exported": false,
-   "id": 272
+   "id": 277
   }
  ]
 }
