@@ -1,6 +1,6 @@
-"""Demo-Rollen (companion/demo.py): Anzahl, Rollenordner, deterministisch.
+"""Demo-Rollen (demo/rolls.py, intern): Anzahl, Rollenordner, deterministisch.
 
-Ausfuehren:  .venv/bin/python -m unittest tests.test_demo -v
+Ausfuehren:  .venv/bin/python -m unittest discover -s demo -v
 """
 import hashlib
 import os
@@ -10,7 +10,8 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from companion import demo            # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import rolls as demo                  # noqa: E402
 from companion.sources import standalone_job   # noqa: E402
 
 

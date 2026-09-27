@@ -1,6 +1,6 @@
 {
   "kind": "web",
-  "start": "KADER_CACHE=$(mktemp -d) .venv/bin/python -m companion demo --no-browser --port {port}",
+  "start": "demo/start.sh --no-browser --port {port}",
   "ready_line": "^(http://127\\.0\\.0\\.1:\\d+/\\?t=\\S+)",
   "viewport": [
     1400,
@@ -52,5 +52,5 @@
     "placeholder-labels.svg": "gallery",
     "placeholder-strategies.svg": "editor"
   },
-  "note": "docs/shots/before-after.webp is made by 'python -m companion.demo before-after docs/shots/before-after.webp' (language-neutral, real detection on a demo roll). The darktable panel stays a placeholder: it needs darktable's GUI with the plugin."
+  "note": "docs/shots/before-after.webp is made by 'demo/rolls.py before-after docs/shots/before-after.webp' (language-neutral, real detection on a demo roll). The darktable panel stays a placeholder: it needs darktable's GUI with the plugin."
 }

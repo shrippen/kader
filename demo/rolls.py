@@ -1,10 +1,10 @@
-"""Demo-Rollen: gezeichnete Kamerascans fuer Screenshots und zum Ausprobieren.
+"""Demo-Rollen: gezeichnete Kamerascans fuer die Screenshots (intern, nie Teil eines Releases).
 
-``kader demo`` erzeugt zwei Filmrollen der gemeinsamen shrippen-Demowelt (Studio Weber,
-siehe companion/demo/world.json) als JPEGs: heller Leuchttisch, schwarzer Filmstreifen mit
+``demo/start.sh`` legt damit zwei Filmrollen der gemeinsamen shrippen-Demowelt (Studio Weber,
+siehe demo/world.json) als JPEGs an: heller Leuchttisch, schwarzer Filmstreifen mit
 Perforation, darin ein gezeichnetes Motiv (Elbstrand Oevelgoenne, Fahrradwerkstatt). Jedes
 Bild liegt etwas anders (Versatz, Drehung); ein paar sind absichtlich unterbelichtet,
-damit die Erkennung alle drei Stufen zeigt. Danach laeuft der normale Weg wie ``kader open``.
+damit die Erkennung alle drei Stufen zeigt. Danach laeuft der normale Weg ``kader open``.
 Keine echten Fotos, deterministisch (fester Zufallssamen).
 """
 import json
@@ -16,7 +16,7 @@ import numpy as np
 
 from PIL import Image, ImageDraw, ImageFilter
 
-WORLD = os.path.join(os.path.dirname(os.path.abspath(__file__)), "demo", "world.json")
+WORLD = os.path.join(os.path.dirname(os.path.abspath(__file__)), "world.json")
 W, H = 1333, 2000          # wie ein Hochformat-Kamerascan eines Kleinbildnegativs
 
 
@@ -194,7 +194,10 @@ def before_after(out, seed=3):
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) == 3 and sys.argv[1] == "before-after":
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # kader.py
+    if len(sys.argv) == 3 and sys.argv[1] == "rolls":
+        print(generate(sys.argv[2]))
+    elif len(sys.argv) == 3 and sys.argv[1] == "before-after":
         print("confidence", before_after(sys.argv[2]))
     else:
-        sys.exit("usage: python -m companion.demo before-after OUT.webp")
+        sys.exit("usage: demo/rolls.py rolls FOLDER | before-after OUT.webp")

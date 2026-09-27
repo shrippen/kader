@@ -8,9 +8,6 @@ Eigenstaendig, ohne darktable:
   kader check [ORDNER]             Konverter, Ziele, Vorschlag fuer ORDNER
   kader darktable-plugin install|uninstall|status
                                    darktable-Plugin aus der App einrichten (exe/AppImage)
-  kader demo [ORDNER] [open-Optionen]
-                                   gezeichnete Demo-Rollen (Studio Weber) anlegen und oeffnen,
-                                   Standard-ORDNER: KADER_CACHE/demo-rollen
 
   --tui zeigt statt der einmaligen URL-Ausgabe eine laufende Statusanzeige im Terminal
   (Fortschritt, Zähler, URL, Taste O öffnet den Browser, Q beendet den Server) - gedacht für
@@ -50,7 +47,7 @@ from .export import is_raw
 from .server import acquire_lock, make_server, serve
 from .sources import folder_job, standalone_job
 
-COMMANDS = ("open", "check", "serve", "cleanup", "darktable-plugin", "demo")
+COMMANDS = ("open", "check", "serve", "cleanup", "darktable-plugin")
 
 
 def _darktable_plugin(action):
@@ -77,8 +74,6 @@ def _darktable_plugin(action):
 
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
-    if argv and argv[0] == "demo":
-        argv = _demo_argv(argv[1:])
     if argv and argv[0] not in COMMANDS and not argv[0].startswith("-"):
         argv.insert(0, "open")          # Kurzform: nur der Ordner
 
@@ -143,15 +138,6 @@ def main(argv=None):
     if args.cmd == "open":
         return _open(args)
     return _serve(args)
-
-
-def _demo_argv(rest):
-    """``kader demo [ORDNER] ...`` -> Demo-Rollen anlegen, dann ``open ORDNER --new ...``."""
-    from . import demo
-    folder = rest.pop(0) if rest and not rest[0].startswith("-") else os.path.join(sess.DEFAULT_ROOT, "demo-rollen")
-    n = demo.generate(folder)
-    print(f"Demo:       {n} gezeichnete Scans in {folder}")
-    return ["open", folder, "--new", *rest]
 
 
 def _server_args(p):
