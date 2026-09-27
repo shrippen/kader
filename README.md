@@ -324,7 +324,7 @@ Legt zwei Rollen mit gezeichneten Kamerascans an (Elbstrand Övelgönne, Fahrrad
 Demowelt „Studio Weber“ aller shrippen-Projekte, `companion/demo/world.json`) und öffnet sie wie `kader open`.
 Ein paar Bilder sind absichtlich unterbelichtet, damit Grün, Gelb und Rot vorkommen. Standardordner ist
 `KADER_CACHE/demo-rollen`, ein anderer geht mit `kader demo ORDNER`. `demo/shots.json` beschreibt die
-Screenshots, die `shrippen.github.io/tools/screenshots.py` davon macht.
+Screenshots, die `shrippen.github.io/demo/tools/screenshots.py` davon macht.
 
 ## Nutzung mit darktable
 
