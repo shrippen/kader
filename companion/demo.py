@@ -154,3 +154,47 @@ def generate(folder, seed=3):
             difficult = {4: 0.8, 9: 0.9, 6: 0.95 if idx else 0}.get(i, 0)
             _scan(motif, rnd, i, difficult).save(path, quality=90)
     return count
+
+
+def before_after(out, seed=3):
+    """Landing-page picture: a demo scan (left) and the frame Kader cut from it (right).
+
+    Runs the real detection on one demo roll and uses its crop. ``out`` is the image file."""
+    import tempfile
+
+    import kader as acn
+
+    with tempfile.TemporaryDirectory() as tmp:
+        generate(tmp, seed)
+        roll = sorted(d for d in os.listdir(tmp) if os.path.isdir(os.path.join(tmp, d)))[0]
+        paths = sorted(os.path.join(tmp, roll, f) for f in os.listdir(os.path.join(tmp, roll)))
+        batch = acn.compute_batch(paths, 0.3, False, "35mm", report=lambda msg: None)
+        result = next(r for r in batch["results"] if os.path.basename(r["input_file"]) == os.path.basename(paths[0]))
+        scan = Image.open(paths[0]).convert("RGB")
+    x, y, w, h = (int(result[k]) for k in ("x", "y", "width", "height"))
+    frame = scan.crop((x, y, x + w, y + h))
+    # Kante colours: dark ground, the crop marked in yellow on the scan.
+    height = 900
+    left = scan.resize((round(scan.width * height / scan.height), height))
+    s = height / scan.height
+    d = ImageDraw.Draw(left)
+    d.rectangle([x * s, y * s, (x + w) * s, (y + h) * s], outline=(250, 189, 47), width=5)
+    right = frame.resize((round(frame.width * height / frame.height), height))
+    gap, pad, arrow = 150, 40, (250, 189, 47)
+    canvas = Image.new("RGB", (left.width + gap + right.width + 2 * pad, height + 2 * pad), (29, 32, 33))
+    canvas.paste(left, (pad, pad))
+    canvas.paste(right, (pad + left.width + gap, pad))
+    d = ImageDraw.Draw(canvas)
+    ax, ay = pad + left.width + 30, pad + height // 2
+    d.line([(ax, ay), (ax + gap - 60, ay)], fill=arrow, width=8)
+    d.polygon([(ax + gap - 60, ay - 22), (ax + gap - 30, ay), (ax + gap - 60, ay + 22)], fill=arrow)
+    canvas.save(out, quality=88)
+    return result.get("confidence")
+
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) == 3 and sys.argv[1] == "before-after":
+        print("confidence", before_after(sys.argv[2]))
+    else:
+        sys.exit("usage: python -m companion.demo before-after OUT.webp")
