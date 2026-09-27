@@ -12,6 +12,7 @@ a = Analysis(
     [os.path.join(SPECPATH, "kader_app.py")],
     pathex=[ROOT],
     datas=[(os.path.join(ROOT, "companion", "static"), os.path.join("companion", "static")),
+           (os.path.join(ROOT, "companion", "demo"), os.path.join("companion", "demo")),
            (os.path.join(ROOT, "kader.lua"), ".")],          # darktable-Plugin, siehe companion/dtplugin.py
     # Spaet importiert (erst in Funktionen); die Analyse findet sie nicht zuverlaessig.
     hiddenimports=["kader", "film_scale", "companion.__main__", "companion.window", "companion.tui",

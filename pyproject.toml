@@ -30,4 +30,4 @@ packages = [
 ]
 
 [tool.setuptools.package-data]
-companion = ["static/*", "static/vendor/*", "static/vendor/fonts/*"]
+companion = ["static/*", "static/vendor/*", "static/vendor/fonts/*", "demo/*"]

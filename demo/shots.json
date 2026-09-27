@@ -1,0 +1,51 @@
+{
+  "kind": "web",
+  "start": "KADER_CACHE=$(mktemp -d) .venv/bin/python -m companion demo --no-browser --port {port}",
+  "ready_line": "^(http://127\\.0\\.0\\.1:\\d+/\\?t=\\S+)",
+  "viewport": [
+    1400,
+    1000
+  ],
+  "setup": [
+    {
+      "goto": "{base}"
+    },
+    {
+      "eval": "localStorage.setItem('shrippen-lang', '{lang}')"
+    },
+    {
+      "goto": "{base}"
+    },
+    {
+      "wait": "#bands .tile"
+    },
+    {
+      "eval": "new Promise(r => { const t = setInterval(() => { if (document.querySelector('#phase-pill .pill')?.dataset.state === 'reviewing') { clearInterval(t); r(); } }, 300); })"
+    }
+  ],
+  "shots": [
+    {
+      "name": "gallery",
+      "actions": [
+        {
+          "eval": "window.scrollTo(0, document.querySelector('#bands').getBoundingClientRect().top + window.scrollY - 90)"
+        }
+      ],
+      "settle": 1500
+    },
+    {
+      "name": "editor",
+      "actions": [
+        {
+          "dblclick": "#bands .band[data-tier='green'] .tile"
+        },
+        {
+          "wait": "#editor:not([hidden]) #ed-crop"
+        },
+        {
+          "sleep": 1200
+        }
+      ]
+    }
+  ]
+}

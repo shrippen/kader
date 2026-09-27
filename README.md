@@ -314,6 +314,18 @@ noch die Portprüfung. `--tui` zeigt deshalb dauerhaft eine rote Warnzeile, sola
 - Nur für den eigenständigen `open`-Weg; `serve --job`/`serve --folder` (darktable, Kalibrierung) binden weiterhin
   ausschließlich an `127.0.0.1`, das Flag existiert dort nicht.
 
+### Demo
+
+```bash
+kader demo                       # gezeichnete Demo-Rollen anlegen und öffnen
+```
+
+Legt zwei Rollen mit gezeichneten Kamerascans an (Elbstrand Övelgönne, Fahrradwerkstatt; aus der gemeinsamen
+Demowelt „Studio Weber“ aller shrippen-Projekte, `companion/demo/world.json`) und öffnet sie wie `kader open`.
+Ein paar Bilder sind absichtlich unterbelichtet, damit Grün, Gelb und Rot vorkommen. Standardordner ist
+`KADER_CACHE/demo-rollen`, ein anderer geht mit `kader demo ORDNER`. `demo/shots.json` beschreibt die
+Screenshots, die `shrippen.github.io/tools/screenshots.py` davon macht.
+
 ## Nutzung mit darktable
 
 ### Mit Web-UI (Companion)
