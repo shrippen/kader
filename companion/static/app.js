@@ -272,12 +272,23 @@ function renderActionbar() {
   const right = editable
     ? `<button type="button" class="btn btn-accent" data-act="finish"${canFinish ? '' : ' disabled'}>${T(s.mode === 'folder' ? 'finish_folder' : 'finish')}</button>`
     : `<button type="button" class="btn btn-outline" data-act="reopen">${T('reopen')}</button>`;
-  $('actionbar').innerHTML = `<div class="bulk-bar"><span class="n">${n.apply}<small>${T('to_apply')}</small></span><span class="n">${n.red}<small>${T('band_red')}</small></span><div class="group">
+  $('actionbar').innerHTML = `<div class="bulk-bar is-fixed"><span class="n">${n.apply}<small>${T('to_apply')}</small></span><span class="n">${n.red}<small>${T('band_red')}</small></span><div class="group">
       <button type="button" class="btn btn-outline btn-sm" data-act="undo"${editable && s.can_undo ? '' : ' disabled'}>${T('undo')} · Z</button>
       <button type="button" class="btn btn-outline btn-sm" data-act="undo-sel"${editable && selectedIds().length ? '' : ' disabled'}>${T('undo_sel')}</button>
       <button type="button" class="btn btn-outline btn-sm" data-act="straighten-sel" title="${esc(S('straighten_sel_h'))}"${editable && selectedIds().length ? '' : ' disabled'}>${T('straighten_sel')}</button>
       </div><span class="grow"></span>
       <div class="group">${right}</div></div>`;
+  trackBarHeight();
+}
+
+// Kante lifts the toasts by --bar-h; the page pads by the same height so the fixed bar covers nothing.
+let barObserver;
+function trackBarHeight() {
+  const bar = $('actionbar').firstElementChild;
+  barObserver?.disconnect();
+  if (!bar) return;
+  barObserver = new ResizeObserver(() => document.documentElement.style.setProperty('--bar-h', `${bar.offsetHeight}px`));
+  barObserver.observe(bar);
 }
 
 // ── Aktionen ─────────────────────────────────────────────────────────────────
