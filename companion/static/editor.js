@@ -183,8 +183,14 @@ function renderStrip() {
   const img = cur();
   el().querySelector('#ed-strip').innerHTML = filmImages().map((i) =>
     `<button type="button" data-id="${esc(i.id)}" data-tier="${i.group}"${String(i.id) === ed.id ? ' aria-current="true"' : ''} title="${esc(i.filename)}"><img alt="" loading="lazy" src="${thumbUrl(i.id, 200)}"></button>`).join('');
-  const active = el().querySelector('#ed-strip [aria-current]');
-  if (active && active.scrollIntoView) active.scrollIntoView({ inline: 'center', block: 'nearest' });
+  // Centre the current thumb by scrolling the strip only; scrollIntoView would also scroll
+  // the editor, which on phones stacks the strip at the bottom and opened scrolled down.
+  const strip = el().querySelector('#ed-strip');
+  const active = strip.querySelector('[aria-current]');
+  if (!active) {
+    return;
+  }
+  strip.scrollLeft = active.offsetLeft - strip.offsetLeft - (strip.clientWidth - active.offsetWidth) / 2;
 }
 
 // Die Faktoren der Konfidenz (siehe roadmap.md): zeigt bei einem falschen "gruenen"
