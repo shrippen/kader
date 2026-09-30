@@ -279,7 +279,7 @@ function renderSide() {
     <div><div class="h-label" role="heading" aria-level="3">${T('group')}</div>
       <div class="seg" role="group" data-key="group">${grp('green')}${grp('yellow')}${grp('red')}</div></div>
     <div><div class="h-label" role="heading" aria-level="3">${T('decision')}</div>
-      <div class="seg" role="group" data-key="decision">${dec('', 'keep_open')}${dec('accept', 'accept')}${dec('skip', 'skip')}</div></div>
+      <div class="seg seg-fill" role="group" data-key="decision">${dec('', 'keep_open')}${dec('accept', 'accept')}${dec('skip', 'skip')}</div></div>
     ${prop ? `<div class="callout callout-warn"><strong>${T('proposal')}</strong>
       ${prop.error ? esc(prop.error) : `${prop.confidence != null ? prop.confidence.toFixed(3) : ''} ${esc(prop.method || '')}`}
       <div class="row is-spaced">

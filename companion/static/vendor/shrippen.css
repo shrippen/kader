@@ -254,12 +254,13 @@ a{color:var(--link);text-decoration:none}
 a:hover{text-decoration:underline}
 code{font-family:var(--font-mono);font-size:.85em;color:var(--fg2)}
 /* The hidden attribute wins over every Kante display rule (.tile-tools, .bulk-bar, .editbar, …) */
-[hidden]{display:none!important}
 
 /* ── Language: paired elements, e.g. <p lang="en">…</p><p lang="de">…</p>.
    <html lang> is "en" by default; shrippen.js switches it. ── */
 html[lang="en"] [lang="de"],html[lang="de"] [lang="en"]{display:none!important}
 /* Registered so the cut can animate (A01, A19). */
+/* [hidden] wins over every display rule below; here, not in base.css, so apps without the reset get it too */
+[hidden]{display:none!important}
 @property --chamfer{syntax:"<length>";inherits:true;initial-value:16px}
 @property --c1{syntax:"<length>";inherits:false;initial-value:0px}
 @property --c2{syntax:"<length>";inherits:false;initial-value:0px}
@@ -663,6 +664,8 @@ textarea.input{min-height:5.5rem;line-height:1.5;resize:vertical}
 .seg{display:inline-flex;border:1px solid var(--bg2);flex-wrap:wrap}
 .seg button{background:none;border:0;min-height:calc(var(--h-m) - 2px);padding:0 .9rem;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;color:var(--fg3);cursor:pointer}
 .seg button:hover{color:var(--fg0)}.seg button[aria-pressed="true"]{background:var(--primary);color:var(--on-primary)}
+/* .seg-fill: segments share the full width in one row (narrow side panels); a label that does not fit ends in … */
+.seg.seg-fill{display:flex;flex-wrap:nowrap}.seg-fill button{flex:1 1 auto;min-width:0;padding:0 .5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .range{--zones:var(--bg2);display:flex;flex-direction:column;gap:.4rem}
 .range-row{display:flex;align-items:center;gap:.9rem}
 .range input{-webkit-appearance:none;appearance:none;flex:1;min-width:0;height:22px;background:transparent;cursor:pointer}
@@ -1049,8 +1052,11 @@ label.field{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;t
 .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:.8rem}
 .delta{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--font-mono);font-size:.7rem;letter-spacing:.06em;font-variant-numeric:tabular-nums;color:var(--fg3)}
 .delta::before{content:"";width:8px;height:2px;background:currentColor}
-.delta.up{color:var(--aqua)}.delta.up::before{width:0;height:0;background:none;border:5px solid transparent;border-bottom:8px solid var(--aqua);border-top:0}
-.delta.dn{color:var(--red)}.delta.dn::before{width:0;height:0;background:none;border:5px solid transparent;border-top:8px solid var(--red);border-bottom:0}
+.delta.up{color:var(--aqua)}.delta.up::before{width:0;height:0;background:none;border:5px solid transparent;border-bottom:8px solid currentColor;border-top:0}
+.delta.dn{color:var(--red)}.delta.dn::before{width:0;height:0;background:none;border:5px solid transparent;border-top:8px solid currentColor;border-bottom:0}
+/* Polarity: data-good="down" where falling is good (costs, errors: up red, down green); "none" = arrow only, no judgement */
+.delta[data-good="down"].up{color:var(--red)}.delta[data-good="down"].dn{color:var(--aqua)}
+.delta[data-good="none"]:is(.up,.dn){color:var(--fg2)}
 /* Bulk bar: appears when something is selected; cyan bar because selection is cyan */
 .bulk-bar{display:flex;flex-wrap:wrap;align-items:center;gap:.8rem;background:var(--bg1);border-top:3px solid var(--cyan);padding:.5rem .8rem;
   clip-path:polygon(0 0,calc(100% - var(--cut-m)) 0,100% var(--cut-m),100% 100%,0 100%)}
@@ -1372,8 +1378,8 @@ a.chip,a.chip:hover{text-decoration:none}
 /* Heat map: .met reached the day's goal (aqua bar), .under missed it (orange bar); --rows fills
    column by column (a year of weeks: --rows:7). .heat-legend shows the scale, less to more */
 /* A 1 px ground line keeps the bar apart from a cell of the same hue */
-.heat i.met{box-shadow:inset 0 -3px 0 var(--aqua),inset 0 -4px 0 var(--bg-void)}
-.heat i.under{box-shadow:inset 0 -3px 0 var(--warn),inset 0 -4px 0 var(--bg-void)}
+.heat i.met{box-shadow:inset 0 -2px 0 var(--aqua),inset 0 -3px 0 var(--bg-void)}
+.heat i.under{box-shadow:inset 0 -2px 0 var(--warn),inset 0 -3px 0 var(--bg-void)}
 .heat[style*="--rows"]{grid-auto-flow:column;grid-template-rows:repeat(var(--rows),auto);grid-auto-columns:minmax(0,1fr)}
 .heat-legend{display:flex;align-items:center;gap:3px;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3)}
 .heat-legend>i{width:10px;height:10px;background:var(--bg-hard)}

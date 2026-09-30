@@ -86,7 +86,16 @@ function updateTile(el, img) {
   conf.innerHTML = img.status === 'error'
     ? `<svg viewBox="0 0 24 24">${ICON.red}</svg>–`
     : `<svg viewBox="0 0 24 24">${ICON[img.group]}</svg>${img.confidence == null ? '–' : img.confidence.toFixed(2)}`;
-  el.querySelector('.tile-sub').textContent = img.status === 'error' ? (img.error || S('error_tile')) : (img.method || '');
+  // Method ids (contour_adaptive_mean) wrap after an underscore, not inside a word.
+  const sub = el.querySelector('.tile-sub');
+  sub.textContent = '';
+  const subText = img.status === 'error' ? (img.error || S('error_tile')) : (img.method || '');
+  subText.split('_').forEach((part, i) => {
+    if (i > 0) {
+      sub.append('_', document.createElement('wbr'));
+    }
+    sub.append(part);
+  });
   const badges = [];
   if (img.manual_crop) badges.push(pill(T('manual'), 'hl'));
   if (img.proposal && img.proposal.crop) badges.push(pill(T('proposal'), 'hl'));

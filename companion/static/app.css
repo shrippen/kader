@@ -81,7 +81,7 @@ body { min-height: 100vh; }
 .deg-input { width: 6rem; }
 .editor-side > div { display: flex; flex-direction: column; gap: .5rem; }
 .editor-side .callout, .editor-side .field-hint { margin: 0; }
-.editor-side > div > .btn, .editor-side .seg { align-self: flex-start; }
+.editor-side > div > .btn, .editor-side .seg:not(.seg-fill) { align-self: flex-start; }
 @media (max-width: 900px) {
   .editor { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto auto; overflow-y: auto; }
   .editor-main { min-height: auto; }
