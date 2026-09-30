@@ -193,7 +193,7 @@ const PARTS = ['size_agree', 'edge_score', 'exposure_factor', 'roll_factor'];
 const PARTS_OLD = ['size_agree', 'edge_score', 'film_trust', 'exposure_factor'];   // Sitzungen vor der Rollen-Verlaesslichkeit
 function confPartsHtml(img) {
   const cp = img.conf_parts;
-  if (!cp) return `<div><div class="toolbar-label" role="heading" aria-level="3">${T('conf_parts')}</div><p class="field-hint">${T('cp_none')}</p></div>`;
+  if (!cp) return `<div><div class="h-label" role="heading" aria-level="3">${T('conf_parts')}</div><p class="field-hint">${T('cp_none')}</p></div>`;
   const vals = (typeof cp.roll_factor === 'number' ? PARTS : PARTS_OLD).filter((k) => typeof cp[k] === 'number');
   const min = Math.min(...vals.map((k) => cp[k]));
   const rows = vals.map((k) => {
@@ -202,7 +202,7 @@ function confPartsHtml(img) {
     return `<div class="progress"><div class="progress-head"><span>${T('cp_' + k)}${weak ? ` · ${T('cp_weakest')}` : ''}</span><span>${v.toFixed(2)}</span></div>
       <div class="progress-bar"><i data-tier="${v >= 0.7 ? 'green' : v >= 0.4 ? 'yellow' : 'red'}" style="--p:${Math.round(clamp(v) * 100)}%"></i></div></div>`;
   }).join('');
-  return `<div><div class="toolbar-label" role="heading" aria-level="3">${T('conf_parts')}</div><div class="cp">${rows}</div><p class="field-hint">${T('conf_parts_h')}</p></div>`;
+  return `<div><div class="h-label" role="heading" aria-level="3">${T('conf_parts')}</div><div class="cp">${rows}</div><p class="field-hint">${T('conf_parts_h')}</p></div>`;
 }
 
 function targetSkipHtml(img) {
@@ -224,7 +224,7 @@ const fmtDeg = (d) => `${d > 0 ? '+' : ''}${d.toFixed(2)}°`;
 // Schraeglage des Filmrahmens (gemessen an den vier Crop-Kanten) und Geradestellen beim Anwenden.
 function skewHtml(img) {
   const sk = img.skew, locked = !isEditable();
-  if (!sk || sk.deg == null) return `<div><div class="toolbar-label" role="heading" aria-level="3">${T('skew')}</div><p class="field-hint">${T('skew_none')}</p></div>`;
+  if (!sk || sk.deg == null) return `<div><div class="h-label" role="heading" aria-level="3">${T('skew')}</div><p class="field-hint">${T('skew_none')}</p></div>`;
   const sides = Object.entries(sk.sides || {}).map(([k, v]) => `${S('side_' + k)} ${fmtDeg(v)}`).join(' · ');
   const strong = Math.abs(sk.deg) >= 0.5;
   const rows = `<div class="hud"><span>${T('skew_measured')} <b>${fmtDeg(sk.deg)}</b> ${sk.deg > 0 ? T('skew_cw') : T('skew_ccw')}</span>
@@ -250,7 +250,7 @@ function skewHtml(img) {
     ctl = `<button type="button" class="btn ${strong ? 'btn-accent' : 'btn-outline'} btn-sm" data-act="straighten-on"${locked ? ' disabled' : ''}>${S(sfx === '' ? 'skew_do' : 'skew_do_std', fmtDeg(sk.deg))}</button>
       <p class="field-hint">${T(sfx === '' ? 'skew_off_h' : `skew_off${sfx}_h`)}</p>${noRotate}`;
   }
-  return `<div><div class="toolbar-label" role="heading" aria-level="3">${T('skew')}</div>${rows}${ctl}</div>`;
+  return `<div><div class="h-label" role="heading" aria-level="3">${T('skew')}</div>${rows}${ctl}</div>`;
 }
 
 function renderSide() {
@@ -265,14 +265,14 @@ function renderSide() {
   const prop = img.proposal;
   el().querySelector('#ed-side').innerHTML = `
     <div>
-      <div class="toolbar-label" role="heading" aria-level="3">${T('conf')}</div>
+      <div class="h-label" role="heading" aria-level="3">${T('conf')}</div>
       <div class="hud"><span>${T('conf')} <b>${img.confidence == null ? '–' : img.confidence.toFixed(3)}</b></span>
         <span>${T('method')} <b>${esc(img.method || '–')}</b></span>
         <span>${T('group')} <b>${T(img.group)}${img.group !== img.auto_group ? ' *' : ''}</b></span></div>
     </div>
-    <div><div class="toolbar-label" role="heading" aria-level="3">${T('group')}</div>
+    <div><div class="h-label" role="heading" aria-level="3">${T('group')}</div>
       <div class="seg" role="group" data-key="group">${grp('green')}${grp('yellow')}${grp('red')}</div></div>
-    <div><div class="toolbar-label" role="heading" aria-level="3">${T('decision')}</div>
+    <div><div class="h-label" role="heading" aria-level="3">${T('decision')}</div>
       <div class="seg" role="group" data-key="decision">${dec('', 'keep_open')}${dec('accept', 'accept')}${dec('skip', 'skip')}</div></div>
     ${prop ? `<div class="callout callout-warn"><strong>${T('proposal')}</strong>
       ${prop.error ? esc(prop.error) : `${prop.confidence != null ? prop.confidence.toFixed(3) : ''} ${esc(prop.method || '')}`}
@@ -288,7 +288,7 @@ function renderSide() {
     ${refDevHtml(img)}
     ${skewHtml(img)}
     ${confPartsHtml(img)}
-    ${reasons ? `<div><div class="toolbar-label" role="heading" aria-level="3">${T('reasons')}</div><ul class="reasons">${reasons}</ul></div>` : ''}
+    ${reasons ? `<div><div class="h-label" role="heading" aria-level="3">${T('reasons')}</div><ul class="reasons">${reasons}</ul></div>` : ''}
     <p class="toolbar-label">${T('k_move')}<br>${T('k_group')}<br>${T('k_accept')}</p>`;
   const film = store.s.film_aspects && store.s.film_aspects[img.film];
   el().querySelector('[data-ratio="film"]').disabled = !film;
@@ -512,8 +512,9 @@ async function loadCandidates() {
     d.innerHTML = `<span class="cand-tag">${String.fromCharCode(65 + i)} · ${c.confidence.toFixed(2)}</span>`;
     overlay.appendChild(d);
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'btn btn-outline btn-sm'; b.dataset.cand = i;
-    b.innerHTML = `<span class="led" style="--c:var(--${col})"></span>${esc(`${String.fromCharCode(65 + i)} ${c.method} ${c.confidence.toFixed(2)}`)}`;
+    b.type = 'button'; b.className = 'chip'; b.dataset.cand = i;
+    b.style.setProperty('--c', `var(--${col})`);
+    b.textContent = `${String.fromCharCode(65 + i)} ${c.method} ${c.confidence.toFixed(2)}`;
     chips.appendChild(b);
   });
 }

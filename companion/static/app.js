@@ -69,10 +69,12 @@ function renderFlow() {
 // [key in summary, label]; built once, later renders only tick the numbers (Kante L1)
 const FACTS = [['total', 'images'], ['green', 'green'], ['yellow', 'yellow'], ['red', 'red'], ['apply', 'to_apply']];
 
+const TIERS = ['green', 'yellow', 'red'];
+
 function renderSummary() {
   const n = store.s.summary, host = $('summary');
   if (host.children.length !== FACTS.length) {
-    host.innerHTML = FACTS.map(([k, label]) => `<div class="fact" data-k="${k}"><b>${n[k]}</b><span>${T(label)}</span></div>`).join('');
+    host.innerHTML = FACTS.map(([k, label]) => `<div class="fact"${TIERS.includes(k) ? ` data-tier="${k}"` : ''}><b>${n[k]}</b><span>${T(label)}</span></div>`).join('');
     return;
   }
   FACTS.forEach(([k, label], i) => {
@@ -132,7 +134,7 @@ function renderTargetPanel() {
   const warn = s.applied_target
     ? `<div class="callout callout-warn"><strong>${T('target_switch_warn', S('tgt_' + s.applied_target))}</strong></div>` : '';
   host.innerHTML = `<div class="callout target-panel">
-    <div class="toolbar-label" role="heading" aria-level="3">${T('target_panel_title')}</div>
+    <div class="h-label" role="heading" aria-level="3">${T('target_panel_title')}</div>
     <p class="field-hint">${T('target_panel_intro')}</p>
     <div class="target-options" role="listbox" aria-label="${esc(S('target'))}">${cards}</div>
     ${warn}
@@ -226,12 +228,13 @@ function renderSettings() {
         <div class="field range" id="rg-g"><label for="st-green">${T('threshold_green')}</label><div class="range-row"><input id="st-green" type="range" min="0" max="100"><output class="range-out" id="st-green-out"></output></div></div>
         <div class="field range" id="rg-y"><label for="st-yellow">${T('threshold_yellow')}</label><div class="range-row"><input id="st-yellow" type="range" min="0" max="100"><output class="range-out" id="st-yellow-out"></output></div></div>
         <div class="field wide"><span class="field-hint" id="st-hint"></span></div>
-        <div class="field"><span class="field-label">${T('format')}</span><div class="seg" role="group" id="st-format">${fmts.map((f) => `<button type="button" data-format="${esc(f)}" aria-pressed="false">${esc(f)}</button>`).join('')}</div></div>
-        <div class="field"><label for="st-aspect">${T('aspect')}</label><input class="input" id="st-aspect" type="number" step="0.01" min="0.2" max="5" inputmode="decimal"><span class="field-hint">${T('aspect_h')}</span></div>
-        <div class="field"><label for="st-fbl">${T('film_border')}</label><input class="input" id="st-fbl" type="number" min="0" max="255" inputmode="numeric"><span class="field-hint">${T('film_border_h')}</span></div>
-        <div class="field"><span class="field-label">&nbsp;</span>
-          <button type="button" class="switch" role="switch" aria-checked="false" id="st-nopen"><span class="switch-track"></span>${T('no_penalty')}</button>
-          <button type="button" class="switch" role="switch" aria-checked="false" id="st-skip"><span class="switch-track"></span>${T('skip_refine')}</button></div>
+      </div>
+      <div>
+        <div class="setting"><b>${T('format')}</b><div class="ctl"><div class="seg" role="group" id="st-format">${fmts.map((f) => `<button type="button" data-format="${esc(f)}" aria-pressed="false">${esc(f)}</button>`).join('')}</div></div></div>
+        <div class="setting"><b>${T('aspect')}</b><span>${T('aspect_h')}</span><div class="ctl"><input class="input" id="st-aspect" aria-label="${esc(S('aspect'))}" type="number" step="0.01" min="0.2" max="5" inputmode="decimal"></div></div>
+        <div class="setting"><b>${T('film_border')}</b><span>${T('film_border_h')}</span><div class="ctl"><input class="input" id="st-fbl" aria-label="${esc(S('film_border'))}" type="number" min="0" max="255" inputmode="numeric"></div></div>
+        <div class="setting"><b>${T('no_penalty')}</b><div class="ctl"><button type="button" class="switch" role="switch" aria-checked="false" id="st-nopen" aria-label="${esc(S('no_penalty'))}"><span class="switch-track"></span></button></div></div>
+        <div class="setting"><b>${T('skip_refine')}</b><div class="ctl"><button type="button" class="switch" role="switch" aria-checked="false" id="st-skip" aria-label="${esc(S('skip_refine'))}"><span class="switch-track"></span></button></div></div>
       </div>
       <div class="settings-actions"><button type="button" class="btn btn-accent btn-sm" data-act="redetect" id="st-redetect"></button>
         <span class="field-hint">${T('redetect_hint')}</span></div>
@@ -269,11 +272,11 @@ function renderActionbar() {
   const right = editable
     ? `<button type="button" class="btn btn-accent" data-act="finish"${canFinish ? '' : ' disabled'}>${T(s.mode === 'folder' ? 'finish_folder' : 'finish')}</button>`
     : `<button type="button" class="btn btn-outline" data-act="reopen">${T('reopen')}</button>`;
-  $('actionbar').innerHTML = `<div class="toolbar"><div class="group">
+  $('actionbar').innerHTML = `<div class="bulk-bar"><span class="n">${n.apply}<small>${T('to_apply')}</small></span><span class="n">${n.red}<small>${T('band_red')}</small></span><div class="group">
       <button type="button" class="btn btn-outline btn-sm" data-act="undo"${editable && s.can_undo ? '' : ' disabled'}>${T('undo')} · Z</button>
       <button type="button" class="btn btn-outline btn-sm" data-act="undo-sel"${editable && selectedIds().length ? '' : ' disabled'}>${T('undo_sel')}</button>
       <button type="button" class="btn btn-outline btn-sm" data-act="straighten-sel" title="${esc(S('straighten_sel_h'))}"${editable && selectedIds().length ? '' : ' disabled'}>${T('straighten_sel')}</button>
-      <span class="toolbar-label">${T('to_apply')}: ${n.apply} · ${T('band_red')}: ${n.red}</span></div>
+      </div><span class="grow"></span>
       <div class="group">${right}</div></div>`;
 }
 

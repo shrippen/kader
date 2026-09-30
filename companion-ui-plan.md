@@ -288,7 +288,7 @@ neuen Bausteine.
   gibt dazu selbst keine Werte an.
 
 ### 5.5 Einbindung technisch
-- Die UI läuft lokal, **kein Laden von Fremd-Hosts**: `shrippen.css` (Kante 1.4, Tokens + Komponenten samt App-Bausteinen),
+- Die UI läuft lokal, **kein Laden von Fremd-Hosts**: `shrippen.css` (Kante 1.6, Tokens + Komponenten samt App-Bausteinen),
   `shrippen.js`, `fonts.css` (erzeugt, Kante liefert kein `@font-face`) und die Fonts (`Rajdhani-500/600/700`,
   `JetBrainsMono-400/500` als `.ttf`) werden in `companion/static/vendor/`
   gelegt (offline, keine Google-Fonts-Anfrage, reproduzierbar).
@@ -331,7 +331,7 @@ companion/
   static/
     index.html
     app.js           # ES-Module: gallery.js, editor.js, dnd.js, api.js
-    vendor/          # Kante 1.4: shrippen.css, shrippen.js, fonts/, VERSION (unverändert)
+    vendor/          # Kante 1.6: shrippen.css, shrippen.js, fonts/, VERSION (unverändert)
     app.css          # nur App-Bausteine, ausschließlich mit Tokens
     i18n.js          # EN/DE-Textpaare, Umschalter
 kader.lua               # + Export, Sitzung starten, Knopf "Plan anwenden", result.json
