@@ -6,6 +6,7 @@
 set -euo pipefail
 SRC="${1:-$(dirname "$0")/../../shrippen.github.io}"
 DST="$(cd "$(dirname "$0")/.." && pwd)/companion/static/vendor"
+VER="$(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['meta']['version'])" "$SRC/kante/tokens/palette.json")"
 FONTS=(Rajdhani-500 Rajdhani-600 Rajdhani-700 JetBrainsMono-400 JetBrainsMono-500)
 
 [ -f "$SRC/docs/v1/shrippen.css" ] || { echo "no Kante build in $SRC (run ./build.sh there)" >&2; exit 1; }
@@ -23,7 +24,7 @@ done
 cp "$SRC/kante/fonts/OFL.txt" "$DST/fonts/"
 
 {
-  echo "Kante 1.4 (web build, vendored unchanged)"
+  echo "Kante $VER (web build, vendored unchanged)"
   echo "source: https://github.com/shrippen/shrippen.github.io"
   echo "branch: $(git -C "$SRC" branch --show-current)"
   echo "commit: $(git -C "$SRC" rev-parse HEAD)"
