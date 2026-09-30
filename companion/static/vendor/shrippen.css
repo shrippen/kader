@@ -930,7 +930,7 @@ details.dropdown>summary::-webkit-details-marker{display:none}
 details.dropdown>.menu{position:absolute;top:calc(100% + 4px);left:0;z-index:20}
 details.dropdown.is-right>.menu{left:auto;right:0}
 /* Toast stack: fixed corner, newest at the bottom, a live region */
-.toast-stack{position:fixed;right:1rem;bottom:var(--toast-offset,1rem);z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:.6rem;pointer-events:none}
+.toast-stack{--safe-bottom:env(safe-area-inset-bottom,0px);position:fixed;right:1rem;bottom:calc(var(--toast-offset,1rem) + var(--safe-bottom));z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:.6rem;pointer-events:none}
 .toast-stack>*{pointer-events:auto}
 /* File input */
 .input[type="file"]{padding:0;display:flex;align-items:center;color:var(--fg2)}
@@ -967,7 +967,7 @@ label.field{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;t
 .table tfoot td.num{color:var(--yellow)}
 /* Charts: SVG with the data palette --d1 to --d6; squares for marks, 1 px grid */
 .chart{display:block;width:100%;height:auto}
-.chart text{font-family:var(--font-mono);font-size:8px;letter-spacing:.08em;fill:var(--fg3)}
+.chart text{font-family:var(--font-mono);font-size:var(--chart-text,8px);letter-spacing:.08em;fill:var(--fg3)}
 .chart .grid{stroke:var(--bg1);stroke-width:1}
 .chart .goal{stroke:var(--yellow);stroke-width:1.5;stroke-dasharray:4 3}
 .chart .line{fill:none;stroke-width:2;stroke-linejoin:miter}
@@ -1055,10 +1055,10 @@ label.field{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;t
 .bulk-bar.is-sticky{position:sticky;bottom:1rem;z-index:5}
 .bulk-bar.is-fixed{position:fixed;left:0;right:0;bottom:0;z-index:20}
 /* A fixed bar lifts the toasts above it; --bar-h is the app's bar height */
-:root:has(.bulk-bar.is-fixed:not([hidden])) .toast-stack{bottom:calc(var(--toast-offset,1rem) + var(--bar-h,3.6rem))}
+:root:has(.bulk-bar.is-fixed:not([hidden])) .toast-stack{bottom:calc(var(--toast-offset,1rem) + var(--bar-h,3.6rem) + var(--safe-bottom))}
 /* ... unless something covers the bar (a full-screen overlay, an open sheet): an element with
    data-covers-bar that is present and not [hidden] (a <dialog> only while open) keeps the toasts down */
-:root:has([data-covers-bar]:not([hidden]):not(dialog:not([open]))) .toast-stack.toast-stack{bottom:var(--toast-offset,1rem)}
+:root:has([data-covers-bar]:not([hidden]):not(dialog:not([open]))) .toast-stack.toast-stack{bottom:calc(var(--toast-offset,1rem) + var(--safe-bottom))}
 /* Sheet: a panel from the bottom or the side, with an action row */
 .sheet{background:var(--bg-panel);border-top:4px solid var(--yellow);padding:1.1rem 1.3rem 1.3rem;display:flex;flex-direction:column;gap:.8rem;
   clip-path:polygon(0 0,calc(100% - var(--chamfer)) 0,100% var(--chamfer),100% 100%,0 100%)}
@@ -1206,7 +1206,7 @@ a.hint-card>.title:hover,.hint-card>a.title:hover{color:var(--link)}
 .hint-card>details>p{margin-top:.35rem;padding-left:.7rem;border-left:2px solid var(--bg2);font-size:.84rem;color:var(--fg2)}
 .hint-card>.actions{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin-top:.15rem}
 /* Date tile: a date in a fixed column; day large, month and weekday small; a range may take a second line */
-.date-tile{display:grid;justify-items:center;align-content:center;width:3.6rem;flex:none;line-height:1.1;text-align:center;overflow-wrap:anywhere;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--fg3)}
+.date-tile{display:grid;justify-items:center;align-content:center;width:3.6rem;flex:none;line-height:1.1;text-align:center;white-space:nowrap;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--fg3)}
 .date-tile>b{font-family:var(--font-heading);font-weight:700;font-size:1.5rem;letter-spacing:0;color:var(--fg0);font-variant-numeric:tabular-nums}
 /* Timeline: deadlines, a date column and a 4 px state bar; the state is also written out (.state) */
 .timeline{list-style:none;display:flex;flex-direction:column;gap:2px}
@@ -1229,7 +1229,7 @@ a.hint-card>.title:hover,.hint-card>a.title:hover{color:var(--link)}
 .editbar>.grow{flex:1}
 .editbar.is-sticky{position:sticky;top:var(--editbar-top,0);z-index:5}
 .editbar.is-fixed{position:fixed;left:0;right:0;bottom:0;z-index:20;padding-bottom:calc(.5rem + env(safe-area-inset-bottom,0px))}
-:root:has(.editbar.is-fixed:not([hidden])) .toast-stack{bottom:calc(var(--toast-offset,1rem) + var(--bar-h,3.6rem))}
+:root:has(.editbar.is-fixed:not([hidden])) .toast-stack{bottom:calc(var(--toast-offset,1rem) + var(--bar-h,3.6rem) + var(--safe-bottom))}
 /* Share dialog: one row per subject (user or team) with a right select; a warning callout when credentials go along */
 .share{display:flex;flex-direction:column}
 .share>.row{display:grid;grid-template-columns:minmax(0,1fr) 10rem auto;align-items:center;gap:.6rem;padding:.55rem 0;border-bottom:1px solid var(--bg1)}
@@ -1238,8 +1238,9 @@ a.hint-card>.title:hover,.hint-card>a.title:hover{color:var(--link)}
 .share .subject[data-kind="team"]::before{background:var(--purple);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
 .share .subject>small{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3)}
 .share>.callout{margin:.8rem 0 0}
-.share>.add{display:flex;gap:.6rem;margin-top:.8rem}
-.share>.add>.input{flex:1;min-width:0}
+/* The field takes its own line when the row is narrow (phone, small dialog) */
+.share>.add{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem}
+.share>.add>.input{flex:1 1 12rem;min-width:0}
 /* Login: card on a centred page; setup and second factor use the same card. .login-code is one input drawn as six digit boxes */
 .login-wrap{min-height:var(--login-min-h,100vh);display:grid;place-items:center;padding:2rem var(--gutter)}
 .login{width:100%;max-width:24rem;display:flex;flex-direction:column;gap:1rem;padding:1.6rem 1.6rem 1.4rem;background:var(--bg-panel);border-top:4px solid var(--yellow);
@@ -1343,6 +1344,52 @@ a.hint-card>.title:hover,.hint-card>a.title:hover{color:var(--link)}
 .tile-tools>.is-danger:is(:hover,:focus-visible){color:var(--danger)}
 .tile-tools>.grip{margin:0 .35rem}
 @media (hover:none),(pointer:coarse){.has-tools{--tools-h:var(--h-m)}.tile-tools{visibility:visible;opacity:1}}
+
+/* 11 · Kante 1.9: chips as links, chart details, heat goals, colour input, phone fixes ───── */
+/* A chip may be a link (a filter that navigates): never underlined. Filter chips carry the
+   tier of what they filter: data-tier="critical" red, "warn" orange */
+a.chip,a.chip:hover{text-decoration:none}
+.chip.is-filter[data-tier="critical"]{--c:var(--danger)}
+.chip.is-filter[data-tier="warn"]{--c:var(--warn)}
+/* Charts drawn with preserveAspectRatio="none" (stretched to the card): lines keep their width.
+   The spark end mark as a zero-length path <path class="end" d="M x y h0"> stays square.
+   .bar.is-prev is the last period (dashed outline, no fill); .goal.is-danger a limit (red).
+   Wide viewBoxes (e.g. 0 0 1000 200) scale text down: set --chart-text in viewBox units */
+.chart .line,.chart .grid,.chart .goal,.chart .probe,.spark path{vector-effect:non-scaling-stroke}
+.spark .end{fill:none;stroke:var(--d4);stroke-width:5px;stroke-linecap:square}
+.chart .bar.is-prev{fill:none;stroke-width:1.5;stroke-dasharray:4 3;vector-effect:non-scaling-stroke}
+.chart .bar.is-prev:not(.s1,.s2,.s3,.s4,.s5,.s6,.c){stroke:var(--fg3)}
+.chart .goal.is-danger{stroke:var(--danger)}
+/* Heat map: .met reached the day's goal (aqua bar), .under missed it (orange bar); --rows fills
+   column by column (a year of weeks: --rows:7). .heat-legend shows the scale, less to more */
+/* A 1 px ground line keeps the bar apart from a cell of the same hue */
+.heat i.met{box-shadow:inset 0 -3px 0 var(--aqua),inset 0 -4px 0 var(--bg-void)}
+.heat i.under{box-shadow:inset 0 -3px 0 var(--warn),inset 0 -4px 0 var(--bg-void)}
+.heat[style*="--rows"]{grid-auto-flow:column;grid-template-rows:repeat(var(--rows),auto);grid-auto-columns:minmax(0,1fr)}
+.heat-legend{display:flex;align-items:center;gap:3px;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3)}
+.heat-legend>i{width:10px;height:10px;background:var(--bg-hard)}
+.heat-legend>i[data-l="1"]{background:color-mix(in srgb,var(--cyan) 22%,var(--bg-hard))}
+.heat-legend>i[data-l="2"]{background:color-mix(in srgb,var(--cyan) 44%,var(--bg-hard))}
+.heat-legend>i[data-l="3"]{background:color-mix(in srgb,var(--cyan) 66%,var(--bg-hard))}
+.heat-legend>i[data-l="4"]{background:var(--cyan)}
+.heat-legend>i.met{box-shadow:inset 0 -3px 0 var(--aqua),inset 0 -4px 0 var(--bg-void)}.heat-legend>i.under{box-shadow:inset 0 -3px 0 var(--warn),inset 0 -4px 0 var(--bg-void)}
+.heat-legend>span{margin-inline:.35rem}
+/* Colour input: a square swatch in the Kante field frame */
+input[type="color"],.input[type="color"]{appearance:none;-webkit-appearance:none;flex:none;width:var(--h-m);height:var(--h-m);min-height:0;padding:4px;
+  background:var(--field);border:1px solid var(--bg2);border-bottom-width:2px;border-radius:0;cursor:pointer}
+input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
+input[type="color"]::-webkit-color-swatch{border:0;border-radius:0}
+input[type="color"]::-moz-color-swatch{border:0;border-radius:0}
+input[type="color"]:hover{border-color:var(--fg3)}
+input[type="color"]:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+/* Pills in a tile or a badge row shorten with an ellipsis instead of widening the tile */
+.tile-badges{display:flex;flex-wrap:wrap;gap:.3rem;min-width:0}
+.tile .pill,.tile-badges .pill{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+.tile .pill::before,.tile-badges .pill::before{display:inline-block;margin-right:.45rem;vertical-align:1px}
+/* App page head: the title with its actions, apart from the first card or panel under it */
+.page-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:.6rem 1rem;margin-bottom:1.25rem}
+.page-head>h1,.page-head>h2{margin:0}
+:is(main,.app)>h1+:is(.card,.panel,.feat,.tiles,.panel-grid,.table,.callout,.hint-card,form){margin-top:1.25rem}
 
 /* ── Kante Light (apps, <html data-kante="light">) ─────────────────────
    Kante shapes on the platform look: controls get the system font, normal
