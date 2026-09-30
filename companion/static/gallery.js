@@ -29,7 +29,12 @@ export function initGallery(h) {
   host.addEventListener('dragstart', onDragStart);
   host.addEventListener('dragend', clearDrag);
   host.addEventListener('dragover', onDragOver);
-  host.addEventListener('dragleave', (e) => { const b = e.target.closest('.band'); if (b && !b.contains(e.relatedTarget)) b.classList.remove('is-over'); });
+  host.addEventListener('dragleave', (e) => {
+    const b = e.target.closest('.band');
+    if (!b || b.contains(e.relatedTarget)) return;
+    b.classList.remove('is-over');
+    if (cell && cell.parentNode === b) { cell.remove(); cell = null; }
+  });
   host.addEventListener('drop', onDrop);
   document.addEventListener('keydown', onGlobalKey);
 }
@@ -42,8 +47,8 @@ function insetOf(c) {
 }
 
 function tileMarkup(img) {
-  return `<span class="tile-img"><span class="tile-frame"><img alt="" decoding="async" loading="lazy"><span class="tile-crop"></span></span><span class="tile-noimg" hidden></span><span class="tile-check"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" stroke-linecap="square"/></svg></span><span class="tile-badges"></span></span>
-    <span class="tile-meta"><span class="tile-name"></span><span class="tile-conf"></span><span class="tile-sub"></span></span>`;
+  return `<span class="tile-img"><span class="tile-frame"><img alt="" decoding="async" loading="lazy"><span class="tile-crop"></span></span><span class="tile-noimg toolbar-label" hidden></span><span class="tile-check"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" stroke-linecap="square"/></svg></span></span>
+    <span class="tile-meta"><span class="tile-name"></span><span class="tile-conf"></span><span class="tile-sub"></span><span class="tile-badges"></span></span>`;
 }
 
 function updateTile(el, img) {
@@ -83,21 +88,27 @@ function updateTile(el, img) {
     : `<svg viewBox="0 0 24 24">${ICON[img.group]}</svg>${img.confidence == null ? '–' : img.confidence.toFixed(2)}`;
   el.querySelector('.tile-sub').textContent = img.status === 'error' ? (img.error || S('error_tile')) : (img.method || '');
   const badges = [];
-  if (img.manual_crop) badges.push(`<span class="tile-badge is-hl">${T('manual')}</span>`);
-  if (img.proposal && img.proposal.crop) badges.push(`<span class="tile-badge is-hl">${T('proposal')}</span>`);
+  if (img.manual_crop) badges.push(pill(T('manual'), 'hl'));
+  if (img.proposal && img.proposal.crop) badges.push(pill(T('proposal'), 'hl'));
   if (img.ref && store.s.mode === 'folder') {
     badges.push(img.ref.hit
-      ? `<span class="tile-badge">${T('ref_hit')}</span>`
-      : `<span class="tile-badge is-hl">${T('ref_miss')} ${img.ref.score.toFixed(1)}×</span>`);
+      ? pill(T('ref_hit'))
+      : pill(`${T('ref_miss')} ${img.ref.score.toFixed(1)}×`, 'hl'));
   }
   const sk = img.skew;
-  if (img.straighten) badges.push(`<span class="tile-badge is-hl">${T('straightened')} ${fmtDeg(img.straighten)}</span>`);
-  else if (sk && sk.deg != null && Math.abs(sk.deg) >= 0.5 && sk.conf >= 0.4) badges.push(`<span class="tile-badge">${T('skewed')} ${fmtDeg(sk.deg)}</span>`);
-  if (img.decision === 'skip') badges.push(`<span class="tile-badge is-off">${T('skip')}</span>`);
-  if (img.decision === 'accept') badges.push(`<span class="tile-badge">${T('accept')}</span>`);
-  if (store.s.mode === 'standalone' && !img.target_ok) badges.push(`<span class="tile-badge is-off">${T('target_skip_badge')}</span>`);
+  if (img.straighten) badges.push(pill(`${T('straightened')} ${fmtDeg(img.straighten)}`, 'hl'));
+  else if (sk && sk.deg != null && Math.abs(sk.deg) >= 0.5 && sk.conf >= 0.4) badges.push(pill(`${T('skewed')} ${fmtDeg(sk.deg)}`));
+  if (img.decision === 'skip') badges.push(pill(T('skip'), 'off'));
+  if (img.decision === 'accept') badges.push(pill(T('accept')));
+  if (store.s.mode === 'standalone' && !img.target_ok) badges.push(pill(T('target_skip_badge'), 'off'));
   el.querySelector('.tile-badges').innerHTML = badges.join('');
   // Vorschlag der Neu-Erkennung als zweites Overlay ist im Editor; hier nur die Marke.
+}
+
+// Tile badge: Kante .pill; 'hl' takes the highlight role, 'off' is struck through
+function pill(text, kind) {
+  const attr = kind === 'hl' ? ' style="--c:var(--hl)"' : '';
+  return `<span class="pill${kind === 'off' ? ' is-off' : ''}"${attr}>${text}</span>`;
 }
 
 const fmtDeg = (d) => `${d > 0 ? '+' : ''}${d.toFixed(1)}°`;
@@ -113,7 +124,7 @@ export function renderGallery() {
   for (const img of sorted(s.images)) byGroup[img.group].push(img);
   for (const g of GROUPS) {
     const band = host.querySelector(`.band[data-tier="${g}"]`);
-    let empty = band.querySelector('.band-empty');
+    let empty = band.querySelector('.empty');
     let i = 1;                                     // children[0] = Kopf
     for (const img of byGroup[g]) {
       const key = String(img.id);
@@ -134,8 +145,8 @@ export function renderGallery() {
     }
     band.querySelector('[data-count]').textContent = byGroup[g].length;
     if (!byGroup[g].length) {
-      if (!empty) { empty = document.createElement('div'); empty.className = 'band-empty'; band.appendChild(empty); }
-      empty.innerHTML = T('empty_band');
+      if (!empty) { empty = document.createElement('div'); empty.className = 'empty'; band.appendChild(empty); }
+      empty.innerHTML = `<p>${T('empty_band')}</p>`;
     } else if (empty) empty.remove();
   }
   for (const [key, el] of tiles) if (!seen.has(key)) { el.remove(); tiles.delete(key); }
@@ -223,7 +234,7 @@ async function onGlobalKey(e) {
   const tag = (e.target.tagName || '').toLowerCase();
   if (['input', 'select', 'textarea'].includes(tag)) return;
   if (!store.s || !isEditable()) return;
-  const focused = document.activeElement && document.activeElement.closest && document.activeElement.closest('.tile');
+  const focused = document.activeElement && document.activeElement.closest && document.activeElement.closest('#bands .tile');
   const ids = selectedIds().length ? selectedIds() : (focused ? [focused.dataset.id] : []);
   const k = e.key.toLowerCase();
   if (k === 'z') { e.preventDefault(); await guard(() => api('POST', 'undo', { scope: 'session' })); await hooks.refresh(); return; }
@@ -244,13 +255,34 @@ async function onGlobalKey(e) {
 
 // ── Drag-and-drop ────────────────────────────────────────────────────────────
 
+// Kante drag and drop (L5): the picked tile (.is-picked) leaves a gap (.drop-gap), the band
+// under the pointer shows the cell it may land in (.drop-cell); after the drop the tile
+// glides from where it was into its new band (Kante.settle).
 let dragIds = [];
+let cell = null;
+const tileOf = (id) => tiles.get(String(id));
+
+function dropCell() {
+  if (cell) { return cell; }
+  cell = document.createElement('div');
+  cell.className = 'tile drop-cell';
+  cell.setAttribute('aria-hidden', 'true');
+  cell.innerHTML = '<span class="tile-img"></span><span class="tile-meta"><span class="tile-name">&nbsp;</span></span>';
+  return cell;
+}
+
 function onDragStart(e) {
   const t = e.target.closest('.tile');
   if (!t || !isEditable()) { e.preventDefault(); return; }
   if (!store.selected.has(t.dataset.id)) setSelection([t.dataset.id]);
   dragIds = selectedIds();
-  dragIds.forEach((id) => tiles.get(String(id)) && tiles.get(String(id)).classList.add('is-dragging'));
+  dragIds.forEach((id) => tileOf(id) && tileOf(id).classList.add('is-picked'));
+  // The browser takes the drag image after this handler: it shows the picked tiles.
+  // Right after, the tiles in the band turn into gaps.
+  setTimeout(() => dragIds.forEach((id) => {
+    const el = tileOf(id);
+    if (el) { el.classList.remove('is-picked'); el.classList.add('drop-gap'); }
+  }), 0);
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('text/plain', 'tiles');
   if (dragIds.length > 1) {
@@ -264,8 +296,9 @@ function onDragStart(e) {
   }
 }
 function clearDrag() {
-  dragIds.forEach((id) => tiles.get(String(id)) && tiles.get(String(id)).classList.remove('is-dragging'));
+  dragIds.forEach((id) => tileOf(id) && tileOf(id).classList.remove('is-picked', 'drop-gap'));
   dragIds = [];
+  if (cell) { cell.remove(); cell = null; }
   document.querySelectorAll('#bands .band').forEach((b) => b.classList.remove('is-over'));
 }
 function onDragOver(e) {
@@ -273,17 +306,23 @@ function onDragOver(e) {
   if (!b || !dragIds.length) return;
   e.preventDefault();
   document.querySelectorAll('#bands .band').forEach((x) => x.classList.toggle('is-over', x === b));
+  // no cell in the band the tiles already sit in
+  const home = dragIds.every((id) => tileOf(id) && tileOf(id).parentNode === b);
+  if (home) { if (cell) { cell.remove(); cell = null; } return; }
+  if (dropCell().parentNode !== b) b.appendChild(cell);
 }
 async function onDrop(e) {
   const b = e.target.closest('.band');
   if (!b || !dragIds.length) return;
   e.preventDefault();
   const ids = dragIds.slice();
+  const from = new Map(ids.map((id) => [id, tileOf(id) && tileOf(id).getBoundingClientRect()]));
   const target = b.dataset.tier;
   clearDrag();
   // Zurueck in die automatische Gruppe = Nutzerentscheid aufheben
   const auto = ids.every((id) => byId(id) && byId(id).auto_group === target);
   await guard(() => api('PATCH', 'images', { ids, group: auto ? null : target }), hooks.refresh);
   await hooks.refresh();
+  if (window.Kante) ids.forEach((id) => tileOf(id) && window.Kante.settle(tileOf(id), from.get(id)));
   toast(T('saved'), 'ok');
 }

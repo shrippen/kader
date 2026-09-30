@@ -2,7 +2,7 @@
 import { api, events, setDegLookup } from './api.js';
 import { T, S, esc } from './i18n.js';
 import { store, setLS, byId, isEditable, selectedIds } from './store.js';
-import { guard, toast, dialog } from './ui.js';
+import { guard, toast, dialog, live, fresh } from './ui.js';
 import { initGallery, renderGallery, setSelection } from './gallery.js';
 import { initEditor, openEditor, refreshEditor, isOpen } from './editor.js';
 
@@ -41,7 +41,7 @@ function renderAll() {
   document.body.classList.toggle('is-locked', !editable);
   renderHeader(); renderFlow(); renderSummary(); renderNotice(); renderTargetPanel(); renderProgress();
   renderToolbar(); renderSettings(); renderGallery(); renderActionbar();
-  $('keyhint').innerHTML = `${T('keys')}: <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> ${T('band_green')}/${T('band_yellow')}/${T('band_red')} · <kbd>A</kbd> ${T('accept')} · <kbd>S</kbd> ${T('skip')} · <kbd>E</kbd> ${T('k_edit').replace(/^E: /, '')} · <kbd>Z</kbd> ${T('undo')}`;
+  $('keyhint').innerHTML = `${T('keys')}: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> ${T('band_green')}/${T('band_yellow')}/${T('band_red')} · <kbd>A</kbd> ${T('accept')} · <kbd>S</kbd> ${T('skip')} · <kbd>E</kbd> ${T('k_edit').replace(/^E: /, '')} · <kbd>Z</kbd> ${T('undo')}`;
   if (isOpen()) refreshEditor();
   void s;
 }
@@ -66,10 +66,20 @@ function renderFlow() {
   $('flow').innerHTML = `<div class="flow">${step('analyze', p === 'analyzing', analyzed)}${arrow}${step('review', p === 'reviewing', ['locked', 'applied', 'apply_failed'].includes(p))}${arrow}${step('done', p === 'locked', p === 'applied')}${arrow}${step('apply', p === 'applied' || p === 'apply_failed', p === 'applied')}</div>`;
 }
 
+// [key in summary, label]; built once, later renders only tick the numbers (Kante L1)
+const FACTS = [['total', 'images'], ['green', 'green'], ['yellow', 'yellow'], ['red', 'red'], ['apply', 'to_apply']];
+
 function renderSummary() {
-  const n = store.s.summary;
-  const fact = (k, v, label) => `<div class="fact" data-k="${k}"><b>${v}</b><span>${T(label)}</span></div>`;
-  $('summary').innerHTML = fact('total', n.total, 'images') + fact('green', n.green, 'green') + fact('yellow', n.yellow, 'yellow') + fact('red', n.red, 'red') + fact('apply', n.apply, 'to_apply');
+  const n = store.s.summary, host = $('summary');
+  if (host.children.length !== FACTS.length) {
+    host.innerHTML = FACTS.map(([k, label]) => `<div class="fact" data-k="${k}"><b>${n[k]}</b><span>${T(label)}</span></div>`).join('');
+    return;
+  }
+  FACTS.forEach(([k, label], i) => {
+    const f = host.children[i];
+    live(f.querySelector('b'), String(n[k]));
+    f.querySelector('span').innerHTML = T(label);
+  });
 }
 
 function renderNotice() {
@@ -95,10 +105,10 @@ function renderNotice() {
     const sfx = { folder: '_folder', standalone: '_standalone' }[s.mode] || '';
     const title = ok ? 'applied_msg' + sfx : (standalone() ? 'failed_msg_standalone' : 'failed_msg');
     host.innerHTML = `<div class="callout ${ok ? 'callout-ok' : 'callout-danger'} notice"><div><strong>${T(title)}</strong>
-      ${standalone() ? `<div class="notice-list">${T('target')}: ${targetHtml(s)}</div>` : ''}
-      ${res.message ? `<div class="notice-list">${esc(res.message)}</div>` : ''}
-      ${imgs.length ? `<div class="notice-list">${T('result_ok')}: ${cnt('ok')} · ${T('result_skipped')}: ${cnt('skipped')} · ${T('result_error')}: ${cnt('error')}</div>` : ''}
-      ${msgs.length ? `<ul class="notice-list">${msgs.slice(0, 8).map(([id, v]) => `<li>${esc((byId(id) || {}).filename || id)}: ${esc(v.message)}</li>`).join('')}</ul>` : ''}
+      ${standalone() ? `<div class="field-hint">${T('target')}: ${targetHtml(s)}</div>` : ''}
+      ${res.message ? `<div class="field-hint">${esc(res.message)}</div>` : ''}
+      ${imgs.length ? `<div class="field-hint">${T('result_ok')}: ${cnt('ok')} · ${T('result_skipped')}: ${cnt('skipped')} · ${T('result_error')}: ${cnt('error')}</div>` : ''}
+      ${msgs.length ? `<ul class="field-hint reasons">${msgs.slice(0, 8).map(([id, v]) => `<li>${esc((byId(id) || {}).filename || id)}: ${esc(v.message)}</li>`).join('')}</ul>` : ''}
       </div>${reopen}</div>`;
   } else if (s.mode === 'folder') {
     const ref = s.summary.ref;
@@ -106,8 +116,8 @@ function renderNotice() {
     const groups = ['green', 'yellow', 'red'].filter((g) => ref.by_group[g].n)
       .map((g) => T('ref_group', S('band_' + g), ref.by_group[g].hits, ref.by_group[g].n)).join(' · ');
     host.innerHTML = `<div class="callout notice"><div><strong>${T('ref_test')}</strong>
-      ${ref.n ? `<div class="notice-list">${T('ref_hits', ref.hits, ref.n, pct)}${groups ? ' · ' + groups : ''}</div>` : ''}
-      <div class="field-hint" style="margin-top:.4rem">${T('ref_hint')}</div></div></div>`;
+      ${ref.n ? `<div class="field-hint">${T('ref_hits', ref.hits, ref.n, pct)}${groups ? ' · ' + groups : ''}</div>` : ''}
+      <div class="field-hint">${T('ref_hint')}</div></div></div>`;
   } else host.innerHTML = '';
 }
 
@@ -121,10 +131,10 @@ function renderTargetPanel() {
   const cards = (s.target_options || []).map((o) => targetCardHtml(o, s.target.name, editable)).join('');
   const warn = s.applied_target
     ? `<div class="callout callout-warn"><strong>${T('target_switch_warn', S('tgt_' + s.applied_target))}</strong></div>` : '';
-  host.innerHTML = `<div class="target-panel">
-    <h3>${T('target_panel_title')}</h3>
+  host.innerHTML = `<div class="callout target-panel">
+    <div class="toolbar-label" role="heading" aria-level="3">${T('target_panel_title')}</div>
     <p class="field-hint">${T('target_panel_intro')}</p>
-    <div class="target-options" role="radiogroup" aria-label="${esc(S('target'))}">${cards}</div>
+    <div class="target-options" role="listbox" aria-label="${esc(S('target'))}">${cards}</div>
     ${warn}
   </div>`;
 }
@@ -134,17 +144,17 @@ function targetCardHtml(o, current, editable) {
   const n = TARGET_LIMITS[o.name] || 0;
   const limits = Array.from({ length: n }, (_, i) => `<li>${T(`tgt_${o.name}_limit${i + 1}`)}</li>`).join('');
   const incompat = o.incompatible
-    ? `<p class="callout callout-warn target-card-warn">${T('target_incompatible_n', o.incompatible, o.total, S('target_reason_' + (o.incompatible_reason || 'not_raw')))}</p>`
+    ? `<p class="callout callout-warn">${T('target_incompatible_n', o.incompatible, o.total, S('target_reason_' + (o.incompatible_reason || 'not_raw')))}</p>`
     : '';
-  return `<button type="button" class="target-card" role="radio" aria-checked="${sel}" aria-pressed="${sel}" data-target="${o.name}"${editable ? '' : ' disabled'}>
-    <div class="target-card-head">
-      <span class="target-card-title">${T('tgt_' + o.name)}</span>
-      ${sel ? `<span class="tile-badge is-hl">${T('target_current')}</span>` : ''}
-      ${o.recommended ? `<span class="tile-badge" title="${esc(S('target_recommended_why'))}">${T('target_recommended')}</span>` : ''}
-    </div>
-    <p class="target-card-tagline">${T('tgt_' + o.name + '_tagline')}</p>
+  return `<button type="button" class="tile target-card" role="option" aria-selected="${sel}" data-target="${o.name}" data-lockable${editable ? '' : ' disabled'}>
+    <span class="target-head">
+      <span class="hud"><b>${T('tgt_' + o.name)}</b></span>
+      ${sel ? `<span class="pill" style="--c:var(--hl)">${T('target_current')}</span>` : ''}
+      ${o.recommended ? `<span class="pill" title="${esc(S('target_recommended_why'))}">${T('target_recommended')}</span>` : ''}
+    </span>
+    <p>${T('tgt_' + o.name + '_tagline')}</p>
     <p class="field-hint">${T('tgt_' + o.name + '_desc')}</p>
-    <ul class="target-limits">${limits}</ul>
+    <ul class="target-limits field-hint">${limits}</ul>
     <p class="field-hint">${T(o.straightens ? 'target_straightens_yes' : 'target_straightens_no')}</p>
     ${o.out ? `<p class="field-hint">${T('target_out_hint', o.out)}</p>` : ''}
     ${incompat}
@@ -157,12 +167,21 @@ async function setTarget(name) {
   await refresh();
 }
 
+// Built once; later renders move the bar and tick the count (Kante L1). Unknown total: hazard stripes.
 function renderProgress() {
   const a = store.analysis, host = $('progress');
   if (!a.busy) { host.innerHTML = ''; return; }
   const pct = a.total ? Math.min(100, Math.round((a.done / a.total) * 100)) : 0;
-  const label = a.stage === 'export' ? 'progress_export' : 'progress_detect';
-  host.innerHTML = `<div class="progress"><div class="progress-head"><span>${T(label)}</span><span>${a.done} / ${a.total}</span></div><div class="progress-bar" role="progressbar" aria-valuenow="${a.done}" aria-valuemax="${a.total}"><i style="--p:${pct}%"></i></div></div>`;
+  if (!host.firstElementChild) {
+    host.innerHTML = `<div class="progress"><div class="progress-head"><span data-label></span><span data-count></span></div><div class="progress-bar" role="progressbar" aria-valuemin="0"><i></i></div></div>`;
+  }
+  const bar = host.querySelector('.progress-bar');
+  host.querySelector('[data-label]').innerHTML = T(a.stage === 'export' ? 'progress_export' : 'progress_detect');
+  live(host.querySelector('[data-count]'), `${a.done} / ${a.total}`);
+  bar.classList.toggle('is-indeterminate', !a.total);
+  bar.setAttribute('aria-valuenow', a.done);
+  bar.setAttribute('aria-valuemax', a.total);
+  bar.querySelector('i').style.setProperty('--p', `${pct}%`);
 }
 
 function seg(items, current, attr) {
@@ -180,13 +199,13 @@ function renderToolbar() {
     .map(([v, k]) => `<option value="${v}"${store.sort === v ? ' selected' : ''}>${esc(S(k))}</option>`).join('');
   $('toolbar').innerHTML = `<div class="toolbar">
     <div class="group">
-      <label class="toolbar-label" for="tb-sort">${T('sort')}</label><select class="select" id="tb-sort" style="width:auto">${sortOpts}</select>
+      <label class="toolbar-label" for="tb-sort">${T('sort')}</label><select class="select" id="tb-sort">${sortOpts}</select>
       <span class="toolbar-sep"></span>
       ${seg([['columns', '▥'], ['rows', '☰']], store.view, 'data-view')}
       ${seg([['s', 'S'], ['m', 'M'], ['l', 'L']], store.size, 'data-size')}
     </div>
     <div class="group">
-      <span class="selcount" id="selcount">${sel.length ? T('selected_n', sel.length) : T('none_selected')}</span>
+      <span class="toolbar-label" id="selcount">${sel.length ? T('selected_n', sel.length) : T('none_selected')}</span>
       <button type="button" class="btn btn-outline btn-sm" data-act="sel-all">${T('all')}</button>
       <button type="button" class="btn btn-outline btn-sm" data-act="sel-none">${T('none')}</button>
       <button type="button" class="btn btn-outline btn-sm" data-act="accept-yellow"${dis}>${T('accept_all_yellow')}</button>
@@ -203,10 +222,10 @@ function renderSettings() {
     settingsBuilt = true;
     const fmts = (s.formats && s.formats.length ? s.formats : FORMATS_FALLBACK);
     $('settings-body').innerHTML = `
-      <div class="panel-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem 1.4rem">
+      <div class="panel-grid">
         <div class="field range" id="rg-g"><label for="st-green">${T('threshold_green')}</label><div class="range-row"><input id="st-green" type="range" min="0" max="100"><output class="range-out" id="st-green-out"></output></div></div>
         <div class="field range" id="rg-y"><label for="st-yellow">${T('threshold_yellow')}</label><div class="range-row"><input id="st-yellow" type="range" min="0" max="100"><output class="range-out" id="st-yellow-out"></output></div></div>
-        <div class="field" style="grid-column:1/-1"><span class="field-hint" id="st-hint"></span></div>
+        <div class="field wide"><span class="field-hint" id="st-hint"></span></div>
         <div class="field"><span class="field-label">${T('format')}</span><div class="seg" role="group" id="st-format">${fmts.map((f) => `<button type="button" data-format="${esc(f)}" aria-pressed="false">${esc(f)}</button>`).join('')}</div></div>
         <div class="field"><label for="st-aspect">${T('aspect')}</label><input class="input" id="st-aspect" type="number" step="0.01" min="0.2" max="5" inputmode="decimal"><span class="field-hint">${T('aspect_h')}</span></div>
         <div class="field"><label for="st-fbl">${T('film_border')}</label><input class="input" id="st-fbl" type="number" min="0" max="255" inputmode="numeric"><span class="field-hint">${T('film_border_h')}</span></div>
@@ -229,6 +248,7 @@ function renderSettings() {
   btn.innerHTML = T('redetect_n', sel.length);
   const editable = isEditable();
   btn.disabled = !editable || !sel.length || store.analysis.busy;
+  btn.classList.toggle('is-busy', !!store.analysis.busy);
   $('settings-body').querySelectorAll('input,button.switch,#st-format button,[data-act="cleanup"]').forEach((n) => { n.disabled = !editable && !n.matches('[data-act="cleanup"]'); });
 }
 
@@ -249,11 +269,11 @@ function renderActionbar() {
   const right = editable
     ? `<button type="button" class="btn btn-accent" data-act="finish"${canFinish ? '' : ' disabled'}>${T(s.mode === 'folder' ? 'finish_folder' : 'finish')}</button>`
     : `<button type="button" class="btn btn-outline" data-act="reopen">${T('reopen')}</button>`;
-  $('actionbar').innerHTML = `<div class="actionbar-inner"><div class="group">
+  $('actionbar').innerHTML = `<div class="toolbar"><div class="group">
       <button type="button" class="btn btn-outline btn-sm" data-act="undo"${editable && s.can_undo ? '' : ' disabled'}>${T('undo')} · Z</button>
       <button type="button" class="btn btn-outline btn-sm" data-act="undo-sel"${editable && selectedIds().length ? '' : ' disabled'}>${T('undo_sel')}</button>
       <button type="button" class="btn btn-outline btn-sm" data-act="straighten-sel" title="${esc(S('straighten_sel_h'))}"${editable && selectedIds().length ? '' : ' disabled'}>${T('straighten_sel')}</button>
-      <span class="selcount">${T('to_apply')}: ${n.apply} · ${T('band_red')}: ${n.red}</span></div>
+      <span class="toolbar-label">${T('to_apply')}: ${n.apply} · ${T('band_red')}: ${n.red}</span></div>
       <div class="group">${right}</div></div>`;
 }
 
@@ -405,7 +425,7 @@ async function main() {
     if (ev.type === 'bye') { store.offline = ev.reason || 'quit'; renderNotice(); return; }
     if (ev.type === 'idle_warning') { toast(T('idle_warning', Math.max(1, Math.ceil(ev.seconds / 60)))); return; }
     if (ev.type === 'state') refreshSoon();
-    else if (ev.type === 'progress') { store.analysis = { ...store.analysis, ...ev }; renderProgress(); renderSettings(); renderActionbar(); }
+    else if (ev.type === 'progress') { store.analysis = { ...store.analysis, ...ev }; renderProgress(); fresh($('progress').firstElementChild); renderSettings(); renderActionbar(); }
     else if (ev.type === 'log') { logLines.push(ev.line); if ($('logbox').open) paintLog(); }
   });
   es.onopen = () => { if (store.offline === 'lost') { store.offline = null; refresh(); } };

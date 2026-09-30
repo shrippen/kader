@@ -2,14 +2,19 @@
 import { ApiError } from './api.js';
 import { T, S, esc } from './i18n.js';
 
+const TOAST_MS = 3500;
+const TOAST_ERROR_MS = 7000;
+
+// Kante .toast; its life line shrinks over --life, so the timer and the line agree.
 export function toast(html, kind) {
   const host = document.getElementById('toasts');
+  const ms = kind === 'error' ? TOAST_ERROR_MS : TOAST_MS;
   const el = document.createElement('div');
   el.className = 'toast';
   if (kind) el.dataset.kind = kind;
-  el.innerHTML = html;
+  el.innerHTML = `<span>${html}</span><span class="toast-life" style="--life:${ms}ms" aria-hidden="true"></span>`;
   host.appendChild(el);
-  setTimeout(() => el.remove(), kind === 'error' ? 7000 : 3500);
+  setTimeout(() => el.remove(), ms);
 }
 
 // Fuehrt einen API-Aufruf aus und zeigt Fehler verstaendlich an. Gibt bei Erfolg das
@@ -36,7 +41,7 @@ export function dialog({ title, body, facts, notes, confirm, cancel = 'cancel', 
     const wrap = document.createElement('div');
     wrap.className = 'scrim is-fixed';
     const factsHtml = facts && facts.length
-      ? `<div class="dialog-facts">${facts.map((f) => `<div class="fact"><b${f.color ? ` style="color:var(--${f.color})"` : ''}>${esc(f.value)}</b><span>${T(f.label)}</span></div>`).join('')}</div>`
+      ? `<div class="dialog-facts">${facts.map((f) => `<div class="fact"${f.color ? ` data-k="${f.color}"` : ''}><b>${esc(f.value)}</b><span>${T(f.label)}</span></div>`).join('')}</div>`
       : '';
     const notesHtml = (notes || []).map((n) => `<div class="callout callout-warn">${n}</div>`).join('');
     wrap.innerHTML = `<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-h">
@@ -54,6 +59,18 @@ export function dialog({ title, body, facts, notes, confirm, cancel = 'cancel', 
     host.appendChild(wrap);
     wrap.querySelector('[data-x="yes"]').focus();
   });
+}
+
+// Kante's live value: the number counts to the new value and a cyan strip fades behind it.
+// Falls back to plain text when shrippen.js is not there (no script, tests).
+export function live(el, text) {
+  if (window.Kante) window.Kante.tick(el, text);
+  else el.textContent = text;
+}
+
+// Kante's fresh line: a 2px line runs once along the bottom edge of a surface with new data.
+export function fresh(el) {
+  if (window.Kante && el) window.Kante.fresh(el);
 }
 
 export const attrText = (key, ...a) => esc(S(key, ...a));
