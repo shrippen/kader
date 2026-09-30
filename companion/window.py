@@ -9,17 +9,18 @@ import subprocess
 import sys
 import webbrowser
 
-from . import programs
+from . import kante_tokens, programs
 from .session import read_json
 
 POLL_MS = 500
 MAX_CELLS = 60                 # mehr Bilder: ein Feld steht fuer mehrere
 
-COL = {
-    "bg": "#282828", "bar": "#1d2021", "line": "#3c3836", "border": "#504945",
-    "fg0": "#fbf1c7", "fg1": "#ebdbb2", "fg2": "#d5c4a1", "fg3": "#a89984",
-    "blue": "#83a598", "blue_h": "#6d9181", "aqua": "#8ec07c", "aqua_h": "#79a869",
-    "yellow": "#fabd2f", "red": "#fb4934",
+_K = kante_tokens.DARK
+COL = {  # Kante roles (generated tokens); primary action = yellow fill, info = cyan
+    "bg": _K["bg0"], "bar": _K["bg_hard"], "line": _K["bg1"], "border": _K["bg2"],
+    "fg0": _K["fg0"], "fg1": _K["fg1"], "fg2": _K["fg2"], "fg3": _K["fg3"],
+    "info": _K["cyan"], "primary": _K["primary"],
+    "primary_h": _K["yellow_hi"], "aqua": _K["aqua"], "yellow": _K["yellow"], "red": _K["danger"],
 }
 STAGE_TEXT = {"export": "RAW-Entwicklung", "detect": "Erkennung", "skew": "Schräglage wird gemessen"}
 STOP_TEXT = {"quit": "Beendet.", "idle": "Wegen Leerlauf beendet.", "signal": "Beendet."}
@@ -270,14 +271,14 @@ class Window:
         if mode == "done":
             self.editor = editor_for(snapshot(self.app).get("target"))
             if self.editor:
-                self.primary.configure(text=self.editor[0], bg=COL["aqua"], activebackground=COL["aqua_h"],
+                self.primary.configure(text=self.editor[0], bg=COL["primary"], activebackground=COL["primary_h"],
                                        command=self.open_editor)
             else:
-                self.primary.configure(text="Ausgabeordner öffnen", bg=COL["aqua"],
-                                       activebackground=COL["aqua_h"], command=self.open_out)
+                self.primary.configure(text="Ausgabeordner öffnen", bg=COL["primary"],
+                                       activebackground=COL["primary_h"], command=self.open_out)
             self.browser_btn.pack(side="right", padx=(0, self.unit))
         else:
-            self.primary.configure(text="Im Browser öffnen", bg=COL["blue"], activebackground=COL["blue_h"],
+            self.primary.configure(text="Im Browser öffnen", bg=COL["primary"], activebackground=COL["primary_h"],
                                    command=self.open_browser)
             self.browser_btn.pack_forget()
 
@@ -297,7 +298,7 @@ class Window:
             self._draw_strip(strip_cells(snap))
         elif mode == "ready":
             self.path.configure(text=snap["folder"])
-            self._badge("Bereit", COL["blue"])
+            self._badge("Bereit", COL["info"])
             look = snap["yellow"] + snap["red"]
             hint = (f"{look} {'Bild braucht' if look == 1 else 'Bilder brauchen'} einen Blick im Browser."
                     if look else "Alle Bilder sicher erkannt – im Browser mit Fertig abschließen.")

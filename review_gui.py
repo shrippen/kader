@@ -18,11 +18,14 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk, ImageDraw
 
+from companion import kante_tokens as kante
+
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(PROJECT_DIR, "review_data")
 RESULTS_FILE = os.path.join(DATA_DIR, "results.json")
 REVIEW_FILE = os.path.join(DATA_DIR, "reviews.json")
 HANDLE_R = 8  # Pixeltoleranz fuer Drag-Handles
+C = kante.DARK  # Farben aus Kante (generiert, siehe tools/gen_kante_tokens.py)
 
 
 def load_results():
@@ -84,7 +87,7 @@ class ReviewGUI:
         self.root = root
         self.root.title("Kader - Review GUI")
         self.root.geometry("1400x900")
-        self.root.configure(bg="#2b2b2b")
+        self.root.configure(bg=C["bg_void"])
         self.results = load_results()
         self.reviews = load_reviews()
         self.filtered = list(range(len(self.results)))
@@ -120,19 +123,30 @@ class ReviewGUI:
     def _build_ui(self):
         style = ttk.Style()
         style.theme_use("clam")
-        style.configure("Dark.TFrame", background="#2b2b2b")
-        style.configure("Dark.TLabel", background="#2b2b2b",
-                        foreground="#e0e0e0", font=("Segoe UI", 11))
-        style.configure("Hdr.TLabel", background="#2b2b2b",
-                        foreground="#fff", font=("Segoe UI", 14, "bold"))
-        style.configure("St.TLabel", background="#2b2b2b",
-                        foreground="#aaa", font=("Segoe UI", 10))
-        style.configure("Ok.TLabel", background="#2b2b2b",
-                        foreground="#4caf50", font=("Segoe UI", 10, "bold"))
-        style.configure("Pr.TLabel", background="#2b2b2b",
-                        foreground="#f44336", font=("Segoe UI", 10, "bold"))
-        style.configure("Mod.TLabel", background="#2b2b2b",
-                        foreground="#ffaa00", font=("Segoe UI", 10, "bold"))
+        ground = C["bg_void"]
+        style.configure("Dark.TFrame", background=ground)
+        style.configure("Dark.TLabel", background=ground,
+                        foreground=C["fg1"], font=("Segoe UI", 11))
+        style.configure("Hdr.TLabel", background=ground,
+                        foreground=C["fg0"], font=("Segoe UI", 14, "bold"))
+        style.configure("St.TLabel", background=ground,
+                        foreground=C["fg3"], font=("Segoe UI", 10))
+        style.configure("Ok.TLabel", background=ground,
+                        foreground=C["aqua"], font=("Segoe UI", 10, "bold"))
+        style.configure("Pr.TLabel", background=ground,
+                        foreground=C["danger"], font=("Segoe UI", 10, "bold"))
+        style.configure("Mod.TLabel", background=ground,
+                        foreground=C["yellow"], font=("Segoe UI", 10, "bold"))
+        # Kante: square controls of fixed height (small = 32 px), no cut corners in Tk
+        style.configure("TButton", background=C["bg1"], foreground=C["fg1"],
+                        bordercolor=C["bg2"], lightcolor=C["bg1"],
+                        darkcolor=C["bg1"], relief="flat",
+                        padding=(14, (kante.H_S - 16) // 2))
+        style.map("TButton", background=[("active", C["bg2"])],
+                  foreground=[("active", C["fg0"])])
+        style.configure("TRadiobutton", background=ground, foreground=C["fg1"])
+        style.map("TRadiobutton", background=[("active", ground)],
+                  foreground=[("active", C["fg0"])])
         # top filter bar
         top = ttk.Frame(self.root, style="Dark.TFrame")
         top.pack(fill=tk.X, padx=10, pady=(10, 0))
@@ -157,7 +171,7 @@ class ReviewGUI:
         # main area
         main = ttk.Frame(self.root, style="Dark.TFrame")
         main.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
-        self.canvas = tk.Canvas(main, bg="#1a1a1a", highlightthickness=0)
+        self.canvas = tk.Canvas(main, bg=C["bg_hard"], highlightthickness=0)
         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         # info panel
         info = ttk.Frame(main, style="Dark.TFrame")
@@ -179,7 +193,7 @@ class ReviewGUI:
             self._ilbl[k] = lbl
         ttk.Label(info, text="\nGruende:", style="Dark.TLabel").pack(
             anchor=tk.W)
-        self.reasons = tk.Text(info, height=6, bg="#1e1e1e", fg="#ccc",
+        self.reasons = tk.Text(info, height=6, bg=C["field"], fg=C["fg2"],
                                font=("Consolas", 10), wrap=tk.WORD,
                                relief=tk.FLAT, state=tk.DISABLED)
         self.reasons.pack(fill=tk.X, pady=5)
@@ -334,7 +348,7 @@ class ReviewGUI:
         self._orig_img = None
         if not self.filtered:
             self.canvas.create_text(400, 300, text="Keine Bilder",
-                                    fill="#666", font=("Segoe UI", 16))
+                                    fill=C["fg3"], font=("Segoe UI", 16))
             return
         idx = min(self.current_idx, len(self.filtered) - 1)
         r = self.results[self.filtered[idx]]
@@ -427,7 +441,7 @@ class ReviewGUI:
 
         # Farbe: Gruen wenn gleich auto, Orange wenn geaendert
         is_modified = (self._crop != self._auto_crop)
-        color = "#ffaa00" if is_modified else "#44ff44"
+        color = C["yellow"] if is_modified else C["aqua"]
 
         # Ausgeblendeter auto-Crop (gestrichelt, grau)
         if is_modified:
@@ -438,7 +452,7 @@ class ReviewGUI:
             arh = int(ac["h"] * s)
             self._diff_id = self.canvas.create_rectangle(
                 arx, ary, arx + arw, ary + arh,
-                outline="#666666", width=1, dash=(6, 4))
+                outline=C["fg3"], width=1, dash=(6, 4))
 
         # Crop-Rechteck
         self._rect_id = self.canvas.create_rectangle(
@@ -451,7 +465,7 @@ class ReviewGUI:
             hid = self.canvas.create_rectangle(
                 cx - HANDLE_R, cy - HANDLE_R,
                 cx + HANDLE_R, cy + HANDLE_R,
-                fill=color, outline="#000", width=1)
+                fill=color, outline=C["bg_void"], width=1)
             self._handle_ids.append(hid)
 
         # Label

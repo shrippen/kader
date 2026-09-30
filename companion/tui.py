@@ -17,13 +17,18 @@ import threading
 import time
 import webbrowser
 
+from . import kante_tokens
 from .session import read_json
 
 POLL_S = 0.25
 OPEN_MSG_S = 3.0
 
-PHASE_STYLE = {"analyzing": "yellow", "reviewing": "yellow", "locked": "cyan",
-              "applied": "green", "apply_failed": "red"}
+# Kante roles as truecolor styles (rich downsamples on terminals with fewer colours)
+_K = kante_tokens.DARK
+YELLOW, CYAN, GREEN, RED = _K["yellow"], _K["cyan"], _K["aqua"], _K["danger"]
+MUTED, TRACK = _K["fg3"], _K["bg2"]
+PHASE_STYLE = {"analyzing": YELLOW, "reviewing": YELLOW, "locked": CYAN,
+              "applied": GREEN, "apply_failed": RED}
 PHASE_LABEL = {"analyzing": "Analysiere", "reviewing": "Pruefen", "locked": "Gesperrt",
               "applied": "Angewendet", "apply_failed": "Fehler"}
 
@@ -58,47 +63,48 @@ def _renderable(app, message=None):
 
     head = Table.grid(padding=(0, 2), expand=True)
     head.add_column(); head.add_column(justify="right")
-    head.add_row(Text(st["session"], style="dim"),
-                Text(PHASE_LABEL.get(phase, phase), style=f"bold {PHASE_STYLE.get(phase, 'white')}"))
+    head.add_row(Text(st["session"], style=MUTED),
+                Text(PHASE_LABEL.get(phase, phase), style=f"bold {PHASE_STYLE.get(phase, _K['fg1'])}"))
     tgt = st["target"]
     tgt_line = f"Ziel: {tgt['name']}" + (f"  ->  {tgt['out']}" if tgt.get("out") else "")
-    head.add_row(Text(tgt_line, style="dim", overflow="ellipsis", no_wrap=True), "")
+    head.add_row(Text(tgt_line, style=MUTED, overflow="ellipsis", no_wrap=True), "")
 
     counts = Table.grid(padding=(0, 2))
-    counts.add_row(Text(f"{n['green']} gruen", style="green"), Text(f"{n['yellow']} gelb", style="yellow"),
-                  Text(f"{n['red']} rot", style="red"), Text(f"{n['apply']} anwenden", style="bold"),
-                  Text(f"{n['total']} gesamt", style="dim"))
+    counts.add_row(Text(f"{n['green']} gruen", style=GREEN), Text(f"{n['yellow']} gelb", style=YELLOW),
+                  Text(f"{n['red']} rot", style=RED), Text(f"{n['apply']} anwenden", style="bold"),
+                  Text(f"{n['total']} gesamt", style=MUTED))
 
     body = [head, counts]
     if prog.get("busy"):
         total = prog.get("total") or 1
         stage = {"export": "RAW-Export", "detect": "Erkennung", "skew": "Schraeglage"}.get(prog.get("stage"), prog.get("stage") or "")
         body.append(Text(f"{stage}: {prog.get('done', 0)}/{prog.get('total', 0)}"))
-        body.append(ProgressBar(total=total, completed=prog.get("done", 0)))
+        body.append(ProgressBar(total=total, completed=prog.get("done", 0), style=TRACK,
+                                complete_style=YELLOW, finished_style=GREEN))
     elif phase in ("applied", "apply_failed"):
         res = read_json(app.session.path("result.json"), {}) or {}
         imgs = list((res.get("images") or {}).values())
         cnt = lambda k: sum(1 for i in imgs if i.get("status") == k)   # noqa: E731
         if res.get("message"):
-            body.append(Text(res["message"], style="red"))
+            body.append(Text(res["message"], style=RED))
         if imgs:
             body.append(Text(f"OK: {cnt('ok')}  Uebersprungen: {cnt('skipped')}  Fehler: {cnt('error')}"))
     else:
-        body.append(Text("Bereit.", style="dim"))
+        body.append(Text("Bereit.", style=MUTED))
 
-    body.append(Panel(Align.center(Text(app.url, style="bold underline cyan")),
-                      title="In einem Browser oeffnen", border_style="cyan", padding=(0, 1)))
+    body.append(Panel(Align.center(Text(app.url, style=f"bold underline {CYAN}")),
+                      title="In einem Browser oeffnen", border_style=CYAN, padding=(0, 1)))
     if not app.loopback_only:
         # Steht dauerhaft hier, nicht nur einmal beim Start: der Alt-Screen der TUI verdeckt jede
         # Ausgabe von davor, solange sie laeuft - genau dann muss der Hinweis sichtbar bleiben.
         body.append(Panel(Text(f"Im Netzwerk erreichbar ({app.bind}). Nur der Token oben "
                                "schuetzt den Zugriff - nicht in unsicheren Netzen freigeben.",
-                               style="bold red"), border_style="red", padding=(0, 1)))
+                               style=f"bold {RED}"), border_style=RED, padding=(0, 1)))
     if message:
-        body.append(Text(message, style="italic yellow"))
-    body.append(Text("O  Browser oeffnen      Q  Server beenden", style="dim"))
+        body.append(Text(message, style=f"italic {YELLOW}"))
+    body.append(Text("O  Browser oeffnen      Q  Server beenden", style=MUTED))
 
-    return Panel(Group(*body), title="[bold] Kader [/]", border_style="yellow", padding=(1, 2))
+    return Panel(Group(*body), title="[bold] Kader [/]", border_style=YELLOW, padding=(1, 2))
 
 
 def _key_reader(fd, out_q, stop_evt):
