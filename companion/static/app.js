@@ -59,7 +59,7 @@ function renderFlow() {
   const step = (key, hl, done) => {
     const k = folder && (key === 'done' || key === 'apply') ? key + '_folder' : key;
     const desc = key === 'apply' && standalone() ? T('tgt_' + store.s.target.name) : T('step_' + k + '_d');
-    return `<div class="flow-node${hl ? ' hl' : ''}${done ? ' is-done' : ''}"><b>${T('step_' + k)}</b><span>${desc}</span></div>`;
+    return `<div class="flow-node${hl ? ' hl' : ''}${done ? ' done' : ''}"><b>${T('step_' + k)}</b><span>${desc}</span></div>`;
   };
   const arrow = '<span class="flow-arrow"></span>';
   const analyzed = p !== 'analyzing';

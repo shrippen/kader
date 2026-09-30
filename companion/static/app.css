@@ -15,7 +15,6 @@ body { min-height: 100vh; }
 
 /* Phase chain and figures */
 #flow .flow { margin-bottom: 0; }
-#flow .flow-node.is-done { border-top-color: var(--aqua); }
 .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 1rem; }
 
 /* Notices */
@@ -55,8 +54,7 @@ body { min-height: 100vh; }
 .tile-frame img { display: block; width: 100%; height: 100%; object-fit: fill; }
 .tile-badges { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: .3rem; }
 .tile-badges:empty { display: none; }
-.tile-sub { overflow-wrap: anywhere; }
-.tile-badges .pill { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.tile-badges .pill { overflow: hidden; text-overflow: ellipsis; }
 .tile-noimg { position: absolute; inset: 0; display: grid; place-items: center; }
 .pill.is-off { text-decoration: line-through; }
 .tile[data-error] .tile-sub { color: var(--danger); }
@@ -86,7 +84,6 @@ body { min-height: 100vh; }
 .editor-side > div { display: flex; flex-direction: column; gap: .5rem; }
 .editor-side .callout, .editor-side .field-hint { margin: 0; }
 .editor-side > div > .btn, .editor-side .seg { align-self: flex-start; }
-.stage-frame .readout { white-space: nowrap; }
 @media (max-width: 900px) {
   .editor { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto auto; overflow-y: auto; }
   .editor-main { min-height: auto; }
