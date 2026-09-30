@@ -1384,8 +1384,8 @@ input[type="color"]:hover{border-color:var(--fg3)}
 input[type="color"]:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 /* Pills in a tile or a badge row shorten with an ellipsis instead of widening the tile */
 .tile-badges{display:flex;flex-wrap:wrap;gap:.3rem;min-width:0}
-.tile .pill,.tile-badges .pill{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
-.tile .pill::before,.tile-badges .pill::before{display:inline-block;margin-right:.45rem;vertical-align:1px}
+.tile .pill,.tile-badges .pill{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;letter-spacing:.06em;padding-inline:.4rem}
+.tile .pill::before,.tile-badges .pill::before{display:inline-block;margin-right:.3rem;vertical-align:1px}
 /* App page head: the title with its actions, apart from the first card or panel under it */
 .page-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:.6rem 1rem;margin-bottom:1.25rem}
 .page-head>h1,.page-head>h2{margin:0}
