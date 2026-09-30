@@ -324,7 +324,8 @@ class ServerTest(unittest.TestCase):
         self.assertEqual(self.call("GET", "/api/session", host="evil.example")[0], 403)
         self.assertEqual(self.call("GET", "/api/session")[0], 200)
         self.assertEqual(self.call("GET", "/static/../session.py", token=False)[0], 404)
-        self.assertEqual(self.call("GET", "/static/vendor/styles.css", token=False)[0], 200)
+        for vendored in ("shrippen.css", "shrippen.js", "fonts.css", "VERSION", "fonts/Rajdhani-700.ttf"):
+            self.assertEqual(self.call("GET", "/static/vendor/" + vendored, token=False)[0], 200, vendored)
 
     def test_session_payload(self):
         st, data = self.js("GET", "/api/session")

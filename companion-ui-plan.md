@@ -288,14 +288,14 @@ neuen Bausteine.
   gibt dazu selbst keine Werte an.
 
 ### 5.5 Einbindung technisch
-- Die UI läuft lokal, **kein Laden von Fremd-Hosts**: `styles.css` (aus `ds-bundle/`, enthält die App-Bausteine)
-  (Tokens + Komponenten), `shrippen.js` und die Fonts (`Rajdhani-500/600/700`,
+- Die UI läuft lokal, **kein Laden von Fremd-Hosts**: `shrippen.css` (Kante 1.7, Tokens + Komponenten samt App-Bausteinen),
+  `shrippen.js`, `fonts.css` (erzeugt, Kante liefert kein `@font-face`) und die Fonts (`Rajdhani-500/600/700`,
   `JetBrainsMono-400/500` als `.ttf`) werden in `companion/static/vendor/`
   gelegt (offline, keine Google-Fonts-Anfrage, reproduzierbar).
   Die Landingpage lädt dagegen von `shrippen.github.io/DesignDefault/v1/`;
   die Companion-UI soll eine feste Version pinnen und eine Notiz mit
   Herkunft und Stand (`v1`) im Ordner tragen.
-- Die vendorte Datei wird **nicht editiert**; Anpassungen nur in `app.css`.
+- Die vendorten Dateien werden **nicht editiert** (Aktualisieren: `tools/sync-kante.sh`); Kader-Layout nur in `app.css`.
   `shrippen.js` im `<head>` synchron laden (Sprachumschalter, Copy-Button).
 - Kein Framework nötig: passt zur Vorgabe des Systems (schlichtes HTML plus
   benannte Klassen) und zum Plan (Vanilla-JS).
@@ -331,7 +331,7 @@ companion/
   static/
     index.html
     app.js           # ES-Module: gallery.js, editor.js, dnd.js, api.js
-    vendor/          # shrippen-Designsystem v1: styles.css, shrippen.js, fonts/ (unverändert)
+    vendor/          # Kante 1.7: shrippen.css, shrippen.js, fonts/, VERSION (unverändert)
     app.css          # nur App-Bausteine, ausschließlich mit Tokens
     i18n.js          # EN/DE-Textpaare, Umschalter
 kader.lua               # + Export, Sitzung starten, Knopf "Plan anwenden", result.json

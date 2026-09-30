@@ -420,6 +420,8 @@ saubere Ende (benötigt `rich`, sonst übersprungen).
 | `companion/programs.py` | darktable/RawTherapee finden (auch Windows-Installationsordner) und starten |
 | `companion/dtconfig.py`, `companion/dtplugin.py` | darktables Konfiguration lesen; Plugin aus der App einrichten |
 | `companion/tui.py` | Terminal-Statusanzeige (`--tui`), nur eigenständige Nutzung |
+| `companion/static/vendor/` | Kante 1.7 (Web-Build, unverändert vendort; Herkunft in `VERSION`); Aktualisieren: `tools/sync-kante.sh` |
+| `companion/kante_tokens.py` | Kante-Farben und Größen für Tk und TUI, erzeugt von `tools/gen_kante_tokens.py` (nicht von Hand ändern) |
 | `kader.lua` | darktable-Integration (Lua-Plugin) |
 | `pyproject.toml` | Python-Paket, Befehl `kader` |
 | `tests/` | Unit-/Integrationstests, Lua-Stub, Browser-Smoke-Test |

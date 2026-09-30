@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+### Oberfläche auf Kante 1.7
+- Die Companion-UI nutzt Kante 1.7 (vendort, `companion/static/vendor/`) statt des alten Design-Bundles; eigene
+  Bausteine (Badges, Chips, Kennzahlenlisten, Fortschrittszeilen) sind durch Kante-Klassen ersetzt, `app.css`
+  enthält nur noch Layout. Kennzahlen und Analysefortschritt zählen hoch, Drag-and-drop zwischen den Bändern
+  nutzt Kantes Lücke/Zielzelle/Einrasten.
+- Tk-Review-GUI, Statusfenster und TUI beziehen ihre Farben aus `companion/kante_tokens.py` (aus Kantes
+  `palette.json` erzeugt, `tools/gen_kante_tokens.py`). Geschnittene Ecken gibt es in Tk nicht.
+
+- Kante 1.5/1.6 nachgezogen: Aktionsleiste als `.bulk-bar`, Kennzahlen mit `.fact[data-tier]`, Kandidaten als
+  `.chip`, Einstellungen als `.setting`-Zeilen, Meldungen im `.toast-stack`, Abschnittstitel als `.h-label`;
+  die zugehörigen eigenen Regeln in `app.css` entfallen.
+  Kopfzeile mit `.nav-inner.is-wrap`/`.nav-tools`, Aktionsleiste als `.bulk-bar.is-fixed` (Meldungen und Seitenrand
+  folgen `--bar-h`), Editor auf Handys mit voller Bildfläche; kein seitliches Scrollen mehr bei 390 px. `tools/sync-kante.sh` liest die Version aus `palette.json`.
+
 ## 0.3.0 (2026-09-26)
 
 ### darktable und RawTherapee ohne Terminal
