@@ -121,6 +121,33 @@ die Crop-Koordinaten als JSON.
 - Film-Konsistenz nur anwenden wenn Film-Aspect verlässlich
   (matching >= 3 Bilder nahe am Film-Aspect).
 
+## GUI rule
+
+- Every GUI of this project is generated from Kante, not inspired by it: landing pages,
+  web apps, Qt Quick / Kirigami apps, Plasma widgets, dialogs, e-mail and print layouts.
+  Source: https://github.com/shrippen/Kante (checkout `../Kante`).
+  Web: link `https://shrippen.github.io/v1/shrippen.css` and `shrippen.js`, or vendor them
+  unchanged. Apps: copy `qml/Kante` (and `KantePlasma` for Plasma widgets) unchanged.
+- Use Kante's tokens, roles, components, classes, QML components and motion as they are.
+  No own colours, fonts, sizes, radii, cuts, shadows, animation timings, no own copy or
+  variant of a component that Kante has. Raw values (`#hex`, `px` for controls) are a bug;
+  use roles (`--primary`, `--focus`, `--warn`, `KanteStyle.*`).
+- A missing element is added to Kante first (CSS or QML, docs, catalogue), then used here.
+  Never solve it locally in this project and never wait with a "temporary" copy.
+- Exception: Kimai plugins take their GUI from Knust (`kimai/knust/` in Kante) and
+  the kit (`kimai/kit/`), the Kante spinoff that adapts Kante to Kimai's look. The same rule applies to Knust: use it
+  as it is, and add missing elements to Knust.
+- Exception: Kintsugi (`shrippen/kintsugi`) uses Kante Gold (`<html data-kante="gold">`),
+  the noble variant defined in Kante itself. The same rule applies: use it as it is, and
+  add a missing element or Gold detail to Kante (its Gold block) first. No other project
+  uses Kante Gold without a decision recorded here.
+- A project without a GUI (library, CLI, scripts) has nothing to do here.
+- Here: the companion web UI vendors `companion/static/vendor/` (`tools/sync-kante.sh`,
+  `VERSION` names the Kante commit); Tk and the TUI take `companion/kante_tokens.py`, generated
+  by `tools/gen_kante_tokens.py` from Kante's `tokens/`. Never edit either by hand. The landing
+  page links `https://shrippen.github.io/v1/`.
+- Rule text: https://github.com/shrippen/Kante/blob/main/AGENT-RULE.md
+
 ## Repository rule
 
 - This repository lives on Gitea (`git.arianw.de`). GitHub is only a push mirror of it.
