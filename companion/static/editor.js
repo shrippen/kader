@@ -182,7 +182,7 @@ function layout() {
 function renderStrip() {
   const img = cur();
   el().querySelector('#ed-strip').innerHTML = filmImages().map((i) =>
-    `<button type="button" data-id="${esc(i.id)}" data-tier="${i.group}"${String(i.id) === ed.id ? ' aria-current="true"' : ''} title="${esc(i.filename)}"><img alt="" loading="lazy" src="${thumbUrl(i.id, 200)}"></button>`).join('');
+    `<button type="button" data-id="${esc(i.id)}" data-label="${i.group}"${String(i.id) === ed.id ? ' aria-current="true"' : ''} title="${esc(i.filename)}"><img alt="" loading="lazy" src="${thumbUrl(i.id, 200)}"></button>`).join('');
   // Centre the current thumb by scrolling the strip only; scrollIntoView would also scroll
   // the editor, which on phones stacks the strip at the bottom and opened scrolled down.
   const strip = el().querySelector('#ed-strip');
@@ -206,7 +206,7 @@ function confPartsHtml(img) {
     const v = cp[k];
     const weak = v === min && vals.length > 1;
     return `<div class="progress"><div class="progress-head"><span>${T('cp_' + k)}${weak ? ` · ${T('cp_weakest')}` : ''}</span><span>${v.toFixed(2)}</span></div>
-      <div class="progress-bar"><i data-tier="${v >= 0.7 ? 'green' : v >= 0.4 ? 'yellow' : 'red'}" style="--p:${Math.round(clamp(v) * 100)}%"></i></div></div>`;
+      <div class="progress-bar"><i data-label="${v >= 0.7 ? 'green' : v >= 0.4 ? 'yellow' : 'red'}" style="--p:${Math.round(clamp(v) * 100)}%"></i></div></div>`;
   }).join('');
   return `<div><div class="h-label" role="heading" aria-level="3">${T('conf_parts')}</div><div class="cp">${rows}</div><p class="field-hint">${T('conf_parts_h')}</p></div>`;
 }

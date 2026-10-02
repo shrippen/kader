@@ -19,7 +19,7 @@ export function initGallery(h) {
   for (const g of GROUPS) {
     const band = document.createElement('div');
     band.className = 'band';
-    band.dataset.tier = g;
+    band.dataset.label = g;
     band.innerHTML = `<div class="band-head"><span>${T('band_' + g)}<span class="band-hint">${T('band_' + g + '_h')}</span></span><span data-count>0</span></div>`;
     host.appendChild(band);
   }
@@ -59,7 +59,7 @@ function updateTile(el, img) {
   if (el._sig === sig) return;
   el._sig = sig;
   const sel = store.selected.has(String(img.id));
-  el.dataset.tier = img.group;
+  el.dataset.label = img.group;
   el.setAttribute('aria-selected', sel ? 'true' : 'false');
   el.draggable = isEditable();
   el.toggleAttribute('data-error', img.status === 'error');
@@ -132,7 +132,7 @@ export function renderGallery() {
   const byGroup = { green: [], yellow: [], red: [] };
   for (const img of sorted(s.images)) byGroup[img.group].push(img);
   for (const g of GROUPS) {
-    const band = host.querySelector(`.band[data-tier="${g}"]`);
+    const band = host.querySelector(`.band[data-label="${g}"]`);
     let empty = band.querySelector('.empty');
     let i = 1;                                     // children[0] = Kopf
     for (const img of byGroup[g]) {
@@ -326,7 +326,7 @@ async function onDrop(e) {
   e.preventDefault();
   const ids = dragIds.slice();
   const from = new Map(ids.map((id) => [id, tileOf(id) && tileOf(id).getBoundingClientRect()]));
-  const target = b.dataset.tier;
+  const target = b.dataset.label;
   clearDrag();
   // Zurueck in die automatische Gruppe = Nutzerentscheid aufheben
   const auto = ids.every((id) => byId(id) && byId(id).auto_group === target);

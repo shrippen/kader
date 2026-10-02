@@ -74,7 +74,7 @@ const TIERS = ['green', 'yellow', 'red'];
 function renderSummary() {
   const n = store.s.summary, host = $('summary');
   if (host.children.length !== FACTS.length) {
-    host.innerHTML = FACTS.map(([k, label]) => `<div class="fact"${TIERS.includes(k) ? ` data-tier="${k}"` : ''}><b>${n[k]}</b><span>${T(label)}</span></div>`).join('');
+    host.innerHTML = FACTS.map(([k, label]) => `<div class="fact"${TIERS.includes(k) ? ` data-label="${k}"` : ''}><b>${n[k]}</b><span>${T(label)}</span></div>`).join('');
     return;
   }
   FACTS.forEach(([k, label], i) => {
