@@ -41,7 +41,7 @@ export function dialog({ title, body, facts, notes, confirm, cancel = 'cancel', 
     const wrap = document.createElement('div');
     wrap.className = 'scrim is-fixed';
     const factsHtml = facts && facts.length
-      ? `<div class="dialog-facts">${facts.map((f) => `<div class="fact"${f.color ? ` data-tier="${f.color}"` : ''}><b>${esc(f.value)}</b><span>${T(f.label)}</span></div>`).join('')}</div>`
+      ? `<div class="dialog-facts">${facts.map((f) => `<div class="fact"${f.color ? ` data-label="${f.color}"` : ''}><b>${esc(f.value)}</b><span>${T(f.label)}</span></div>`).join('')}</div>`
       : '';
     const notesHtml = (notes || []).map((n) => `<div class="callout callout-warn">${n}</div>`).join('');
     wrap.innerHTML = `<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-h">

@@ -88,7 +88,7 @@ def main():
             shot("1-gallery.png")
 
             def count(tier):
-                return pg.locator(f'#bands .band[data-tier="{tier}"] .tile').count()
+                return pg.locator(f'#bands .band[data-label="{tier}"] .tile').count()
 
             print('Tastatur', flush=True)
             # Tastatur: erste Kachel auswaehlen, mit 3 nach Rot
@@ -98,18 +98,18 @@ def main():
             assert tile.get_attribute("aria-selected") == "true"
             red0 = count("red")
             pg.keyboard.press("3")
-            pg.wait_for_function(f"document.querySelector('#bands .tile[data-id=\"{first_id}\"]').closest('.band').dataset.tier==='red'")
+            pg.wait_for_function(f"document.querySelector('#bands .tile[data-id=\"{first_id}\"]').closest('.band').dataset.label==='red'")
             assert count("red") == red0 + 1 or red0 + 1 >= 1
             # Undo
             pg.keyboard.press("z")
-            pg.wait_for_function(f"document.querySelector('#bands .tile[data-id=\"{first_id}\"]').closest('.band').dataset.tier!=='red' || {red0}>0")
+            pg.wait_for_function(f"document.querySelector('#bands .tile[data-id=\"{first_id}\"]').closest('.band').dataset.label!=='red' || {red0}>0")
 
             print('Drag-and-drop in Rot', flush=True)
             # Drag-and-drop in Rot
-            t2 = pg.locator("#bands .band[data-tier='green'] .tile, #bands .band[data-tier='yellow'] .tile").first
+            t2 = pg.locator("#bands .band[data-label='green'] .tile, #bands .band[data-label='yellow'] .tile").first
             id2 = t2.get_attribute("data-id")
-            t2.drag_to(pg.locator("#bands .band[data-tier='red']"))
-            pg.wait_for_function(f"document.querySelector('#bands .tile[data-id=\"{id2}\"]').closest('.band').dataset.tier==='red'", timeout=8000)
+            t2.drag_to(pg.locator("#bands .band[data-label='red']"))
+            pg.wait_for_function(f"document.querySelector('#bands .tile[data-id=\"{id2}\"]').closest('.band').dataset.label==='red'", timeout=8000)
 
             # Akzeptieren bestaetigt den erkannten Crop als Referenz (Taste A)
             acc = pg.locator("#bands .tile", has=pg.locator(f".tile-name:text-is('{no_ref}')")).first
