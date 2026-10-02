@@ -114,9 +114,9 @@ function updateTile(el, img) {
   // Vorschlag der Neu-Erkennung als zweites Overlay ist im Editor; hier nur die Marke.
 }
 
-// Tile badge: Kante .pill; 'hl' takes the highlight role, 'off' is struck through
+// Tile badge: Kante .pill; 'hl' takes the highlight role, 'off' is struck through. data-kind names the role for tests.
 function pill(text, kind) {
-  const attr = kind === 'hl' ? ' style="--c:var(--hl)"' : '';
+  const attr = kind === 'hl' ? ' data-kind="hl" style="--c:var(--hl)"' : '';
   return `<span class="pill${kind === 'off' ? ' is-off' : ''}"${attr}>${text}</span>`;
 }
 

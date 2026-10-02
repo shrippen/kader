@@ -80,7 +80,7 @@ def main():
             notice = pg.locator("#notice").inner_text()
             assert "reference test" in notice.lower(), notice
             assert f"of {n_refs}" in notice, notice
-            assert pg.locator("#bands .tile .tile-badge").count() >= 1
+            assert pg.locator("#bands .tile .tile-badges .pill").count() >= 1
             assert pg.locator("#tb-sort option[value='ref_desc']").count() == 1
             shot = lambda name: pg.screenshot(path=os.path.join(a.shots, name), full_page=False) if a.shots else None
             if a.shots:
@@ -116,7 +116,7 @@ def main():
             acc_id = acc.get_attribute("data-id")
             acc.click()
             pg.keyboard.press("a")
-            pg.wait_for_function(f"[...document.querySelectorAll('#bands .tile[data-id=\"{acc_id}\"] .tile-badge')].some(b => b.textContent.toLowerCase().includes('accept'))", timeout=8000)
+            pg.wait_for_function(f"[...document.querySelectorAll('#bands .tile[data-id=\"{acc_id}\"] .tile-badges .pill')].some(b => b.textContent.toLowerCase().includes('accept'))", timeout=8000)
             print('Editor', flush=True)
             # Editor: oeffnen, Griff ziehen
             pg.locator(f'#bands .tile[data-id="{id2}"]').dblclick()
@@ -143,20 +143,42 @@ def main():
                 sval = float(dict(kv.split("=") for kv in q.split("?")[1].split("&"))["s"])
                 assert abs(sval - deg_of[iid]) < 1e-6, f"Vorladen ohne Tilt: {u}"
             # Phase 5: die vier Konfidenz-Faktoren sind im Editor sichtbar
-            assert pg.locator("#ed-side .cp-row").count() == 4, "Konfidenz-Faktoren fehlen im Editor"
+            assert pg.locator("#ed-side .cp .progress").count() == 4, "Konfidenz-Faktoren fehlen im Editor"
             # Schraeglage: Messwert und (im Ordnermodus) nur Anzeige, kein Geradestellen-Knopf
             side = pg.inner_text("#ed-side").lower()
             assert ("tilt" in side or "schräglage" in side), "Schraeglage fehlt im Editor"
             assert pg.locator("#ed-toolbar [data-act='tilt-toggle']").count() == 1, "Tilt-Schalter fehlt"
             # Tilt-Schalter (Taste T): ist standardmaessig an, wenn ein verlaesslicher Tilt gemessen wurde
             tog = "#ed-toolbar [data-act='tilt-toggle']"
+            # ohne merkliche Schraeglage (unter 0,01 Grad wertet der Server Geradestellen als aus) gibt es nichts zu schalten
+            st_t = json.loads(pg.evaluate("fetch('/api/session',{headers:{'X-Token':new URLSearchParams(location.search).get('t')}}).then(r=>r.text())"))
+            ed_id = pg.evaluate("document.querySelector('#ed-strip button[aria-current=\"true\"], #ed-strip button.is-current')?.dataset.id") or first_id
+            ed_img = next(i for i in st_t["images"] if str(i["id"]) == str(ed_id))
+            sk_deg = (ed_img.get("skew") or {}).get("deg")
+            if ed_img.get("straighten") is None and (sk_deg is None or abs(sk_deg) < 0.01):
+                assert pg.locator(tog).is_disabled(), f"Tilt-Schalter aktiv, obwohl Bild {ed_id} keine Schraeglage hat ({sk_deg})"
+            # das Umschalten an einem Bild mit Schraeglage pruefen: mit ] weiter, bis der Schalter frei ist
+            moved = 0
+            for _ in range(a.n):
+                if not pg.locator(tog).is_disabled():
+                    break
+                pg.keyboard.press("]")
+                moved += 1
+                pg.wait_for_timeout(400)
+            assert not pg.locator(tog).is_disabled(), "kein Bild mit Schraeglage im Film"
             if not pg.locator(tog).is_disabled():
                 start = pg.get_attribute(tog, "aria-pressed")
                 for want in ("false" if start == "true" else "true", start):
                     pg.keyboard.press("t")
                     pg.wait_for_function(f"document.querySelector(\"{tog}\").getAttribute('aria-pressed')==='{want}'", timeout=8000)
                     pg.wait_for_timeout(300)
-                    assert ("s=0" in pg.get_attribute("#ed-img", "src")) == (want == "false"), "Bildansicht folgt dem Schalter nicht"
+                    # s = Winkel der Ansicht als Zahl ("s=0.1" enthaelt auch "s=0", daher nicht als Text vergleichen)
+                    s_deg = float(dict(kv.split("=", 1) for kv in pg.get_attribute("#ed-img", "src").split("?", 1)[1].split("&")).get("s", "0"))
+                    assert (s_deg == 0) == (want == "false"), f"Bildansicht folgt dem Schalter nicht (s={s_deg}, an={want})"
+            for _ in range(moved):                       # zurueck zum Bild, an dem die naechsten Schritte arbeiten
+                pg.keyboard.press("[")
+                pg.wait_for_timeout(400)
+            assert pg.evaluate("document.querySelector('#ed-strip button[aria-current=\"true\"]')?.dataset.id") == str(ed_id), "nicht zurueck beim Ausgangsbild"
             shot("2-editor.png")
             h = pg.locator("#ed-crop .handle[data-h='se']")
             box = h.bounding_box()
@@ -164,7 +186,7 @@ def main():
             pg.mouse.down()
             pg.mouse.move(box["x"] - 60, box["y"] - 40, steps=6)
             pg.mouse.up()
-            pg.wait_for_function(f"document.querySelector('#bands .tile[data-id=\"{id2}\"] .tile-badge.is-hl')", timeout=8000)
+            pg.wait_for_function(f"document.querySelector('#bands .tile[data-id=\"{id2}\"] .tile-badges .pill[data-kind=hl]')", timeout=8000)
             st = json.loads(pg.evaluate("fetch('/api/session',{headers:{'X-Token':new URLSearchParams(location.search).get('t')}}).then(r=>r.text())"))
             img2 = next(i for i in st["images"] if str(i["id"]) == id2)
             assert img2["manual_crop"], "kein manueller Crop gespeichert"
@@ -199,7 +221,7 @@ def main():
             assert "r2" in pg.locator("#phase-pill").inner_text().lower()
             assert pg.locator("#bands .tile").first.get_attribute("draggable") == "true"
             # Korrektur blieb erhalten
-            assert pg.locator(f'#bands .tile[data-id="{id2}"] .tile-badge.is-hl').count() >= 1
+            assert pg.locator(f'#bands .tile[data-id="{id2}"] .tile-badges .pill[data-kind=hl]').count() >= 1
 
             print('helles Theme', flush=True)
             # helles Theme + Deutsch
