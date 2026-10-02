@@ -325,6 +325,10 @@ function drawSkewLines() {
     : '';
 }
 
+// Ein Tilt unter 0,01 Grad ist keiner: der Server wertet Geradestellen darunter als aus (session.straight_deg).
+const TILT_MIN = 0.01;
+const hasTilt = (deg) => deg != null && Math.abs(deg) >= TILT_MIN;
+
 // Schalter "Tilt anwenden": zeigt das Bild geradegestellt (Crop dann im geraden Bild setzen).
 function syncTiltToggle() {
   const btn = el().querySelector('[data-act="tilt-toggle"]');
@@ -332,15 +336,15 @@ function syncTiltToggle() {
   const img = cur();
   const on = img.straighten != null;
   btn.setAttribute('aria-pressed', String(on));
-  btn.disabled = !isEditable() || (!on && !(img.skew && img.skew.deg != null) && ed.lastDeg == null);
+  btn.disabled = !isEditable() || (!on && !hasTilt(img.skew && img.skew.deg) && !hasTilt(ed.lastDeg));
 }
 
 function toggleTilt() {
   const img = cur();
   if (!isEditable()) return;
   if (img.straighten != null) { ed.lastDeg = img.straighten; return patch({ straighten: null }); }
-  const deg = ed.lastDeg != null ? ed.lastDeg : (img.skew && img.skew.deg);
-  if (deg == null) return toast(T('skew_none'), 'error');
+  const deg = hasTilt(ed.lastDeg) ? ed.lastDeg : (img.skew && img.skew.deg);
+  if (!hasTilt(deg)) return toast(T('skew_none'), 'error');
   return patch({ straighten: { deg } });
 }
 
