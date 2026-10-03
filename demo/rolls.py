@@ -150,8 +150,8 @@ def generate(folder, seed=3):
             if os.path.exists(path):
                 continue
             rnd = random.Random(seed * 1000 + idx * 100 + i)
-            # unterbelichtete Bilder (Anteil Schwarz): landen in Gruen, Gelb und Rot
-            difficult = {4: 0.8, 9: 0.9, 6: 0.95 if idx else 0}.get(i, 0)
+            # unterbelichtete Bilder (Anteil Schwarz, Bildnummer ab 1 aus der Welt): landen in Gruen, Gelb und Rot
+            difficult = roll.get("underexposed", {}).get(str(i + 1), 0)
             _scan(motif, rnd, i, difficult).save(path, quality=90)
     return count
 
