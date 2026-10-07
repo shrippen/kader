@@ -285,3 +285,13 @@ ohne SSH-Tunnel kam ein Browser auf einem anderen Rechner gar nicht erst bis zum
   die Bewertungsfunktion bevorzugt echte Interfaces gegenueber Docker/VPN, auch wenn die Routenwahl selbst auf ein
   Docker-Netz zeigt; ein echter Server auf `127.0.0.2` beweist per HTTP-Anfragen mit unterschiedlichen `Host`-Headern,
   dass der Hostname jetzt egal ist, der Port aber weiterhin geprüft wird und ein falscher Token weiterhin 403 gibt).
+
+## Update-Hinweis
+
+Ein Hinweis, wenn es ein neueres Release gibt, für AppImage, Windows-`.exe`, `install.sh` und `pip`: dort meldet sonst niemand Updates. Ein Flathub-Build bekäme keinen, das darktable-Lua-Plugin auch nicht. Format, Plattformen und Regeln: `shrippen.github.io/overview/VERSIONS.md`.
+
+- [ ] Prüfung an einer Stelle in Python: höchstens einmal am Tag `https://shrippen.github.io/versions.json` (Projekt `kader`), Antwort im Konfigurationsordner gespeichert, still bei Fehlern; nur Format 1 und `https`-Links
+- [ ] Anzeige im Startdialog der App und in der Companion-Web-UI als Kante `.callout.has-x` mit Link; der Server fragt, nicht der Browser. „Ausblenden“ gilt bis zur nächsten Version
+- [ ] Abschaltbar in den Einstellungen und per `KADER_UPDATE_CHECK=0`; im Demo-Modus immer aus; Build-Schalter, damit ein Store-Build sie weglässt
+- [ ] README: was abgerufen wird (`https://shrippen.github.io/versions.json` ohne Parameter, höchstens einmal am Tag) und wie man es abschaltet
+- [ ] Nach jedem Release `python3 ../shrippen.github.io/overview/tools/build-versions.py` und `docs/versions.json` dort committen
