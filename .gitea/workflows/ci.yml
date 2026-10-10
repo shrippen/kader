@@ -1,0 +1,40 @@
+# Checks on every pull request and on main: the unit and integration tests (tests/, with the Lua
+# stub of the darktable API) and the demo rolls (demo/). The browser smoke test (tests/ui_smoke.py)
+# needs Playwright and stays local.
+#
+# Python container: the same Python on Gitea and GitHub, independent of the runner image.
+#
+# This same file lives in .gitea/workflows and .github/workflows: Gitea reads only .gitea/workflows
+# as soon as it exists, GitHub only ever reads .github/workflows. Kept as two files, so a change
+# here is a reminder to update the other one too. Gitea then no longer reads release.yml (Windows
+# and AppImage, GitHub only).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# One runner works the queue in order. A newer push to the same branch or PR replaces the
+# older run instead of queueing behind it.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: python:3.12-bookworm
+    timeout-minutes: 20
+    steps:
+      - name: Tools
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq --no-install-recommends nodejs git lua5.4 libglib2.0-0 > /dev/null
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: pip install -q opencv-python-headless numpy pillow rich rawpy
+      - name: Tests
+        run: python -m unittest discover -s tests -v
+      - name: Demo rolls
+        run: python -m unittest discover -s demo -v
