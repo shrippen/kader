@@ -1009,6 +1009,17 @@ class FolderReferenceTest(unittest.TestCase):
 LUA = shutil.which("lua5.4") or shutil.which("lua")
 
 
+def running(pid):
+    """True while the process runs. A stopped process whose parent is gone stays a zombie until
+    PID 1 reaps it; in a container without an init (CI) that never happens, so /proc/<pid>
+    alone is not enough."""
+    try:
+        with open(f"/proc/{pid}/stat") as f:
+            return f.read().rsplit(")", 1)[1].split()[0] != "Z"
+    except OSError:
+        return False
+
+
 @unittest.skipUnless(LUA, "lua fehlt")
 class LuaBridgeTest(unittest.TestCase):
     """Die Lua-Seite (Plan anwenden / Pruefung oeffnen) gegen echte plan.json/result.json,
@@ -1164,15 +1175,15 @@ class LuaBridgeTest(unittest.TestCase):
         with open(f"/proc/{info['pid']}/cmdline", "rb") as f:
             cmd = f.read().split(b"\0")
         self.assertIn(b"--watch-pid", cmd)                            # stoppt mit darktable
-        self.addCleanup(lambda: os.path.exists(f"/proc/{info['pid']}") and os.kill(info["pid"], signal.SIGKILL))
+        self.addCleanup(lambda: running(info['pid']) and os.kill(info["pid"], signal.SIGKILL))
 
         out = lua("stop")                                             # Stop-Knopf
         self.assertIn("gestoppt", out["status"])
         for _ in range(50):
-            if not os.path.exists(f"/proc/{info['pid']}"):
+            if not running(info['pid']):
                 break
             time.sleep(0.1)
-        self.assertFalse(os.path.exists(f"/proc/{info['pid']}"))
+        self.assertFalse(running(info['pid']))
         self.assertFalse(os.path.exists(os.path.join(self.root, sid, "server.json")))
 
     def _plugin_copy(self, app_path):
@@ -1208,13 +1219,13 @@ class LuaBridgeTest(unittest.TestCase):
         self.assertIn("SERVER LÄUFT", out["status"])
         sid = open(os.path.join(self.root, "last_session")).read().strip()
         info = sess.read_json(os.path.join(self.root, sid, "server.json"))
-        self.addCleanup(lambda: os.path.exists(f"/proc/{info['pid']}") and os.kill(info["pid"], signal.SIGKILL))
+        self.addCleanup(lambda: running(info['pid']) and os.kill(info["pid"], signal.SIGKILL))
         self.assertIn("gestoppt", lua("stop")["status"])
         for _ in range(50):
-            if not os.path.exists(f"/proc/{info['pid']}"):
+            if not running(info['pid']):
                 break
             time.sleep(0.1)
-        self.assertFalse(os.path.exists(f"/proc/{info['pid']}"))
+        self.assertFalse(running(info['pid']))
 
     def test_app_mode_reports_a_moved_app(self):
         script = self._plugin_copy(os.path.join(self.tmp, "weg", "Kader.AppImage"))
@@ -1272,14 +1283,14 @@ class LuaBridgeTest(unittest.TestCase):
         lua("start")
         sid = open(os.path.join(self.root, "last_session")).read().strip()
         info = sess.read_json(os.path.join(self.root, sid, "server.json"))
-        self.addCleanup(lambda: os.path.exists(f"/proc/{info['pid']}") and os.kill(info["pid"], signal.SIGKILL))
-        self.assertTrue(os.path.exists(f"/proc/{info['pid']}"))
+        self.addCleanup(lambda: running(info['pid']) and os.kill(info["pid"], signal.SIGKILL))
+        self.assertTrue(running(info['pid']))
         lua("exit")
         for _ in range(60):
-            if not os.path.exists(f"/proc/{info['pid']}"):
+            if not running(info['pid']):
                 break
             time.sleep(0.1)
-        self.assertFalse(os.path.exists(f"/proc/{info['pid']}"), "Server lief nach exit weiter")
+        self.assertFalse(running(info['pid']), "Server lief nach exit weiter")
 
     def test_apply_leaves_traces_in_log_and_status(self):
         """Auch ein Fruehabbruch muss sichtbar sein (Log + Statuszeile), nie stumm."""
