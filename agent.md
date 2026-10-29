@@ -121,12 +121,22 @@ die Crop-Koordinaten als JSON.
 - Film-Konsistenz nur anwenden wenn Film-Aspect verlässlich
   (matching >= 3 Bilder nahe am Film-Aspect).
 
-## Release rule
+## Release steps
 
-- Every release gets a detailed release log, written before the tag, as a section `## [X.Y.Z] — YYYY-MM-DD` in `CHANGELOG.md` (newest first, `## [Unreleased]` stays on top): `### English` and `### Deutsch`, each with a lead (what the release is about, one or two sentences), then the changes grouped as New, Improved, Fixed and Note (Neu, Verbessert, Behoben, Hinweis; breaking changes, steps the user must take). Empty groups are left out. Each point says what changed for the user and why, not which code moved. The English part ends with `All changes: https://github.com/shrippen/kader/compare/vA...vB`.
-- The same text goes into the release notes on Gitea and as a new entry at the top of `#changes` on the landing page (`docs/index.html`, Kante `.changelog`, same wording in both languages, compare link); from the fourth entry on, the oldest move into `details.changelog-more`. Bump the version in the footer.
-- The release workflow takes the GitHub release notes from that section (followed by the download guide `packaging/RELEASE_NOTES.md`) and fails without it. A release is done when the landing page shows it.
-- The notes come from `scripts/release-notes.sh X.Y.Z` (release workflow; Gitea: `scripts/release-notes.sh X.Y.Z > notes.md`, then `tea`). CI checks the headings on every push (`scripts/release-notes.sh --check`). The script is a copy of Kante's `tools/release-notes.sh`: change it only there, sync with `../Kante/tools/sync-release-notes.sh`.
+In this order, from the version bump to done:
+
+1. Version `X.Y.Z` (on a branch `release/X.Y.Z`) in `pyproject.toml` and `companion/__init__.py` (`__version__`).
+2. Release log in `CHANGELOG.md`, before the tag: turn what `## [Unreleased]` collected into a section `## [X.Y.Z] — YYYY-MM-DD` below it (newest first; `## [Unreleased]` stays on top), with `### English` and `### Deutsch`, each a lead (what the release is about, one or two sentences), then the groups New, Improved, Fixed and Note (Neu, Verbessert, Behoben, Hinweis; breaking changes, steps the user must take) as `####`. Empty groups are left out. Each point says what changed for the user and why, not which code moved. The English part ends with `All changes: https://github.com/shrippen/kader/compare/vA...vB`. Check with `scripts/release-notes.sh --check` (CI runs it on every push) and read the notes with `scripts/release-notes.sh X.Y.Z`.
+3. Landing page `docs/index.html`: the same text as a new entry at the top of `#changes` (Kante `.changelog`, both languages, compare link); from the fourth entry on, the oldest move into `details.changelog-more`. Bump the version in the footer and in the download box (label and both links, `releases/download/vX.Y.Z/Kader-X.Y.Z-windows-x64.exe` and `…-x86_64.AppImage`). Graphics: a screenshot from the demo world per visible change (`demo/shots.json`, `../shrippen.github.io/demo/tools/.venv/bin/python ../shrippen.github.io/demo/tools/screenshots.py kader`, saved as `docs/shots/release-X.Y.Z-<name>-<lang>.webp`), a diagram for changes inside. Screenshots are taken only now, for a tagged release.
+4. PR with steps 1–3, review as the review rule says; the owner confirms the release in words (it publishes); CI green; merge on Gitea.
+5. Tag the merge commit and push the tag to Gitea only (the mirror carries it to GitHub): `git tag -a vX.Y.Z -m "X.Y.Z" <merge commit> && git push origin vX.Y.Z`.
+6. Gitea release, notes only, no files: `scripts/release-notes.sh X.Y.Z > notes.md && tea releases create --login git.arianw.de --repo shrippen/kader --tag vX.Y.Z --title "Kader X.Y.Z" --note-file notes.md`.
+7. GitHub: the tag starts `.github/workflows/release.yml`, which runs the tests, builds `Kader-X.Y.Z-windows-x64.exe` and `Kader-X.Y.Z-x86_64.AppImage`, and creates the release with the same notes plus the download guide `packaging/RELEASE_NOTES.md` (it fails without the section). Check the run (`gh run list -R shrippen/kader -w release.yml`) and the two files; a failed job: `gh run rerun <run id> --failed -R shrippen/kader` (builds the tag as it is; a fix in the code needs a new version). The download links of step 3 must resolve now.
+8. `python3 ../shrippen.github.io/overview/tools/build-versions.py`, then commit `docs/versions.json` in `shrippen.github.io` via a PR there.
+9. No deploy or store step.
+10. Done when https://shrippen.github.io/kader/ shows the release in `#changes`, the footer and the download box, and https://shrippen.github.io/versions.json has it.
+
+The release-notes script is a copy of Kante's `tools/release-notes.sh`: change it only there, then sync with `../Kante/tools/sync-release-notes.sh "$PWD"`.
 
 ## GUI rule
 
