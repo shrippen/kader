@@ -7,7 +7,7 @@ Für Nutzer ohne Python/Terminal: eine `.exe` für Windows, ein AppImage für Li
 ## Automatisch (Release)
 
 Ein Tag `v*` wird von git.arianw.de nach GitHub gespiegelt; dort baut `.github/workflows/release.yml`
-beide Pakete und hängt sie an das GitHub-Release (Text aus `RELEASE_NOTES.md`). Von Hand
+beide Pakete und hängt sie an das GitHub-Release (Text: der Abschnitt der Version aus `CHANGELOG.md`, dahinter `RELEASE_NOTES.md`; ohne Abschnitt bricht der Lauf ab). Von Hand
 (Actions → release → Run workflow) entstehen nur Artefakte zum Testen, kein Release.
 
 ## Von Hand

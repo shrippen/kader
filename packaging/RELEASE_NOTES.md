@@ -19,5 +19,4 @@ Statt den Dialog zu benutzen, kann man den Ordner auch direkt auf die Datei zieh
 der Prüfung das Ziel „darktable-Sidecars“; darktable übernimmt den Zuschnitt beim Import des Ordners.
 **RawTherapee-Nutzer**: Ziel „RawTherapee-Profile“ wählen, nach „Fertig“ öffnet „RawTherapee öffnen“ den Ordner.
 
-RAW-Dateien werden ohne zusätzliche Programme entwickelt. Was sich geändert hat, steht in
-[CHANGELOG.md](https://github.com/shrippen/kader/blob/main/CHANGELOG.md).
+RAW-Dateien werden ohne zusätzliche Programme entwickelt.
