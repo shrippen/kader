@@ -121,6 +121,12 @@ die Crop-Koordinaten als JSON.
 - Film-Konsistenz nur anwenden wenn Film-Aspect verlässlich
   (matching >= 3 Bilder nahe am Film-Aspect).
 
+## Release rule
+
+- Every release gets a detailed release log, written before the tag, as a section `## [X.Y.Z] — YYYY-MM-DD` in `CHANGELOG.md` (newest first, `## [Unreleased]` stays on top): `### English` and `### Deutsch`, each with a lead (what the release is about, one or two sentences), then the changes grouped as New, Improved, Fixed and Note (Neu, Verbessert, Behoben, Hinweis; breaking changes, steps the user must take). Empty groups are left out. Each point says what changed for the user and why, not which code moved. The English part ends with `All changes: https://github.com/shrippen/kader/compare/vA...vB`.
+- The same text goes into the release notes on Gitea and as a new entry at the top of `#changes` on the landing page (`docs/index.html`, Kante `.changelog`, same wording in both languages, compare link); from the fourth entry on, the oldest move into `details.changelog-more`. Bump the version in the footer.
+- The release workflow takes the GitHub release notes from that section (followed by the download guide `packaging/RELEASE_NOTES.md`) and fails without it. A release is done when the landing page shows it.
+
 ## GUI rule
 
 - Every GUI of this project is generated from Kante, not inspired by it: landing pages,
