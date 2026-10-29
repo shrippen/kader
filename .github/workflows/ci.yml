@@ -51,6 +51,9 @@ jobs:
           apt-get update -qq
           apt-get install -y -qq --no-install-recommends nodejs git lua5.4 libglib2.0-0 > /dev/null
       - uses: actions/checkout@v4
+      # Release headings "## [X.Y.Z] — YYYY-MM-DD": a wrong one shows up here, not at the tag.
+      - name: CHANGELOG.md headings
+        run: scripts/release-notes.sh --check
       - name: Dependencies
         run: pip install -q opencv-python-headless numpy pillow rich rawpy
       - name: Tests
