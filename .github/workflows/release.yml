@@ -76,24 +76,13 @@ jobs:
         with:
           path: out
           merge-multiple: true
-      # Release-Notizen: der Abschnitt der Version aus CHANGELOG.md ("## [X.Y.Z]", "## X.Y.Z" oder
-      # "## vX.Y.Z", danach Leerzeichen oder Zeilenende), dahinter die Download-Anleitung aus
-      # packaging/RELEASE_NOTES.md. Fehlt der Abschnitt oder ist er leer, bricht der Lauf ab.
+      # Release-Notizen: der Abschnitt "## [X.Y.Z] — JJJJ-MM-TT" der Version aus CHANGELOG.md
+      # (scripts/release-notes.sh), dahinter die Download-Anleitung aus packaging/RELEASE_NOTES.md.
+      # Fehlt der Abschnitt oder ist er leer, bricht der Lauf ab.
       - name: Notizen aus CHANGELOG.md
         run: |
           version="${GITHUB_REF_NAME#v}"
-          awk -v v="$version" '
-            /^## / {
-              if (on) exit
-              h = substr($0, 4); sub(/^\[/, "", h); sub(/^v/, "", h)
-              if (substr(h, 1, length(v)) == v) {
-                rest = substr(h, length(v) + 1)
-                if (rest == "" || rest ~ /^[] ]/) { on = 1; next }
-              }
-            }
-            on
-          ' CHANGELOG.md > notes.md
-          grep -q '[^[:space:]]' notes.md || { echo "::error::CHANGELOG.md hat keine Notizen fuer $version (## [$version] — JJJJ-MM-TT)"; exit 1; }
+          scripts/release-notes.sh "$version" > notes.md
           printf '\n---\n\n' >> notes.md
           cat packaging/RELEASE_NOTES.md >> notes.md
 
