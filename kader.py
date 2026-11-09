@@ -1384,7 +1384,7 @@ def _init_worker():
 
 # Worker frisch starten, nicht per fork aus dem Elternprozess: hat der schon OpenCVs Thread-Pool benutzt (etwa
 # _resolve_format vor dem Konsens-Pool), haengt cv2.setNumThreads im geforkten Kind (Python < 3.14 forkt unter Linux).
-# forkserver ist ab 3.14 ohnehin Standard; Windows/macOS nutzen spawn.
+# forkserver ist ab 3.14 ohnehin Standard; Windows kennt ihn nicht und nutzt spawn.
 _POOL_START = "forkserver" if "forkserver" in multiprocessing.get_all_start_methods() else None
 
 

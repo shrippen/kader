@@ -70,9 +70,9 @@ class PoolTest(unittest.TestCase):
         except TimeoutError:
             for p in ex._processes.values():     # haengende Worker beenden, sonst wartet shutdown ewig
                 p.kill()
-            self.fail("Worker haengt beim Start")
-        finally:
             ex.shutdown(wait=False, cancel_futures=True)
+            self.fail("Worker haengt beim Start")
+        ex.shutdown()
         self.assertEqual(threads, 1)
 
 
