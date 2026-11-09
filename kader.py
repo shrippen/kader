@@ -231,14 +231,15 @@ def detect_by_contours(gray: np.ndarray) -> list[dict]:
 
 # ─── Strategie 2: Canny + Hough ──────────────────────────────────────────────
 
-# Hough laeuft auf jedem HOUGH_STEP-ten Pixel der Kantenkarte. Nach CLAHE sind 50-75 % der Pixel Kanten (Filmkorn),
+# Hough laeuft auf jedem HOUGH_STEP-ten Pixel der Kantenkarte. Nach CLAHE sind 50-77 % der Pixel Kanten (Filmkorn),
 # HoughLinesP stimmt fuer jedes Kantenpixel ueber alle 180 Winkel ab und kostete ~90 % der Erkennung. Halbe
-# Aufloesung: 7x schneller, gleiche Treffer (tools/eval.py 197 -> 198 von 209, darktable-Crops 1453 -> 1467 von 1662).
+# Aufloesung: find_best_crop 7x schneller, Treffer gleich oder besser (tools/eval.py 197 -> 198 von 209,
+# darktable-Crops 1453 -> 1467 von 1662).
 HOUGH_STEP = 2
 
 
 def _hough_lines(edges, h, w):
-    """Liniensegmente (N, 4) in Koordinaten von ``edges``, oder None."""
+    """Liniensegmente wie HoughLinesP ((N, 4) oder (N, 1, 4)) in Koordinaten von ``edges``, oder None."""
     s = HOUGH_STEP
     sub = np.ascontiguousarray(edges[::s, ::s])
     lines = cv2.HoughLinesP(sub, 1, np.pi / 180, threshold=100 // s,
