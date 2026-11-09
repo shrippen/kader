@@ -9,7 +9,7 @@
 Faster and in a new look: a roll is detected about 4.7 times as fast, and the review in the browser uses the Kante design, also on a phone.
 
 #### Improved
-- Detection is about 4.7 times as fast: the test rolls took 58 seconds and now take about 13, with the same or slightly better hits (reference crops 1453 → 1467 of 1662). The line search runs on half the resolution, and each analysis process uses one thread instead of all cores at once.
+- Detection is about 4.7 times as fast: the test rolls took 58 seconds and now take about 12, with the same or slightly better hits (reference crops 1453 → 1467 of 1662). The line search runs on half the resolution, and each analysis process uses one thread instead of all cores at once.
 - The web UI uses the Kante design: clearer labels, counts and progress, and dragging an image between green, yellow and red shows where it lands. The status window and the terminal display take the same colours.
 - On a phone the page no longer scrolls sideways, the action bar keeps out of the way of the content and messages, and the crop editor opens at the top with the whole picture.
 
@@ -23,7 +23,7 @@ All changes: https://github.com/shrippen/kader/compare/v0.3.0...v0.4.0
 Schneller und in neuem Gewand: Eine Rolle ist etwa 4,7-mal so schnell erkannt, und die Prüfung im Browser nutzt das Kante-Design, auch auf dem Handy.
 
 #### Verbessert
-- Die Erkennung ist etwa 4,7-mal so schnell: Die Testrollen brauchten 58 Sekunden und jetzt etwa 13, mit gleichen oder etwas besseren Treffern (Referenz-Crops 1453 → 1467 von 1662). Die Liniensuche läuft auf halber Auflösung, und jeder Analyseprozess nutzt einen Thread statt aller Kerne zugleich.
+- Die Erkennung ist etwa 4,7-mal so schnell: Die Testrollen brauchten 58 Sekunden und jetzt etwa 12, mit gleichen oder etwas besseren Treffern (Referenz-Crops 1453 → 1467 von 1662). Die Liniensuche läuft auf halber Auflösung, und jeder Analyseprozess nutzt einen Thread statt aller Kerne zugleich.
 - Die Web-Oberfläche nutzt das Kante-Design: klarere Labels, Zahlen und Fortschritt, und beim Ziehen eines Bildes zwischen Grün, Gelb und Rot sieht man, wo es landet. Statusfenster und Terminal-Anzeige übernehmen dieselben Farben.
 - Auf dem Handy scrollt die Seite nicht mehr seitwärts, die Aktionsleiste verdeckt weder Inhalt noch Meldungen, und der Zuschnitt-Editor öffnet oben mit dem ganzen Bild.
 
