@@ -2,24 +2,33 @@
 
 ## [Unreleased]
 
-### Erkennung 4,7x schneller
-- Die Liniensuche (Hough) läuft auf halber Auflösung der Kantenkarte, jeder Analyseprozess nutzt einen
-  OpenCV-Thread statt aller Kerne. Eine Rolle ist damit etwa 4,7-mal so schnell erkannt; die Treffer sind gleich
-  oder besser (Referenz-Crops 1453 → 1467 von 1662).
+## [0.4.0] — 2026-11-09
 
-### Oberfläche auf Kante 1.7
-- Die Companion-UI nutzt Kante 1.7 (vendort, `companion/static/vendor/`) statt des alten Design-Bundles; eigene
-  Bausteine (Badges, Chips, Kennzahlenlisten, Fortschrittszeilen) sind durch Kante-Klassen ersetzt, `app.css`
-  enthält nur noch Layout. Kennzahlen und Analysefortschritt zählen hoch, Drag-and-drop zwischen den Bändern
-  nutzt Kantes Lücke/Zielzelle/Einrasten.
-- Tk-Review-GUI, Statusfenster und TUI beziehen ihre Farben aus `companion/kante_tokens.py` (aus Kantes
-  `palette.json` erzeugt, `tools/gen_kante_tokens.py`). Geschnittene Ecken gibt es in Tk nicht.
+### English
 
-- Kante 1.5/1.6 nachgezogen: Aktionsleiste als `.bulk-bar`, Kennzahlen mit `.fact[data-tier]`, Kandidaten als
-  `.chip`, Einstellungen als `.setting`-Zeilen, Meldungen im `.toast-stack`, Abschnittstitel als `.h-label`;
-  die zugehörigen eigenen Regeln in `app.css` entfallen.
-  Kopfzeile mit `.nav-inner.is-wrap`/`.nav-tools`, Aktionsleiste als `.bulk-bar.is-fixed` (Meldungen und Seitenrand
-  folgen `--bar-h`), Editor auf Handys mit voller Bildfläche; kein seitliches Scrollen mehr bei 390 px. `tools/sync-kante.sh` liest die Version aus `palette.json`.
+Faster and in a new look: a roll is detected about 4.7 times as fast, and the review in the browser uses the Kante design, also on a phone.
+
+#### Improved
+- Detection is about 4.7 times as fast: the test rolls took 58 seconds and now take about 12, with the same or slightly better hits (reference crops 1453 → 1467 of 1662). The line search runs on half the resolution, and each analysis process uses one thread instead of all cores at once.
+- The web UI uses the Kante design: clearer labels, counts and progress, and dragging an image between green, yellow and red shows where it lands. The status window and the terminal display take the same colours.
+- On a phone the page no longer scrolls sideways, the action bar keeps out of the way of the content and messages, and the crop editor opens at the top with the whole picture.
+
+#### Fixed
+- The straighten switch (key T) did nothing on an image without a measured tilt. It is now off there, and T says there is no tilt.
+
+All changes: https://github.com/shrippen/kader/compare/v0.3.0...v0.4.0
+
+### Deutsch
+
+Schneller und in neuem Gewand: Eine Rolle ist etwa 4,7-mal so schnell erkannt, und die Prüfung im Browser nutzt das Kante-Design, auch auf dem Handy.
+
+#### Verbessert
+- Die Erkennung ist etwa 4,7-mal so schnell: Die Testrollen brauchten 58 Sekunden und jetzt etwa 12, mit gleichen oder etwas besseren Treffern (Referenz-Crops 1453 → 1467 von 1662). Die Liniensuche läuft auf halber Auflösung, und jeder Analyseprozess nutzt einen Thread statt aller Kerne zugleich.
+- Die Web-Oberfläche nutzt das Kante-Design: klarere Labels, Zahlen und Fortschritt, und beim Ziehen eines Bildes zwischen Grün, Gelb und Rot sieht man, wo es landet. Statusfenster und Terminal-Anzeige übernehmen dieselben Farben.
+- Auf dem Handy scrollt die Seite nicht mehr seitwärts, die Aktionsleiste verdeckt weder Inhalt noch Meldungen, und der Zuschnitt-Editor öffnet oben mit dem ganzen Bild.
+
+#### Behoben
+- Der Schalter zum Geradestellen (Taste T) tat bei einem Bild ohne gemessene Neigung nichts. Dort ist er jetzt aus, und T meldet, dass es keine Neigung gibt.
 
 ## [0.3.0] — 2026-09-26
 

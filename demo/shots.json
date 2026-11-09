@@ -37,7 +37,7 @@
       "name": "editor",
       "actions": [
         {
-          "dblclick": "#bands .band[data-tier='green'] .tile"
+          "dblclick": "#bands .band[data-label='green'] .tile"
         },
         {
           "wait": "#editor:not([hidden]) #ed-crop"
