@@ -13,6 +13,7 @@ import subprocess
 import sys
 import os
 import math
+import multiprocessing
 import tempfile
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
@@ -1381,8 +1382,15 @@ def _init_worker():
     cv2.setNumThreads(1)
 
 
+# Worker frisch starten, nicht per fork aus dem Elternprozess: hat der schon OpenCVs Thread-Pool benutzt (etwa
+# _resolve_format vor dem Konsens-Pool), haengt cv2.setNumThreads im geforkten Kind (Python < 3.14 forkt unter Linux).
+# forkserver ist ab 3.14 ohnehin Standard; Windows/macOS nutzen spawn.
+_POOL_START = "forkserver" if "forkserver" in multiprocessing.get_all_start_methods() else None
+
+
 def _process_pool(n_items):
-    return ProcessPoolExecutor(max_workers=_worker_count(n_items), initializer=_init_worker)
+    return ProcessPoolExecutor(max_workers=_worker_count(n_items), initializer=_init_worker,
+                               mp_context=multiprocessing.get_context(_POOL_START))
 
 
 def _pass_a_worker(item):

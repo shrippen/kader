@@ -56,10 +56,24 @@ class HoughTest(unittest.TestCase):
         self.assertAlmostEqual(max(xs), x + w, delta=TOL_PX)
 
 
+POOL_TIMEOUT_S = 60
+
+
 class PoolTest(unittest.TestCase):
     def test_worker_uses_one_opencv_thread(self):
-        with kader._process_pool(1) as ex:
-            self.assertEqual(ex.submit(cv2.getNumThreads).result(), 1)
+        # Der Elternprozess hat OpenCVs Thread-Pool schon benutzt (wie _resolve_format vor dem Konsens-Pool).
+        # Per fork abgezweigte Kinder blieben dann in cv2.setNumThreads haengen (Python < 3.14).
+        cv2.GaussianBlur(np.zeros((2000, 2000), np.uint8), (31, 31), 0)
+        ex = kader._process_pool(1)
+        try:
+            threads = ex.submit(cv2.getNumThreads).result(timeout=POOL_TIMEOUT_S)
+        except TimeoutError:
+            for p in ex._processes.values():     # haengende Worker beenden, sonst wartet shutdown ewig
+                p.kill()
+            self.fail("Worker haengt beim Start")
+        finally:
+            ex.shutdown(wait=False, cancel_futures=True)
+        self.assertEqual(threads, 1)
 
 
 if __name__ == "__main__":
