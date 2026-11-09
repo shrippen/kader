@@ -301,7 +301,7 @@ class Analyzer:
                 items.append((path, aspect, fbl, bool(settings.get("no_aspect_penalty")),
                               bool(settings.get("skip_refine"))))
             done = 0
-            with cf.ProcessPoolExecutor(max_workers=max(1, min(os.cpu_count() or 2, len(items)))) as ex:
+            with acn._process_pool(len(items)) as ex:
                 futs = {ex.submit(_single_worker, it): it[0] for it in items}
                 for fut in cf.as_completed(futs):
                     done += 1

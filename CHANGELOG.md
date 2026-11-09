@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Erkennung 4,7x schneller
+- Die Liniensuche (Hough) läuft auf halber Auflösung der Kantenkarte, jeder Analyseprozess nutzt einen
+  OpenCV-Thread statt aller Kerne. Eine Rolle ist damit etwa 4,7-mal so schnell erkannt; die Treffer sind gleich
+  oder besser (Referenz-Crops 1453 → 1467 von 1662).
+
 ### Oberfläche auf Kante 1.7
 - Die Companion-UI nutzt Kante 1.7 (vendort, `companion/static/vendor/`) statt des alten Design-Bundles; eigene
   Bausteine (Badges, Chips, Kennzahlenlisten, Fortschrittszeilen) sind durch Kante-Klassen ersetzt, `app.css`
