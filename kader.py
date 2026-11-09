@@ -231,6 +231,21 @@ def detect_by_contours(gray: np.ndarray) -> list[dict]:
 
 # ─── Strategie 2: Canny + Hough ──────────────────────────────────────────────
 
+# Hough laeuft auf jedem HOUGH_STEP-ten Pixel der Kantenkarte. Nach CLAHE sind 50-75 % der Pixel Kanten (Filmkorn),
+# HoughLinesP stimmt fuer jedes Kantenpixel ueber alle 180 Winkel ab und kostete ~90 % der Erkennung. Halbe
+# Aufloesung: 7x schneller, gleiche Treffer (tools/eval.py 197 -> 198 von 209, darktable-Crops 1453 -> 1467 von 1662).
+HOUGH_STEP = 2
+
+
+def _hough_lines(edges, h, w):
+    """Liniensegmente (N, 4) in Koordinaten von ``edges``, oder None."""
+    s = HOUGH_STEP
+    sub = np.ascontiguousarray(edges[::s, ::s])
+    lines = cv2.HoughLinesP(sub, 1, np.pi / 180, threshold=100 // s,
+                            minLineLength=min(h, w) // 4 // s, maxLineGap=20 // s)
+    return None if lines is None else lines * s
+
+
 def detect_by_canny_hough(gray: np.ndarray) -> list[dict]:
     candidates = []
     h, w = gray.shape
@@ -241,8 +256,7 @@ def detect_by_canny_hough(gray: np.ndarray) -> list[dict]:
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
         edges = cv2.dilate(edges, kernel, iterations=1)
 
-        lines = cv2.HoughLinesP(edges, 1, np.pi / 180, threshold=100,
-                                minLineLength=min(h, w) // 4, maxLineGap=20)
+        lines = _hough_lines(edges, h, w)
         if lines is None:
             continue
 
@@ -1360,6 +1374,16 @@ def _worker_count(n_items):
     return max(1, min(os.cpu_count() or 4, n_items))
 
 
+def _init_worker():
+    """Ein OpenCV-Thread je Prozess: der Pool verteilt die Bilder schon auf alle Kerne, OpenCVs eigene Threads
+    ueberbuchen sie (24 Prozesse x 24 Threads) und kosteten ~30 % Laufzeit bei gleichem Ergebnis."""
+    cv2.setNumThreads(1)
+
+
+def _process_pool(n_items):
+    return ProcessPoolExecutor(max_workers=_worker_count(n_items), initializer=_init_worker)
+
+
 def _pass_a_worker(item):
     """Ein Bild fuer Pass A verarbeiten. item = (path, load_path)."""
     path, load_path = item
@@ -1732,7 +1756,7 @@ def apply_film_consensus(results, load_paths, report=None, film_scales=None):
     items = [(load_paths.get(p["r"]["input_file"], p["r"]["input_file"]),
              p["x"], p["y"], p["w"], p["h"]) for p in plans]
     report(f"BATCHINFO consensus_refine={len(items)}")
-    with ProcessPoolExecutor(max_workers=_worker_count(len(items))) as ex:
+    with _process_pool(len(items)) as ex:
         refined = list(ex.map(_consensus_worker, items, chunksize=1))
 
     # Rollenweite Evidenz aus dem Einpassen: wie scharf die Kanten am Rahmen der Physik sind und wie weit sie ihn
@@ -1777,7 +1801,7 @@ def apply_film_consensus(results, load_paths, report=None, film_scales=None):
                 y2 = int(round(max(0, min(ih - h2, cy - h2 / 2))))
                 p["w2"], p["h2"] = w2, h2
                 items2.append((load_paths.get(p["r"]["input_file"], p["r"]["input_file"]), x2, y2, w2, h2))
-            with ProcessPoolExecutor(max_workers=_worker_count(len(items2))) as ex:
+            with _process_pool(len(items2)) as ex:
                 refined2 = list(ex.map(_consensus_worker, items2, chunksize=1))
             for i, res2 in zip(idx, refined2):
                 p = plans[i]
@@ -1943,7 +1967,7 @@ def compute_batch(image_paths, confidence_threshold, debug, default_format,
         pass_a_items.append((path, load_paths.get(path, path)))
 
     if pass_a_items:
-        with ProcessPoolExecutor(max_workers=_worker_count(len(pass_a_items))) as ex:
+        with _process_pool(len(pass_a_items)) as ex:
             futures = {ex.submit(_pass_a_worker, it): it for it in pass_a_items}
             for fut in as_completed(futures):
                 done_units += 1
@@ -2000,7 +2024,7 @@ def compute_batch(image_paths, confidence_threshold, debug, default_format,
                              aspect, debug, exposure_contrast))
 
     if pass_b_items:
-        with ProcessPoolExecutor(max_workers=_worker_count(len(pass_b_items))) as ex:
+        with _process_pool(len(pass_b_items)) as ex:
             futures = {ex.submit(_pass_b_worker, it): it for it in pass_b_items}
             for fut in as_completed(futures):
                 done_units += 1
@@ -2027,7 +2051,7 @@ def compute_batch(image_paths, confidence_threshold, debug, default_format,
             paths_by_film[meas["film"]].append(load_paths.get(meas["path"], meas["path"]))
         scale_items = [(f, _sample_paths(ps)) for f, ps in paths_by_film.items() if ps]
         if scale_items:
-            with ProcessPoolExecutor(max_workers=_worker_count(len(scale_items))) as ex:
+            with _process_pool(len(scale_items)) as ex:
                 film_scales = dict(ex.map(_scale_worker, scale_items))
     apply_film_consensus(results, load_paths, report=report, film_scales=film_scales)
 
