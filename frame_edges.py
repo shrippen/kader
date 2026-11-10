@@ -416,8 +416,8 @@ def detect(rolls, pool_map=map, progress=lambda: None):
 
     rolls: {name: (pfade, pitch_frac)}; pitch_frac = Perforationstakt relativ zur langen Bildkante (film_scale), wenn
     er als Massstab gilt, sonst None. pool_map(fn, items): verteilt die Arbeit je Bild (Standard: nacheinander).
-    progress(): je Bild einer geloesten Rolle zweimal, nach jedem der zwei Durchlaeufe (ein unlesbares Bild
-    zaehlt beide im ersten); Bilder einer Rolle ohne Loesung zaehlen einmal.
+    progress(): je Bild zweimal, nach jedem der zwei Durchlaeufe. Ein unlesbares Bild zaehlt beide im ersten;
+    ein lesbares, dessen Gruppe keine Loesung findet, nur den ersten.
     -> {name: (ergebnisse je Bild, rolleninfo)}; Rollen ohne lesbares Bild oder ohne Loesung fehlen.
 
     Bilder einer Rolle mit anderer Arbeitsgroesse (anderer Export) bilden eine eigene Gruppe mit eigener

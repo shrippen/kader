@@ -73,7 +73,7 @@ Export, sondern auf einem eigenen Erkennungsbild aus dem RAW (`companion/rawdete
 logarithmiert und ab dem Filmrand gestreckt. In bearbeiteten Exporten dunkler Bilder liegen Filmrand und Bild beide
 im Schwarz; im RAW sind sie getrennt. Ob Negativ oder Dia, entscheidet die Rolle (die Polung mit den geschlosseneren
 Kanten). Lage und Seitenverhältnis kommen vom Export, der Crop gilt also für ihn. Auf drei dunklen Rollen liegen damit
-bei 47 von 57 Handcrops alle vier Kanten näher als 25 px, auf den Exporten bei 32. Ein Bild, dessen Export einen
+bei 46 von 57 Handcrops alle vier Kanten näher als 25 px, auf den Exporten bei 32. Ein Bild, dessen Export einen
 anderen Ausschnitt zeigt (im RAW-Entwickler gedreht oder entzerrt), wird wie bisher auf dem Export gemessen; ohne
 `rawpy` gilt das für alle.
 

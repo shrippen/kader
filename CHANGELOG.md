@@ -27,7 +27,7 @@ The crop now sits on the frame: Kader measures the frame edges of a whole roll t
 - A single picture in another scale keeps its own edges when both are clearly visible.
 - Dark pictures keep their edges when Kader gets the RAW files. A developed export can crush film border and
   picture into the same black; Kader now measures on its own image from the RAW, where the two are still apart, and
-  tells negatives from slides by the roll. On three dark rolls all four edges are within about 1 % for 47 of 57
+  tells negatives from slides by the roll. On three dark rolls all four edges are within about 1 % for 46 of 57
   hand-made crops instead of 32. This applies to 35 mm film in the web UI and needs the Python package `rawpy`;
   without it the export is measured as before.
 - The editor shows the four edges as the factors of the confidence.
@@ -65,7 +65,7 @@ Der Crop sitzt jetzt auf dem Rahmen: Kader misst die Rahmenkanten einer ganzen R
 - Ein einzelnes Bild in anderem Maßstab behält seine eigenen Kanten, wenn beide klar zu sehen sind.
 - Dunkle Bilder behalten ihre Kanten, wenn Kader die RAW-Dateien bekommt. Ein entwickelter Export kann Filmrand und
   Bild ins selbe Schwarz drücken; Kader misst jetzt auf einem eigenen Bild aus dem RAW, in dem beide noch getrennt
-  sind, und unterscheidet Negativ und Dia an der Rolle. Auf drei dunklen Rollen liegen bei 47 von 57 Crops von Hand
+  sind, und unterscheidet Negativ und Dia an der Rolle. Auf drei dunklen Rollen liegen bei 46 von 57 Crops von Hand
   alle vier Kanten auf etwa 1 % genau statt bei 32. Das gilt für Kleinbild in der Web-Oberfläche und braucht das
   Python-Paket `rawpy`; ohne es wird wie bisher der Export gemessen.
 - Der Editor zeigt die vier Kanten als Faktoren der Konfidenz.
