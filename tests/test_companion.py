@@ -327,6 +327,14 @@ class ServerTest(unittest.TestCase):
         for vendored in ("shrippen.css", "shrippen.js", "fonts.css", "VERSION", "fonts/Rajdhani-700.ttf"):
             self.assertEqual(self.call("GET", "/static/vendor/" + vendored, token=False)[0], 200, vendored)
 
+    def test_scan_guide_drawing_matches_landing_page(self):
+        for lang in ("en", "de"):
+            name = f"howto-anatomy-{lang}.svg"
+            st, raw = self.call("GET", "/static/" + name, token=False)
+            self.assertEqual(st, 200, name)
+            with open(os.path.join(ROOT, "docs", name), "rb") as f:
+                self.assertEqual(raw, f.read(), name)
+
     def test_session_payload(self):
         st, data = self.js("GET", "/api/session")
         self.assertEqual(st, 200)

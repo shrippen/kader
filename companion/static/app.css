@@ -99,3 +99,6 @@ body { min-height: 100vh; }
 .stage-frame .skewlines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 .skewlines line.case { stroke: var(--bg-void); stroke-width: 4; opacity: .55; }
 .skewlines line.core { stroke: var(--cyan); stroke-width: 1.6; }
+
+/* Scanning guide */
+.guide-img { display: block; width: 100%; max-width: 640px; height: auto; margin: 12px 0; }

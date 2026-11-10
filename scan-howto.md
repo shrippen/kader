@@ -6,6 +6,22 @@ danach, was fototechnisch "am schönsten" aussieht, sondern danach, was die Erke
 messen kann. Hintergrund und Messungen: `bericht-erkennung-2026-09-22.md`,
 `roadmap.md`.
 
+## Begriffe: was in der Aufnahme zu sehen ist
+
+![Datei, Bildfeld, Filmrand, Perforation und Nachbarbild](docs/howto-anatomy-de.svg)
+
+- **Datei:** die ganze Aufnahme der Kamera.
+- **Bildfeld:** das belichtete Bild auf dem Film. Das ist der „Rahmen“, den Kader
+  sucht, und darauf sitzt der Crop.
+- **Filmrand:** der unbelichtete Film rund um das Bildfeld, auch der Steg zwischen
+  zwei Bildern. Die Grenze zwischen Filmrand und Bildfeld ist die Kante, die die
+  Erkennung misst (`frame_edges.py`).
+- **Perforation:** die Lochreihen. Aus ihrem Abstand kommt der Maßstab der Rolle.
+- **Nachbarbild:** darf angeschnitten in der Aufnahme sein.
+
+Der Filmhalter muss nicht im Bild sein. Gebraucht werden nur der Filmrand an allen
+vier Seiten des Bildfelds und mindestens eine Lochreihe.
+
 ## Die eine Regel, die am meisten bringt: Perforation mitscannen
 
 Der wichtigste Trick des Algorithmus ist, dass der Lochabstand von 35-mm-Film
@@ -18,29 +34,25 @@ mit im Scan ist.**
   Transportrichtung des Films) einen sichtbaren Rand mit den Löchern stehen. Ein
   bis zwei Millimeter Luft genügen, mehr schadet nicht.
 - Scanne **nicht** randscharf bis an den Bildinhalt heran, auch wenn es aufgeräumter
-  aussieht. Sechs Rollen in den bisherigen Testdaten hatten die Perforation gar
-  nicht im Scan — bei denen kann der Algorithmus die Rollengröße nur noch aus dem
-  Vergleich mit anderen Rollen schätzen, mit deutlich schlechterer Trefferquote
-  (rund 41 % statt rund 93 % Treffer, siehe Bericht).
+  aussieht. Ohne Perforation fehlt der Maßstab, und die Rahmengröße muss allein aus
+  den Kanten kommen.
 - Der Algorithmus sucht die Perforation in den äußeren 24 % der kurzen Bildkante
   (`EDGE_FRAC` in `film_scale.py`). Sie muss also nicht mittig im Bild liegen —
   aber sie muss in diesem Randstreifen zu finden sein, nicht komplett weggeschnitten.
 
-## Rahmen weder zu eng noch zu weit fassen
+## Bildfeld weder zu eng noch zu weit fassen
 
-Der Algorithmus erwartet, dass der Negativrahmen ungefähr 80–95 % der Scandatei
-füllt (Pitch liegt dann zwischen 7,0 % und 13,5 % der langen Bildkante,
-`PITCH_REL` in `film_scale.py`). Zwei Fehler in beide Richtungen:
+Das Bildfeld soll etwa 70–90 % der Dateibreite füllen. Dann liegen alle vier Kanten
+des Bildfelds und beide Lochreihen sicher in der Datei, und es bleibt Platz, wenn
+der Film schief liegt.
 
-- **Zu eng gescannt** (nur das Bild selbst, ohne Rahmen und Perforation): Die
-  Perforation fehlt komplett, siehe oben.
-- **Zu weit gescannt** (viel schwarzer Rand, Filmhalter, Nachbarbilder mit im
-  Scan): Der Takt lässt sich zwar noch messen, aber der Bezug zwischen Pixelgröße
-  und Rollengröße wird instabiler, und der Algorithmus muss mehr raten, wo der
-  eigentliche Bildinhalt beginnt.
-
-Ein guter Anhaltspunkt: Rahmen und ein schmaler schwarzer Rand mit Perforation
-sollen die Datei füllen, aber nicht mit viel Leerraum drumherum.
+- **Zu eng** (Bildfeld über etwa 90 % der Breite): Schon ein leicht verschobener
+  Film schneidet eine Kante ab, und die Lochreihen fallen aus der Datei. Eine Kante,
+  die nicht in der Datei liegt, kann die Erkennung nicht finden; das Bild wird dann
+  nicht grün.
+- **Zu weit** (Bildfeld unter etwa 55 % der Breite): Der Lochabstand liegt außerhalb
+  des Bereichs, in dem er gesucht wird (`PITCH_REL` in `film_scale.py`), und es geht
+  unnötig Auflösung verloren.
 
 ## Filmhalter sauber halten
 
@@ -106,7 +118,7 @@ genug abgebildet werden.
 ## Kurz zusammengefasst
 
 1. Perforation mitscannen — an mindestens einer Kante, lieber an beiden.
-2. Rahmen weder randscharf zuschneiden noch mit viel Leerraum umgeben.
+2. Bildfeld auf etwa 70–90 % der Dateibreite, alle vier Kanten in der Datei.
 3. Filmhalter sauber und ohne eigenes periodisches Muster im Scanbereich.
 4. Eine Rolle mit gleicher Scanner-Einstellung und ähnlichem Bildausschnitt
    durchgängig scannen, nicht mittendrin wechseln.
@@ -115,8 +127,6 @@ genug abgebildet werden.
 6. Bei Einzelscans ohne Rollenkontext: beide Ränder erfassen, scharf und
    kontrastreich scannen.
 
-Wer diese Punkte beachtet, landet in der Praxis in der Gruppe der Rollen, die
-ihren Takt zuverlässig bestätigen — dort liegt die Trefferquote heute bei rund
-93 % und die Präzision der automatisch übernommenen ("grünen") Ergebnisse bei
-96 %, gegenüber deutlich schwächeren Werten für Rollen ohne verwertbare
-Perforation.
+Wer diese Punkte beachtet, gibt der Erkennung, was sie messen kann: vier sichtbare
+Kanten je Bild und einen bestätigten Maßstab je Rolle. Messwerte stehen in
+`bericht-erkennung-2026-11-10.md`.
