@@ -344,16 +344,17 @@ def _result(it):
     x1 = min(x0 + it["ws"] + (1 if x0 + it["ws"] >= w - 1 else 0), w)
     y1 = min(y0 + it["hs"] + (1 if y0 + it["hs"] >= h - 1 else 0), h)
     el, er, et, eb = it["ev"]
-    box, ev = [x0, y0, x1 - x0, y1 - y0], [el, et, er, eb]
+    box, ev, axes = [x0, y0, x1 - x0, y1 - y0], [el, et, er, eb], it["from_roll"]
     if it["tr"]:
         box, ev = [y0, x0, y1 - y0, x1 - x0], [et, el, eb, er]
+        axes = sorted({"x": "y", "y": "x"}[a] for a in axes)
     s = it["scale"]
     fw, fh = it["size"]
     bx, by = int(round(box[0] * s)), int(round(box[1] * s))
     return {"path": it["path"], "x": bx, "y": by,
             "width": min(int(round(box[2] * s)), fw - bx), "height": min(int(round(box[3] * s)), fh - by),
             "img_w": fw, "img_h": fh, "edges": [round(v, 3) for v in ev],
-            "from_roll": it["from_roll"], "size_dev": [it["ws"] - it["W"], it["hs"] - it["H"]],
+            "from_roll": axes, "size_dev": [it["ws"] - it["W"], it["hs"] - it["H"]],
             "tilt_deg": -it["tilt"] if it["tr"] else it["tilt"]}
 
 

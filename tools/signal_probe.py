@@ -98,13 +98,13 @@ def main():
         film, fn = d["key"].split("/", 1)
         r = by[fn]
         parts, evd = r.get("_conf_parts") or {}, r.get("evidence") or {}
-        agree = [x["args"][0] for x in r.get("reasons", []) if isinstance(x, dict) and x["key"] == "strategies_agree"]
+        n_agree = [x["args"][0] for x in r.get("reasons", []) if isinstance(x, dict) and x["key"] == "strategies_agree"]
         cx, cy = centre[film]
         content, agree = content_signals(os.path.join(ev.TESTPHOTOS, film, fn), r["x"], r["y"], r["width"], r["height"])
         feats.append((ev.is_hit(d), {
             "confidence": r["confidence"], "size_agree": parts.get("size_agree"),
             "edge_score": parts.get("edge_score"), "film_trust": parts.get("film_trust"),
-            "exposure_factor": parts.get("exposure_factor"), "n_strategien": int(agree[0]) if agree else 0,
+            "exposure_factor": parts.get("exposure_factor"), "n_strategien": int(n_agree[0]) if n_agree else 0,
             "geom_score": r.get("geom_score"), "evidence.edge": evd.get("edge"),
             "evidence.interior": evd.get("interior"), "evidence.exterior": evd.get("exterior"),
             "content (Phase 2)": content, "agree (Phase 2)": agree,

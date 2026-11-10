@@ -19,7 +19,7 @@ import kader  # noqa: E402
 from tests.test_frame_edges import BatchTest, OFFSETS, _Rolls, scan  # noqa: E402
 
 I18N = os.path.join(ROOT, "companion", "static", "i18n.js")
-SOURCES = ("kader.py", os.path.join("companion", "detect.py"))
+SOURCES = ("kader.py", os.path.join("companion", "detect.py"), "batch_test.py")
 TEST_JPG = os.path.join(ROOT, "test.jpg")
 PLACEHOLDER = re.compile(r"\{(\d+)\}")
 

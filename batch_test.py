@@ -13,6 +13,8 @@ Ergebnisse: <projekt>/review_data/results.json (+ meta.json)
 import subprocess, json, os, sys, time, argparse
 from datetime import datetime
 
+from kader import reason
+
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.join(PROJECT_DIR, 'Testphotos')
 SCRIPT = os.path.join(PROJECT_DIR, 'kader.py')
@@ -251,9 +253,7 @@ def _apply_film_consistency(results, film_meta=None):
                 r['height'] = int(med_h * ih)
                 r['confidence'] = round(
                     max(0.3, r['confidence'] * 0.9), 3)
-                r.setdefault('reasons', []).append(
-                    f'Film-Konsistenz: '
-                    f'Abweichung {max_dev:.0%}')
+                r.setdefault('reasons', []).append(reason("film_consistency", f"{max_dev * 100:.0f}"))
                 corrected += 1
 
     if corrected > 0:
