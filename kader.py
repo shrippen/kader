@@ -2013,7 +2013,7 @@ def _edges_pass(paths_by_film, load_paths, film_scales, report, tick):
             for out in ex.map(fn, items, chunksize=1):
                 tick()
                 yield out
-        found = frame_edges.detect(rolls, pool_map)
+        found = frame_edges.detect(rolls, pool_map, lambda fn, items: ex.map(fn, items, chunksize=1))
 
     results, aspects = {}, {}
     for film, (res, info) in found.items():

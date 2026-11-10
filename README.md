@@ -68,7 +68,7 @@ Bilder im selben Ordner gelten als eine **Filmrolle**. Für Kleinbild läuft die
 Die Konfidenz ist die schwächste der vier Kanten. Gemessen an 209 Handcrops liegen bei 167 alle vier Kanten näher
 als 25 px (bei 2000 px langer Kante), von den Grünen 98 % (`tools/eval.py`).
 
-**RAW-Eingabe:** Liegt zu einem Bild das RAW vor und ist `rawpy` installiert, misst die Erkennung nicht auf dem
+**RAW-Eingabe (Web-Oberfläche, Kleinbild):** Liegt zu einem Bild das RAW vor und ist `rawpy` installiert, misst die Erkennung nicht auf dem
 Export, sondern auf einem eigenen Erkennungsbild aus dem RAW (`companion/rawdetect.py`): linear entwickelt,
 logarithmiert und ab dem Filmrand gestreckt. In bearbeiteten Exporten dunkler Bilder liegen Filmrand und Bild beide
 im Schwarz; im RAW sind sie getrennt. Ob Negativ oder Dia, entscheidet die Rolle (die Polung mit den geschlosseneren

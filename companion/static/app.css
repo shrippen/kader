@@ -101,4 +101,4 @@ body { min-height: 100vh; }
 .skewlines line.core { stroke: var(--cyan); stroke-width: 1.6; }
 
 /* Scanning guide */
-.guide-img { display: block; width: 100%; max-width: 640px; height: auto; margin: 12px 0; }
+.guide-img { display: block; width: 100%; max-width: 40rem; height: auto; margin: .8rem 0; }

@@ -133,7 +133,7 @@ def _evidence(paths):
     items = []
     for p in paths:
         try:
-            items.append(frame_edges.measure((p, None)))
+            items.append(frame_edges.measure((p, None, False)))
         except Exception:   # noqa: BLE001
             continue
     shape = (items[0]["w"], items[0]["h"]) if items else None

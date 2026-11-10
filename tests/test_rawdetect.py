@@ -150,8 +150,8 @@ class AnalyzerTest(unittest.TestCase):
             cv2.imwrite(out, export_of(self.linear[raw]))
             on_done(iid, out, None)
 
-    def analyze(self, available=True):
-        job = standalone_job(os.path.join(self.tmp, "Scans"))
+    def analyze(self, available=True, fmt=None):
+        job = standalone_job(os.path.join(self.tmp, "Scans"), settings={"format": fmt} if fmt else None)
         job.update(target="json", converter="rawpy", out=os.path.join(self.tmp, "out"))
         s = sess.Session.create(job, os.path.join(self.tmp, "root"))
         an = Analyzer(s)
@@ -193,6 +193,11 @@ class AnalyzerTest(unittest.TestCase):
         on_raw = [any("RAW" in r for r in i["detected"]["reasons"]) for i in imgs]
         self.assertEqual(on_raw, [False] + [True] * (len(imgs) - 1))
         self.assertEqual(imgs[0]["export_size"], [W * EXPORT_SCALE, (H - CUT_ROWS) * EXPORT_SCALE])
+
+    def test_other_format_is_measured_on_the_export(self):
+        s, an = self.analyze(fmt="6x6")
+        self.assertFalse(os.path.exists(s.path("detect")))
+        self.assertFalse(any("RAW" in line for line in an.log), list(an.log))
 
     def test_without_rawpy_the_export_is_measured(self):
         s, an = self.analyze(available=False)

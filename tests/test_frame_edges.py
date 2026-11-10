@@ -158,6 +158,20 @@ class RollTest(_Rolls):
         for r, (x, y) in zip(res, OFFSETS):
             self.assertBox(r, x, y, FRAME_W, FRAME_H)
 
+    def test_roll_not_inverted_is_found_too(self):
+        # nicht invertierte Negative: Filmrand hell, Bild dunkler
+        res, _ = self.detect([255 - scan(x, y, i) for i, (x, y) in enumerate(OFFSETS)])
+        for r, (x, y) in zip(res, OFFSETS):
+            self.assertBox(r, x, y, FRAME_W, FRAME_H)
+
+    def test_roll_with_impossible_scale_does_not_stop_the_others(self):
+        # Takt doppelt so gross wie wahr: kein Rahmen passt mehr in die Datei
+        good = self.write([scan(x, y, i) for i, (x, y) in enumerate(OFFSETS)], "gut")
+        bad = self.write([scan(x, y, i) for i, (x, y) in enumerate(OFFSETS)], "falsch")
+        found = fe.detect({"gut": (good, PITCH_FRAC), "falsch": (bad, 2 * PITCH_FRAC)})
+        self.assertEqual(sorted(found), ["gut"])
+        self.assertBox(found["gut"][0][0], *OFFSETS[0], FRAME_W, FRAME_H)
+
     def test_unreadable_file_does_not_stop_the_roll(self):
         paths = self.write([scan(x, y, i) for i, (x, y) in enumerate(OFFSETS)])
         broken = os.path.join(self.tmp, "Rolle", "kaputt.png")

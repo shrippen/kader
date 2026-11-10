@@ -49,16 +49,22 @@ FREE_COST = 0.01             # ... und zahlt dafuer je px
 FREE_MIN = 0.4               # ... wenn beide Kanten mindestens so deutlich sind
 STRONG = 0.3                 # Kante gilt als gesehen
 WEAK = 0.2                   # darunter traegt eine Kante die Lage nicht
+POLARITY_SAMPLE = 8          # Bilder je Rolle, an denen die Polung entschieden wird
+POLARITY_LEAD = 2.0          # so viel staerker muss die umgekehrte Polung sein, sonst bleibt es beim Bild, wie es ist
+POLARITY_MIN = 0.5           # und mindestens diese Evidenz haben (Summe beider Achsen); verschleierte Rolle: 0,27 gegen 0,17
 ROLL_MIN_N = 3               # Bilder mit gesehenen Kanten, ab denen die Rolle eine Lage vorgibt
 
 
-def load(path):
+def load(path, invert=False):
     """Graubild fuer die Messung. -> (gamma, tr, scale, (breite, hoehe) der Datei)
 
-    tr: Datei ist hochkant und wurde gestuerzt. scale: Datei-px je Arbeits-px."""
+    tr: Datei ist hochkant und wurde gestuerzt. scale: Datei-px je Arbeits-px. invert: Bild umkehren (nicht
+    invertiertes Negativ: der Filmrand ist dort heller als das Bild, gemessen wird der Sprung ins Helle)."""
     gray = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
     if gray is None:
         raise FileNotFoundError(f"Bild konnte nicht geladen werden: {path}")
+    if invert:
+        gray = 255 - gray
     size = (gray.shape[1], gray.shape[0])
     shrink = LONG / max(gray.shape)
     if shrink < 1:
@@ -176,12 +182,12 @@ def _curves(ev, ws, hs):
 
 def measure(item):
     """Erster Durchlauf fuer ein Bild: Kantenevidenz aus der Bildmitte und ihre Paar-Kurven.
-    item = (path, pitch_frac oder None)."""
-    path, pitch_frac = item
-    gray, tr, scale, size = load(path)
+    item = (path, pitch_frac oder None, invert)."""
+    path, pitch_frac, invert = item
+    gray, tr, scale, size = load(path, invert)
     h, w = gray.shape
     lo, hi = CENTER_BAND
-    out = {"path": path, "tr": tr, "scale": scale, "size": size, "h": h, "w": w}
+    out = {"path": path, "tr": tr, "scale": scale, "size": size, "h": h, "w": w, "invert": invert}
     out.update(_both_axes(gray, (h * lo, h * hi), (w * lo, w * hi)))
     out.update(_curves(out, *_size_ranges(w, h, pitch_frac * w / PITCH_MM if pitch_frac else None)))
     return out
@@ -189,9 +195,9 @@ def measure(item):
 
 def remeasure(item):
     """Zweiter Durchlauf: Kantenevidenz ueber die volle Laenge der Kanten des vorlaeufigen Rahmens, Paar-Kurven
-    um die vorlaeufige Rollengroesse. item = (path, x0, x1, y0, y1, W, H)."""
-    path, x0, x1, y0, y1, W, H = item
-    gray = load(path)[0]
+    um die vorlaeufige Rollengroesse. item = (path, x0, x1, y0, y1, W, H, invert)."""
+    path, x0, x1, y0, y1, W, H, invert = item
+    gray = load(path, invert)[0]
     h, w = gray.shape
     m = EDGE_MARGIN
     out = _both_axes(gray, (y0 + m, y1 - m), (x0 + m, x1 - m))
@@ -215,6 +221,8 @@ def roll_size(items, mm_px, only=None):
     only: Formatname, wenn das Format schon feststeht (Feinsuche).
     -> {"W", "H", "score_w", "score_h", "format"} oder None."""
     ws, hs = items[0]["ws"], items[0]["hs"]
+    if not len(ws) or not len(hs):      # der Massstab laesst keinen Rahmen zu, der in die Datei passt
+        return None
     cw, ch = _roll_curve(items, "cw"), _roll_curve(items, "ch")
 
     best = {}
@@ -388,16 +396,43 @@ def _finish_roll(items, mm_px):
     return [_result(it) for it in items], info
 
 
-def detect(rolls, pool_map=map):
+def _sample_score(items, pitch):
+    """Kantenevidenz einer Stichprobe: Summe beider Achsen der groessten Gruppe gleicher Arbeitsgroesse."""
+    shapes = {}
+    for it in items:
+        shapes.setdefault((it["w"], it["h"]), []).append(it)
+    if not shapes:
+        return 0.0
+    (w, _), group = max(shapes.items(), key=lambda kv: len(kv[1]))
+    roll = roll_size(group, pitch * w / PITCH_MM if pitch else None)
+    return roll["score_w"] + roll["score_h"] if roll else 0.0
+
+
+def detect(rolls, pool_map=map, sample_map=None):
     """Rahmen aller Bilder mehrerer Rollen.
 
     rolls: {name: (pfade, pitch_frac)}; pitch_frac = Perforationstakt relativ zur langen Bildkante (film_scale), wenn
     er als Massstab gilt, sonst None. pool_map(fn, items): verteilt die Arbeit je Bild (Standard: nacheinander).
+    sample_map: dasselbe fuer die Stichprobe zur Polung (Standard: pool_map); so zaehlt ein Aufrufer, der in
+    pool_map den Fortschritt zaehlt, jedes Bild genau zweimal.
     -> {name: (ergebnisse je Bild, rolleninfo)}; Rollen ohne lesbares Bild oder ohne Loesung fehlen.
 
     Bilder einer Rolle mit anderer Arbeitsgroesse (anderer Export) bilden eine eigene Gruppe mit eigener
     Rahmengroesse; die Rolleninfo stammt von der groessten Gruppe."""
-    jobs = [(name, (p, pitch)) for name, (paths, pitch) in rolls.items() for p in paths]
+    # Polung je Rolle: beide an einer Stichprobe messen, die mit der staerkeren Kantenevidenz gilt
+    sample = [(name, (p, pitch, inv)) for name, (paths, pitch) in rolls.items()
+              for p in paths[::max(1, len(paths) // POLARITY_SAMPLE)][:POLARITY_SAMPLE] for inv in (False, True)]
+    measured = {}
+    for (name, job), it in zip(sample, (sample_map or pool_map)(_measure_safe, [j[1] for j in sample])):
+        if it:
+            measured[(job[0], job[2])] = it
+    invert = {}
+    for name, (paths, pitch) in rolls.items():
+        score = {inv: _sample_score([measured[(p, inv)] for p in paths if (p, inv) in measured], pitch)
+                 for inv in (False, True)}
+        invert[name] = score[True] >= POLARITY_MIN and score[True] > POLARITY_LEAD * score[False]
+
+    jobs = [(name, (p, pitch, invert[name])) for name, (paths, pitch) in rolls.items() for p in paths]
     groups = {}             # (rolle, arbeitsgroesse) -> bilder: gemeinsam gemessen wird nur bei gleichem Raster
     for (name, _), it in zip(jobs, pool_map(_measure_safe, [j[1] for j in jobs])):
         if it:
@@ -415,7 +450,7 @@ def detect(rolls, pool_map=map):
             _, x0, ws = best_pos(it["xr"], it["xf"], roll["W"], free=0)
             _, y0, hs = best_pos(it["yr"], it["yf"], roll["H"], free=0)
             it["roll"] = roll
-            second.append((it, (it["path"], x0, x0 + ws, y0, y0 + hs, roll["W"], roll["H"])))
+            second.append((it, (it["path"], x0, x0 + ws, y0, y0 + hs, roll["W"], roll["H"], it["invert"])))
 
     for (it, _), ev in zip(second, pool_map(remeasure, [s[1] for s in second])):
         it.update(ev)

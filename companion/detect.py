@@ -315,7 +315,8 @@ class Analyzer:
     def _batch(self, paths, fmt, units):
         """``compute_batch`` ueber die Erkennungsbilder; Ergebnisse in Pixeln des Exports. -> (batch, {id: ergebnis})"""
         s = self.session
-        raw = self._raw_detect_paths(paths)
+        # nur Kleinbild: dort ist das Erkennungsbild gemessen, andere Formate laufen wie bisher ueber den Export
+        raw = self._raw_detect_paths(paths) if fmt == _acn().EDGES_FORMAT else {}
         used = {raw[p][0] if p in raw else p: p for p in paths}     # Erkennungsbild -> Export
         self._stage("detect", 0, units)
         batch = _acn().compute_batch(list(used), s.state["settings"]["t_yellow"], False, fmt, report=self.report)
