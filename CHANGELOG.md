@@ -2,6 +2,30 @@
 
 ## [Unreleased]
 
+## [0.5.1] — 2026-11-10
+
+### English
+
+The reasons behind a crop now follow the language of the page.
+
+#### Fixed
+
+- In the English web UI the editor listed the reasons behind a crop in German. The detection now hands them over as
+  keys, and the editor shows them in English or German. Sessions from 0.5.0 keep their German reasons until their
+  pictures are detected again.
+
+All changes: https://github.com/shrippen/kader/compare/v0.5.0...v0.5.1
+
+### Deutsch
+
+Die Gründe zu einem Crop folgen jetzt der Sprache der Seite.
+
+#### Behoben
+
+- In der englischen Web-Oberfläche standen die Gründe zu einem Crop im Editor auf Deutsch. Die Erkennung übergibt
+  sie jetzt als Schlüssel, und der Editor zeigt sie auf Englisch oder Deutsch. Sitzungen aus 0.5.0 behalten ihre
+  deutschen Gründe, bis ihre Bilder neu erkannt werden.
+
 ## [0.5.0] — 2026-11-10
 
 ### English
