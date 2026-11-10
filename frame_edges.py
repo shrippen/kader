@@ -428,6 +428,9 @@ def detect(rolls, pool_map=map, progress=lambda: None):
     for (name, job), it in zip(sample, pool_map(_measure_safe, [j[1] for j in sample])):
         if it:
             measured[(job[0], job[2])] = it
+        if job[2]:                      # ein Schritt je Bild der Stichprobe, nach seiner zweiten Polung
+            progress()
+    sampled = {job[0] for _, job in sample}
     invert = {}
     for name, (paths, pitch) in rolls.items():
         score = {inv: _sample_score([measured[(p, inv)] for p in paths if (p, inv) in measured], pitch)
@@ -439,9 +442,10 @@ def detect(rolls, pool_map=map, progress=lambda: None):
     for (name, job), it in zip(todo, pool_map(_measure_safe, [j[1] for j in todo])):
         if it:
             measured[(job[0], job[2])] = it
+        if job[0] not in sampled:
+            progress()
     groups = {}             # (rolle, arbeitsgroesse) -> bilder: gemeinsam gemessen wird nur bei gleichem Raster
     for name, job in jobs:
-        progress()
         it = measured.get((job[0], job[2]))
         if it:
             groups.setdefault((name, it["w"], it["h"]), []).append(it)

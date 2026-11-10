@@ -179,6 +179,18 @@ class RollTest(_Rolls):
         found = fe.detect({"gut": (good, PITCH_FRAC), "falsch": (bad, 1.22 * PITCH_FRAC)})
         self.assertEqual(sorted(found), ["gut"])
 
+    def test_progress_follows_the_measurements(self):
+        paths = self.write([scan(x, y, i) for i, (x, y) in enumerate(OFFSETS)])
+        events = []
+
+        def pool_map(fn, items):
+            for it in items:
+                events.append("ergebnis")
+                yield fn(it)
+        fe.detect({"Rolle": (paths, PITCH_FRAC)}, pool_map, lambda: events.append("schritt"))
+        self.assertEqual(events.count("schritt"), 2 * len(paths))
+        self.assertLess(events.index("schritt"), 3)         # nicht erst, wenn alle gemessen sind
+
     def test_unreadable_file_does_not_stop_the_roll(self):
         paths = self.write([scan(x, y, i) for i, (x, y) in enumerate(OFFSETS)])
         broken = os.path.join(self.tmp, "Rolle", "kaputt.png")
