@@ -130,7 +130,7 @@ def _candidates_worker(item):
 
 
 DETECT_DIR = "detect"
-RAW_KINDS = {"neg": "Negativ", "pos": "Dia"}
+RAW_KINDS = {"neg": "negative", "pos": "slide"}     # term_<name> in i18n.js
 BOX_KEYS = (("x", 0), ("y", 1), ("width", 0), ("height", 1))
 
 
@@ -143,7 +143,7 @@ def _to_export(r, export, kind):
             r[key] = int(round(r[key] * scale[axis]))
     r["_img_w"], r["_img_h"] = size
     r["input_file"] = export
-    r.setdefault("reasons", []).append(f"Erkennung auf dem RAW ({kind})")
+    r.setdefault("reasons", []).append(_acn().reason("raw_image", _acn().term(kind)))
 
 
 def _pool_map(fn, items):
@@ -307,7 +307,7 @@ class Analyzer:
             if pol is None:
                 self.report(f"RAW-Erkennungsbild fuer {name} nicht moeglich, nutze den Export")
                 continue
-            self.report(f"Erkennung auf dem RAW: {name} als {RAW_KINDS[pol]}, {len(items)} von {len(rolls[folder])} Bildern")
+            self.report(f"Erkennung auf dem RAW: {name} ({pol}), {len(items)} von {len(rolls[folder])} Bildern")
             for export, _, base in items:
                 out[export] = (os.path.abspath(rawdetect.path_for(base, pol)), pol)
         return out

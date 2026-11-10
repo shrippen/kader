@@ -116,6 +116,11 @@ class RollTest(_Rolls):
         res, info = self.detect(images)
         self.assertAlmostEqual(info["W"], FRAME_W, delta=TOL_PX)
         self.assertBox(res[1], *OFFSETS[1], small, FRAME_H)
+        self.assertLess(res[1]["size_dev"][0], -fe.SIZE_SLACK)       # die Breite weicht ab
+        portrait = [np.ascontiguousarray(np.rot90(g, k=-1)) for g in images]
+        dev = self.detect(portrait)[0][1]["size_dev"]
+        self.assertLess(dev[1], -fe.SIZE_SLACK)                      # in der Hochkant-Datei die Hoehe
+        self.assertLessEqual(abs(dev[0]), fe.SIZE_SLACK)
 
     def test_frame_running_past_the_file_ends_at_the_border(self):
         # Scan ohne Perforation, Rahmen oben und unten angeschnitten: der Crop endet am Dateirand
@@ -147,6 +152,19 @@ class RollTest(_Rolls):
         self.assertBox(res[0], IMG_H - y - FRAME_H, x, FRAME_H, FRAME_W)
         self.assertEqual(min(range(4), key=lambda i: res[0]["edges"][i]), 1)       # links, oben, rechts, unten
         self.assertEqual((res[0]["img_w"], res[0]["img_h"]), (IMG_H, IMG_W))
+
+    def test_axis_from_roll_is_named_in_file_orientation(self):
+        # linkes und rechtes Fuenftel des Rahmens so dunkel wie der Filmrand: links/rechts kommt aus der Rolle
+        def dark_sides(i, x, y):
+            g = scan(x, y, i)
+            band = FRAME_W // 5
+            g[y:y + FRAME_H, x:x + band] = REBATE
+            g[y:y + FRAME_H, x + FRAME_W - band:x + FRAME_W] = REBATE
+            return g
+        images = [dark_sides(i, x, y) if i == 2 else scan(x, y, i) for i, (x, y) in enumerate(OFFSETS)]
+        self.assertEqual(self.detect(images)[0][2]["from_roll"], ["x"])
+        portrait = [np.ascontiguousarray(np.rot90(g, k=-1)) for g in images]
+        self.assertEqual(self.detect(portrait)[0][2]["from_roll"], ["y"])     # in der Datei oben und unten
 
     def test_picture_of_another_size_keeps_its_result(self):
         # ein Export mit anderer Hoehe (etwa nach einer Drehung im RAW-Entwickler) darf die Rolle nicht kippen

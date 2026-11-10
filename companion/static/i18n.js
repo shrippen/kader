@@ -77,6 +77,29 @@ const D = {
     cp_size_agree: 'Size agreement', cp_edge_score: 'Edge clarity', cp_film_trust: 'Film trust', cp_exposure_factor: 'Exposure cap', cp_roll_factor: 'Roll reliability',
     cp_weakest: 'weakest factor', cp_none: 'No factors available (analysis from an older run).',
     method: 'Method', why: 'Why?', reasons: 'Reasons',
+    reason_dims_invalid: 'Invalid size',
+    reason_aspect_perfect: 'Aspect ratio exact ({0} for {1}, {2})', reason_aspect_ok: 'Aspect ratio close ({0} for {1}, {2})',
+    reason_aspect_off: 'Aspect ratio off ({0} instead of {1}, {2})', reason_aspect_bad: 'Aspect ratio wrong ({0} instead of {1}, {2})',
+    reason_area_good: 'Area fits ({0} % of the picture)', reason_area_full: 'Area fills the picture ({0} %), aspect ratio fits',
+    reason_area_small: 'Area small ({0} %)', reason_area_ok: 'Area acceptable ({0} %)', reason_area_odd: 'Area unusual ({0} %)',
+    reason_margin_ok: 'Distance from the file border fine', reason_margin_small: 'Close to the file border, aspect ratio fits',
+    reason_margin_tiny: 'Very close to the file border', reason_method: 'Method: {0}', reason_strategies_agree: '{0} strategies agree',
+    reason_no_candidate: 'No candidate found, the picture is not cropped.',
+    reason_refined: 'Refined: {0} % of the film strip left out (holes, borders)',
+    reason_roll_unsure: 'Roll uncertain (×{0})', reason_roll_spread: 'Frame sizes of the roll scatter (trust {0})',
+    reason_roll_clamp: 'Roll size had to be adjusted by {0} %', reason_roll_aspect: 'Aspect ratio differs by {0} % from the measured one',
+    reason_roll_vague: 'Several weak hints',
+    reason_low_contrast: 'Low contrast or underexposed (contrast {0}), confidence capped (×{1})',
+    reason_consensus: 'Roll consensus {0}×{1} px (n={2}, MAD {3}/{4})',
+    reason_roll_frame: 'Frame of the roll {0}×{1} px, n={2}', reason_roll_frame_mm: 'Frame of the roll {0}×{1} px ({2} × {3} mm), n={4}',
+    reason_edge_weakest: 'Weakest edge: {0} ({1})',
+    reason_from_roll_x: 'No left or right edge visible, position taken from the roll',
+    reason_from_roll_y: 'No top or bottom edge visible, position taken from the roll',
+    reason_frame_dev: 'Frame differs from the roll ({0} × {1} px at 2000 px), both edges clear',
+    reason_raw_image: 'Detected on the RAW file ({0})',
+    reason_film_consistency: 'Moved to the roll: differed by {0} %',
+    term_landscape: 'landscape', term_portrait: 'portrait', term_unknown: 'unknown', term_negative: 'negative', term_slide: 'slide',
+    term_side_left: 'left', term_side_top: 'top', term_side_right: 'right', term_side_bottom: 'bottom',
     candidates: 'Candidates', candidates_load: 'Load candidates', none_found: 'None',
     group: 'Group', decision: 'Decision', reset_crop: 'Reset correction', roll_size: 'Size to whole roll', manual: 'corrected',
     lock_ratio: 'Aspect', ratio_free: 'Free', ratio_film: 'Film', ratio_image: 'Image',
@@ -229,6 +252,29 @@ const D = {
     cp_size_agree: 'Größenübereinstimmung', cp_edge_score: 'Kantenklarheit', cp_film_trust: 'Film-Vertrauen', cp_exposure_factor: 'Belichtungs-Deckel', cp_roll_factor: 'Rollen-Verlässlichkeit',
     cp_weakest: 'schwächster Faktor', cp_none: 'Keine Faktoren vorhanden (Analyse aus einem älteren Lauf).',
     method: 'Methode', why: 'Warum?', reasons: 'Gründe',
+    reason_dims_invalid: 'Ungültige Größe',
+    reason_aspect_perfect: 'Seitenverhältnis genau ({0} für {1}, {2})', reason_aspect_ok: 'Seitenverhältnis nah ({0} für {1}, {2})',
+    reason_aspect_off: 'Seitenverhältnis abweichend ({0} statt {1}, {2})', reason_aspect_bad: 'Seitenverhältnis falsch ({0} statt {1}, {2})',
+    reason_area_good: 'Fläche passt ({0} % des Bildes)', reason_area_full: 'Fläche füllt das Bild ({0} %), Seitenverhältnis passt',
+    reason_area_small: 'Fläche klein ({0} %)', reason_area_ok: 'Fläche annehmbar ({0} %)', reason_area_odd: 'Fläche ungewöhnlich ({0} %)',
+    reason_margin_ok: 'Abstand zum Dateirand in Ordnung', reason_margin_small: 'Nah am Dateirand, Seitenverhältnis passt',
+    reason_margin_tiny: 'Sehr nah am Dateirand', reason_method: 'Methode: {0}', reason_strategies_agree: '{0} Strategien stimmen überein',
+    reason_no_candidate: 'Kein Kandidat gefunden, das Bild wird nicht beschnitten.',
+    reason_refined: 'Verfeinert: {0} % des Filmstreifens ausgelassen (Löcher, Ränder)',
+    reason_roll_unsure: 'Rolle unsicher (×{0})', reason_roll_spread: 'Rahmengrößen der Rolle streuen (Vertrauen {0})',
+    reason_roll_clamp: 'Rollengröße musste um {0} % angeglichen werden', reason_roll_aspect: 'Seitenverhältnis weicht um {0} % vom gemessenen ab',
+    reason_roll_vague: 'Mehrere schwache Hinweise',
+    reason_low_contrast: 'Kontrastarm oder unterbelichtet (Kontrast {0}), Konfidenz gedeckelt (×{1})',
+    reason_consensus: 'Konsens der Rolle {0}×{1} px (n={2}, MAD {3}/{4})',
+    reason_roll_frame: 'Rahmen der Rolle {0}×{1} px, n={2}', reason_roll_frame_mm: 'Rahmen der Rolle {0}×{1} px ({2} × {3} mm), n={4}',
+    reason_edge_weakest: 'Schwächste Kante: {0} ({1})',
+    reason_from_roll_x: 'Keine Kante links oder rechts zu sehen, Lage aus der Rolle übernommen',
+    reason_from_roll_y: 'Keine Kante oben oder unten zu sehen, Lage aus der Rolle übernommen',
+    reason_frame_dev: 'Rahmen weicht von der Rolle ab ({0} × {1} px bei 2000 px), beide Kanten klar',
+    reason_raw_image: 'Erkannt auf der RAW-Datei ({0})',
+    reason_film_consistency: 'An die Rolle angeglichen: wich um {0} % ab',
+    term_landscape: 'quer', term_portrait: 'hoch', term_unknown: 'unbekannt', term_negative: 'Negativ', term_slide: 'Dia',
+    term_side_left: 'links', term_side_top: 'oben', term_side_right: 'rechts', term_side_bottom: 'unten',
     candidates: 'Kandidaten', candidates_load: 'Kandidaten laden', none_found: 'Keine',
     group: 'Gruppe', decision: 'Entscheidung', reset_crop: 'Korrektur zurücknehmen', roll_size: 'Größe auf Rolle', manual: 'korrigiert',
     lock_ratio: 'Seitenverhältnis', ratio_free: 'Frei', ratio_film: 'Film', ratio_image: 'Bild',
@@ -316,6 +362,17 @@ export const T = (key, ...args) =>
   `<span lang="en">${esc(fmt(D.en[key] ?? key, args))}</span><span lang="de">${esc(fmt(D.de[key] ?? key, args))}</span>`;
 
 // Text in der aktuellen Sprache (fuer title/aria-label/Meldungen)
+// Ein Grund der Erkennung in beiden Sprachen: {key, args} mit Text reason_<key>; ein Argument {t} ist ein Begriff
+// (term_<t>). Gruende aus Sitzungen vor 0.5.1 sind fertiger deutscher Text und bleiben so.
+export const reasonHtml = (r) => {
+  if (typeof r === 'string') return esc(r);
+  const one = (lang) => {
+    const args = (r.args || []).map((a) => (a && typeof a === 'object' ? D[lang]['term_' + a.t] ?? a.t : a));
+    const text = D[lang]['reason_' + r.key];
+    return esc(text == null ? [r.key, ...args].join(' ') : fmt(text, args));
+  };
+  return `<span lang="en">${one('en')}</span><span lang="de">${one('de')}</span>`;
+};
 export const S = (key, ...args) => {
   const lang = document.documentElement.lang === 'de' ? 'de' : 'en';
   return fmt(D[lang][key] ?? key, args);

@@ -1,6 +1,6 @@
 // Detailansicht mit Crop-Editor: Ziehgriffe, Seitenverhaeltnis-Sperre, Kandidaten, Filmstreifen.
 import { api, thumbUrl } from './api.js';
-import { T, S, esc } from './i18n.js';
+import { T, S, esc, reasonHtml } from './i18n.js';
 import { store, byId, isEditable, galleryOrder } from './store.js';
 import { guard, toast } from './ui.js';
 
@@ -271,7 +271,7 @@ function renderSide() {
   const locked = !isEditable();
   const grp = (g) => `<button type="button" data-group="${g}" aria-pressed="${img.group === g}"${locked ? ' disabled' : ''}>${T(g)}</button>`;
   const dec = (d, k) => `<button type="button" data-decision="${d}" aria-pressed="${(img.decision || '') === d}"${locked ? ' disabled' : ''}>${T(k)}</button>`;
-  const reasons = (img.reasons || []).map((r) => `<li>${esc(r)}</li>`).join('');
+  const reasons = (img.reasons || []).map((r) => `<li>${reasonHtml(r)}</li>`).join('');
   const prop = img.proposal;
   el().querySelector('#ed-side').innerHTML = `
     <div>
