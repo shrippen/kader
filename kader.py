@@ -553,13 +553,32 @@ def measure_crop_evidence(gray: np.ndarray, x: int, y: int,
     }
 
 
+def reason(key, *args):
+    """Ein Grund fuer die Oberflaeche: Schluessel (Text in companion/static/i18n.js als reason_<key>, Platzhalter
+    {0}, {1} ...) und Argumente. Zahlen kommen fertig formatiert, Begriffe als term(), die die Oberflaeche
+    uebersetzt (term_<name>)."""
+    return {"key": key, "args": [a if isinstance(a, dict) else str(a) for a in args]}
+
+
+def term(name):
+    return {"t": name}
+
+
+def reason_text(r):
+    """Kurzform eines Grunds fuer Terminal und Debug-Ausgabe (ohne Uebersetzung)."""
+    if isinstance(r, str):
+        return r
+    args = [a["t"] if isinstance(a, dict) else a for a in r.get("args", [])]
+    return " ".join([r["key"], *args])
+
+
 def score_candidate(candidate: dict, img_h: int, img_w: int,
                      target_ratio: float,
                      no_aspect_penalty: bool = False) -> dict:
     x, y = candidate["x"], candidate["y"]
     rw, rh = candidate["width"], candidate["height"]
     if rw <= 0 or rh <= 0:
-        return {**candidate, "confidence": 0.0, "reasons": ["Ungültige Dimensionen"]}
+        return {**candidate, "confidence": 0.0, "reasons": [reason("dims_invalid")]}
 
     img_area = img_h * img_w
     rect_area = rw * rh
@@ -583,19 +602,20 @@ def score_candidate(candidate: dict, img_h: int, img_w: int,
         aspect_diff = diff_portrait
         orientation = "Portrait"
 
+    orient = term("portrait") if orientation == "Portrait" else term("landscape")
     if no_aspect_penalty:
         aspect_diff = 0.0  # Aspect-Strafe fuer Film-Analyse deaktivieren
 
     if aspect_diff < 0.05:
-        reasons.append(f"Seitenverhältnis perfekt ({aspect:.2f} ~ {target_ratio:.2f} {orientation})")
+        reasons.append(reason("aspect_perfect", f"{aspect:.2f}", f"{target_ratio:.2f}", orient))
     elif aspect_diff < 0.15:
-        reasons.append(f"Seitenverhältnis ok ({aspect:.2f} ~ {target_ratio:.2f} {orientation})")
+        reasons.append(reason("aspect_ok", f"{aspect:.2f}", f"{target_ratio:.2f}", orient))
         score *= 0.90
     elif aspect_diff < 0.30:
-        reasons.append(f"Seitenverhältnis abweichend ({aspect:.2f} vs {target_ratio:.2f} {orientation})")
+        reasons.append(reason("aspect_off", f"{aspect:.2f}", f"{target_ratio:.2f}", orient))
         score *= 0.65
     else:
-        reasons.append(f"Seitenverhältnis schlecht ({aspect:.2f} vs {target_ratio:.2f} {orientation})")
+        reasons.append(reason("aspect_bad", f"{aspect:.2f}", f"{target_ratio:.2f}", orient))
         score *= 0.3
 
     # Fläche – bei sehr gutem Seitenverhältnis großzügiger bewerten
@@ -603,37 +623,37 @@ def score_candidate(candidate: dict, img_h: int, img_w: int,
     if aspect_diff < 0.10:
         # Sehr gutes Seitenverhältnis → volle Fläche ist OK
         if 0.20 < area_frac < 0.99:
-            reasons.append(f"Fläche gut ({area_frac:.0%} des Bildes)")
+            reasons.append(reason("area_good", f"{area_frac * 100:.0f}"))
         elif area_frac >= 0.99:
-            reasons.append(f"Fläche voll ({area_frac:.0%} – aber Verhältnis passt)")
+            reasons.append(reason("area_full", f"{area_frac * 100:.0f}"))
             score *= 0.85
         else:
-            reasons.append(f"Fläche klein ({area_frac:.0%})")
+            reasons.append(reason("area_small", f"{area_frac * 100:.0f}"))
             score *= 0.75
     else:
         if 0.30 < area_frac < 0.92:
-            reasons.append(f"Fläche gut ({area_frac:.0%} des Bildes)")
+            reasons.append(reason("area_good", f"{area_frac * 100:.0f}"))
         elif 0.15 < area_frac < 0.95:
-            reasons.append(f"Fläche akzeptabel ({area_frac:.0%})")
+            reasons.append(reason("area_ok", f"{area_frac * 100:.0f}"))
             score *= 0.75
         else:
-            reasons.append(f"Fläche ungewöhnlich ({area_frac:.0%})")
+            reasons.append(reason("area_odd", f"{area_frac * 100:.0f}"))
             score *= 0.4
 
     # Rand-Check
     margin_x = min(x, img_w - (x + rw))
     margin_y = min(y, img_h - (y + rh))
     if margin_x > img_w * 0.01 and margin_y > img_h * 0.01:
-        reasons.append("Randabstand OK")
+        reasons.append(reason("margin_ok"))
     elif aspect_diff < 0.10 and area_frac > 0.90:
         # Gutes Verhältnis + große Fläche → kleiner Rand ist normal
-        reasons.append("Randabstand klein (aber Verhältnis passt)")
+        reasons.append(reason("margin_small"))
         score *= 0.90
     else:
-        reasons.append("Randabstand sehr klein")
+        reasons.append(reason("margin_tiny"))
         score *= 0.8
 
-    reasons.append(f"Methode: {candidate['method']}")
+    reasons.append(reason("method", candidate["method"]))
 
     geom = round(min(1.0, max(0.0, score)), 3)
     return {
@@ -884,8 +904,7 @@ def merge_nearby_candidates(candidates: list[dict], tolerance: float = 30) -> li
 
         best = group[0]
         if len(group) > 1:
-            best["reasons"].append(
-                f"{len(group)} Strategien stimmen überein")
+            best["reasons"].append(reason("strategies_agree", len(group)))
         merged.append(best)
     return merged
 
@@ -913,7 +932,7 @@ def find_best_crop(gray: np.ndarray, target_ratio: float = 1.5,
         return {
             "x": 0, "y": 0, "width": w, "height": h,
             "confidence": 0.0,
-            "reasons": ["Kein Kandidat gefunden – Bild wird nicht beschnitten."],
+            "reasons": [reason("no_candidate")],
             "method": "none",
         }
 
@@ -979,7 +998,7 @@ def find_best_crop(gray: np.ndarray, target_ratio: float = 1.5,
               f"{best['width']}x{best['height']} conf={best['confidence']:.3f}",
               file=sys.stderr)
         for r in best["reasons"]:
-            print(f"    - {r}", file=sys.stderr)
+            print(f"    - {reason_text(r)}", file=sys.stderr)
 
     # ─── Stufe 2: Verfeinerung zur tatsächlichen Bilddfläche ───
     if not skip_refine:
@@ -1000,9 +1019,7 @@ def find_best_crop(gray: np.ndarray, target_ratio: float = 1.5,
             best["height"] = rh
             best["area"] = float(rw * rh)
             best["orientation"] = "Portrait" if rw < rh else "Landscape"
-            best["reasons"].append(
-                f"Stufe 2: {removed_pct:.0f}% des Filmstreifens "
-                f"ausgeschlossen (Sprossenlöcher/Ränder)")
+            best["reasons"].append(reason("refined", f"{removed_pct:.0f}"))
             # Evidenz fuer verfeinertes Ergebnis neu berechnen
             ev2 = measure_crop_evidence(
                 gray, best["x"], best["y"], best["width"], best["height"])
@@ -1017,7 +1034,7 @@ def find_best_crop(gray: np.ndarray, target_ratio: float = 1.5,
               f"{best['width']}x{best['height']} conf={best['confidence']:.3f}",
               file=sys.stderr)
         for r in best["reasons"]:
-            print(f"    - {r}", file=sys.stderr)
+            print(f"    - {reason_text(r)}", file=sys.stderr)
 
     return best
 
@@ -1908,22 +1925,19 @@ def apply_film_consensus(results, load_paths, report=None, film_scales=None):
         if roll_factor < 1.0:
             weak = []
             if p["film_trust"] < ROLL_TRUST[1]:
-                weak.append(f"Groessen der Rolle streuen (Vertrauen {p['film_trust']:.2f})")
+                weak.append(reason("roll_spread", f"{p['film_trust']:.2f}"))
             if clamp > ROLL_CLAMP[0]:
-                weak.append(f"Rollengroesse musste um {clamp * 100:.0f} % angeglichen werden")
+                weak.append(reason("roll_clamp", f"{clamp * 100:.0f}"))
             if aspect_dev > ROLL_ASPECT[0]:
-                weak.append(f"Seitenverhaeltnis weicht um {aspect_dev * 100:.0f} % vom gemessenen ab")
-            r.setdefault("reasons", []).append(
-                "Rolle unsicher (x%.2f): %s" % (roll_factor, "; ".join(weak) or "mehrere schwache Hinweise"))
+                weak.append(reason("roll_aspect", f"{aspect_dev * 100:.0f}"))
+            r.setdefault("reasons", []).extend(
+                [reason("roll_unsure", f"{roll_factor:.2f}")] + (weak or [reason("roll_vague")]))
         if exposure_factor < 1.0:
-            r.setdefault("reasons", []).append(
-                f"Kontrastarm/unterbelichtet (Kontrast "
-                f"{'n/a' if contrast is None else int(contrast)}) "
-                f"- Konfidenz gedeckelt (x{exposure_factor:.2f})")
+            r.setdefault("reasons", []).append(reason(
+                "low_contrast", term("unknown") if contrast is None else int(contrast), f"{exposure_factor:.2f}"))
         r["conf_formula"] = "size+edge*exposure*roll-v4"
-        r.setdefault("reasons", []).append(
-            f"Film-Konsens {int(long_px)}x{int(short_px)} "
-            f"(n={p['n']}, MAD {int(p['mad_long'])}/{int(p['mad_short'])})")
+        r.setdefault("reasons", []).append(reason(
+            "consensus", int(long_px), int(short_px), p["n"], int(p["mad_long"]), int(p["mad_short"])))
 
 
 # ─── Rahmenkanten je Rolle (frame_edges.py) ───────────────────────────────────
@@ -1937,7 +1951,7 @@ EDGES_MIN_ROLL = 0.3                # ohne Massstab: Rollen mit schwaecherer Evi
 EDGES_INSET = 0.005                 # Crop liegt um diesen Anteil der langen Rahmenkante innerhalb der Kante (9 px bei
                                     # 1820 px): die Handcrops liegen im Median 2 px weiter aussen, die darktable-Crops
                                     # 10 px weiter innen als die Kante; mit 9 px bleibt kein Filmrand im Crop
-EDGE_NAMES = ("links", "oben", "rechts", "unten")
+EDGE_SIDES = ("left", "top", "right", "bottom")      # Reihenfolge wie res["edges"]; Text: term_side_<name>
 EDGE_PARTS = ("edge_left", "edge_top", "edge_right", "edge_bottom")
 
 
@@ -1968,16 +1982,18 @@ def _edge_result(film, path, res, info):
     weakest = min(range(4), key=lambda i: edges[i])
     aspect = info["W"] / max(info["H"], 1)
 
-    size = f"Rahmen der Rolle {info['long_px']:.0f}x{info['short_px']:.0f} px"
+    px = (f"{info['long_px']:.0f}", f"{info['short_px']:.0f}")
     if info.get("long_mm"):
-        size += f" ({info['long_mm']:.1f} x {info['short_mm']:.1f} mm)"
-    reasons = [f"{size}, n={info['n']}",
-               f"Schwächste Kante: {EDGE_NAMES[weakest]} ({edges[weakest]:.2f})"]
-    if res["from_roll"]:
-        reasons.append("Keine Kante zu sehen, Lage aus der Rolle übernommen (" + ", ".join(res["from_roll"]) + ")")
+        size = reason("roll_frame_mm", *px, f"{info['long_mm']:.1f}", f"{info['short_mm']:.1f}", info["n"])
+    else:
+        size = reason("roll_frame", *px, info["n"])
+    reasons = [size, reason("edge_weakest", term("side_" + EDGE_SIDES[weakest]), f"{edges[weakest]:.2f}")]
+    if "x" in res["from_roll"]:
+        reasons.append(reason("from_roll_x"))
+    if "y" in res["from_roll"]:
+        reasons.append(reason("from_roll_y"))
     if max(abs(d) for d in res["size_dev"]) > frame_edges.SIZE_SLACK:
-        reasons.append("Rahmen weicht von der Rolle ab (%+d x %+d px bei 2000 px), beide Kanten klar"
-                       % tuple(res["size_dev"]))
+        reasons.append(reason("frame_dev", *(f"{d:+d}" for d in res["size_dev"])))
 
     return {
         "x": x, "y": y, "width": w, "height": h,

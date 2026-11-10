@@ -165,12 +165,12 @@ class AnalyzerTest(unittest.TestCase):
 
     def test_crop_from_density_image_fits_the_export(self):
         s, an = self.analyze()
-        self.assertTrue(any("als Dia" in line for line in an.log), list(an.log))
+        self.assertTrue(any("(pos)" in line for line in an.log), list(an.log))
         for img, (x, y) in zip(s.state["images"].values(), scans.OFFSETS):
             self.assertEqual(img["status"], "done", img.get("error"))
             self.assertEqual(img["export_size"], [W * EXPORT_SCALE, H * EXPORT_SCALE])
             det = img["detected"]
-            self.assertTrue(any("RAW" in r for r in det["reasons"]), det["reasons"])
+            self.assertTrue(any(r["key"] == "raw_image" for r in det["reasons"]), det["reasons"])
             want = [x / W, y / H, (x + scans.FRAME_W) / W, (y + scans.FRAME_H) / H]
             inset = [det["crop"][0] - want[0], det["crop"][1] - want[1], want[2] - det["crop"][2], want[3] - det["crop"][3]]
             for d in inset:                                # der Crop sitzt um den Einzug innerhalb des Rahmens
@@ -190,7 +190,7 @@ class AnalyzerTest(unittest.TestCase):
         s, an = self.analyze()
         imgs = sorted(s.state["images"].values(), key=lambda i: i["path"])
         self.assertEqual([i["status"] for i in imgs], ["done"] * len(imgs))
-        on_raw = [any("RAW" in r for r in i["detected"]["reasons"]) for i in imgs]
+        on_raw = [any(r["key"] == "raw_image" for r in i["detected"]["reasons"]) for i in imgs]
         self.assertEqual(on_raw, [False] + [True] * (len(imgs) - 1))
         self.assertEqual(imgs[0]["export_size"], [W * EXPORT_SCALE, (H - CUT_ROWS) * EXPORT_SCALE])
 
@@ -204,7 +204,7 @@ class AnalyzerTest(unittest.TestCase):
         self.assertFalse(os.path.exists(s.path("detect")))
         for img in s.state["images"].values():
             self.assertEqual(img["status"], "done", img.get("error"))
-            self.assertFalse(any("RAW" in r for r in img["detected"]["reasons"]))
+            self.assertFalse(any(r["key"] == "raw_image" for r in img["detected"]["reasons"]))
 
 
 if __name__ == "__main__":

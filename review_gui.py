@@ -19,6 +19,7 @@ from tkinter import ttk, messagebox
 from PIL import Image, ImageTk, ImageDraw
 
 from companion import kante_tokens as kante
+from kader import reason_text
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(PROJECT_DIR, "review_data")
@@ -512,7 +513,7 @@ class ReviewGUI:
         self.reasons.configure(state=tk.NORMAL)
         self.reasons.delete("1.0", tk.END)
         for reason in r.get("reasons", []):
-            self.reasons.insert(tk.END, f"  {reason}\n")
+            self.reasons.insert(tk.END, f"  {reason_text(reason)}\n")
         self.reasons.configure(state=tk.DISABLED)
         rev2 = self.reviews.get(self._key(r), {})
         if rev2.get("is_problem"):
