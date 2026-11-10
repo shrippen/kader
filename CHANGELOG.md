@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-11-10
+
 ### English
+
+The crop now sits on the frame: Kader measures the frame edges of a whole roll together, shows how sure each of the four edges is, and reads dark pictures from the RAW file.
 
 #### New
 
@@ -24,8 +28,8 @@
 - Dark pictures keep their edges when Kader gets the RAW files. A developed export can crush film border and
   picture into the same black; Kader now measures on its own image from the RAW, where the two are still apart, and
   tells negatives from slides by the roll. On three dark rolls all four edges are within about 1 % for 47 of 57
-  hand-made crops instead of 32. This applies to 35 mm film in the web UI and needs the Python package `rawpy`; without it the export is measured
-  as before.
+  hand-made crops instead of 32. This applies to 35 mm film in the web UI and needs the Python package `rawpy`;
+  without it the export is measured as before.
 - The editor shows the four edges as the factors of the confidence.
 - A roll is analysed about twice as fast again.
 
@@ -35,7 +39,11 @@
 - Kader no longer learns a preferred crop size from hand-set crops. The crop sits 0.5 % of the frame's long side
   inside the measured edge; a stored `convention.json` is no longer read.
 
+All changes: https://github.com/shrippen/kader/compare/v0.4.0...v0.5.0
+
 ### Deutsch
+
+Der Crop sitzt jetzt auf dem Rahmen: Kader misst die Rahmenkanten einer ganzen Rolle gemeinsam, zeigt für jede der vier Kanten, wie sicher sie ist, und liest dunkle Bilder aus dem RAW.
 
 #### Neu
 
@@ -58,8 +66,8 @@
 - Dunkle Bilder behalten ihre Kanten, wenn Kader die RAW-Dateien bekommt. Ein entwickelter Export kann Filmrand und
   Bild ins selbe Schwarz drücken; Kader misst jetzt auf einem eigenen Bild aus dem RAW, in dem beide noch getrennt
   sind, und unterscheidet Negativ und Dia an der Rolle. Auf drei dunklen Rollen liegen bei 47 von 57 Crops von Hand
-  alle vier Kanten auf etwa 1 % genau statt bei 32. Das gilt für Kleinbild in der Web-Oberfläche und braucht das Python-Paket `rawpy`;
-  ohne es wird wie bisher der Export gemessen.
+  alle vier Kanten auf etwa 1 % genau statt bei 32. Das gilt für Kleinbild in der Web-Oberfläche und braucht das
+  Python-Paket `rawpy`; ohne es wird wie bisher der Export gemessen.
 - Der Editor zeigt die vier Kanten als Faktoren der Konfidenz.
 - Eine Rolle wird noch einmal etwa doppelt so schnell analysiert.
 

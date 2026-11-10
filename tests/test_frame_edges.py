@@ -180,15 +180,21 @@ class RollTest(_Rolls):
         self.assertEqual(sorted(found), ["gut"])
 
     def test_progress_follows_the_measurements(self):
-        paths = self.write([scan(x, y, i) for i, (x, y) in enumerate(OFFSETS)])
+        # mehr Bilder als die Stichprobe zur Polung, dazu eine unlesbare Datei: jedes zaehlt zwei Schritte
+        offsets = OFFSETS + OFFSETS[:4]
+        paths = self.write([scan(x, y, i) for i, (x, y) in enumerate(offsets)])
+        self.assertGreater(len(paths), fe.POLARITY_SAMPLE)
+        broken = os.path.join(self.tmp, "Rolle", "kaputt.png")
+        with open(broken, "w") as f:
+            f.write("kein Bild")
         events = []
 
         def pool_map(fn, items):
             for it in items:
                 events.append("ergebnis")
                 yield fn(it)
-        fe.detect({"Rolle": (paths, PITCH_FRAC)}, pool_map, lambda: events.append("schritt"))
-        self.assertEqual(events.count("schritt"), 2 * len(paths))
+        fe.detect({"Rolle": (paths + [broken], PITCH_FRAC)}, pool_map, lambda: events.append("schritt"))
+        self.assertEqual(events.count("schritt"), 2 * (len(paths) + 1))
         self.assertLess(events.index("schritt"), 3)         # nicht erst, wenn alle gemessen sind
 
     def test_unreadable_file_does_not_stop_the_roll(self):

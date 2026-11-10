@@ -205,9 +205,10 @@ function confPartsHtml(img) {
   const keys = edges ? PARTS_EDGES : typeof cp.roll_factor === 'number' ? PARTS : PARTS_OLD;
   const vals = keys.filter((k) => typeof cp[k] === 'number');
   const min = Math.min(...vals.map((k) => cp[k]));
+  const weakest = vals.find((k) => cp[k] === min);    // bei Gleichstand nur einer
   const rows = vals.map((k) => {
     const v = cp[k];
-    const weak = v === min && vals.length > 1;
+    const weak = k === weakest && vals.length > 1;
     return `<div class="progress"><div class="progress-head"><span>${T('cp_' + k)}${weak ? ` · ${T('cp_weakest')}` : ''}</span><span>${v.toFixed(2)}</span></div>
       <div class="progress-bar"><i data-label="${v >= 0.7 ? 'green' : v >= 0.4 ? 'yellow' : 'red'}" style="--p:${Math.round(clamp(v) * 100)}%"></i></div></div>`;
   }).join('');
