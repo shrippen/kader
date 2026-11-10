@@ -116,6 +116,11 @@ class RollTest(_Rolls):
         res, info = self.detect(images)
         self.assertAlmostEqual(info["W"], FRAME_W, delta=TOL_PX)
         self.assertBox(res[1], *OFFSETS[1], small, FRAME_H)
+        self.assertLess(res[1]["size_dev"][0], -fe.SIZE_SLACK)       # die Breite weicht ab
+        portrait = [np.ascontiguousarray(np.rot90(g, k=-1)) for g in images]
+        dev = self.detect(portrait)[0][1]["size_dev"]
+        self.assertLess(dev[1], -fe.SIZE_SLACK)                      # in der Hochkant-Datei die Hoehe
+        self.assertLessEqual(abs(dev[0]), fe.SIZE_SLACK)
 
     def test_frame_running_past_the_file_ends_at_the_border(self):
         # Scan ohne Perforation, Rahmen oben und unten angeschnitten: der Crop endet am Dateirand
