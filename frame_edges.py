@@ -206,12 +206,15 @@ def remeasure(item):
     return out
 
 
+ROLL_KERNEL = np.bartlett(4 * STEP_HALF + 3)
+ROLL_KERNEL /= ROLL_KERNEL.sum()
+
+
 def _roll_curve(items, key):
     acc = np.sum([it[key] for it in items], axis=0) / len(items)
     # Um die wahre Groesse ist die Kurve so breit gleich hoch wie die Evidenz einer klaren Kante; das Dreieck legt
     # das Maximum in die Mitte dieser Breite statt an ihren Anfang
-    kernel = np.bartlett(4 * STEP_HALF + 3)
-    return np.convolve(acc, kernel / kernel.sum(), mode="same")
+    return np.convolve(acc, ROLL_KERNEL, mode="same")
 
 
 def roll_size(items, mm_px, only=None):
@@ -221,7 +224,7 @@ def roll_size(items, mm_px, only=None):
     only: Formatname, wenn das Format schon feststeht (Feinsuche).
     -> {"W", "H", "score_w", "score_h", "format"} oder None."""
     ws, hs = items[0]["ws"], items[0]["hs"]
-    if not len(ws) or not len(hs):      # der Massstab laesst keinen Rahmen zu, der in die Datei passt
+    if min(len(ws), len(hs)) < len(ROLL_KERNEL):    # der Massstab laesst (fast) keinen Rahmen zu, der in die Datei passt
         return None
     cw, ch = _roll_curve(items, "cw"), _roll_curve(items, "ch")
 
@@ -408,13 +411,12 @@ def _sample_score(items, pitch):
     return roll["score_w"] + roll["score_h"] if roll else 0.0
 
 
-def detect(rolls, pool_map=map, sample_map=None):
+def detect(rolls, pool_map=map, progress=lambda: None):
     """Rahmen aller Bilder mehrerer Rollen.
 
     rolls: {name: (pfade, pitch_frac)}; pitch_frac = Perforationstakt relativ zur langen Bildkante (film_scale), wenn
     er als Massstab gilt, sonst None. pool_map(fn, items): verteilt die Arbeit je Bild (Standard: nacheinander).
-    sample_map: dasselbe fuer die Stichprobe zur Polung (Standard: pool_map); so zaehlt ein Aufrufer, der in
-    pool_map den Fortschritt zaehlt, jedes Bild genau zweimal.
+    progress(): wird je Bild genau zweimal gerufen, nach jedem der zwei Durchlaeufe.
     -> {name: (ergebnisse je Bild, rolleninfo)}; Rollen ohne lesbares Bild oder ohne Loesung fehlen.
 
     Bilder einer Rolle mit anderer Arbeitsgroesse (anderer Export) bilden eine eigene Gruppe mit eigener
@@ -423,7 +425,7 @@ def detect(rolls, pool_map=map, sample_map=None):
     sample = [(name, (p, pitch, inv)) for name, (paths, pitch) in rolls.items()
               for p in paths[::max(1, len(paths) // POLARITY_SAMPLE)][:POLARITY_SAMPLE] for inv in (False, True)]
     measured = {}
-    for (name, job), it in zip(sample, (sample_map or pool_map)(_measure_safe, [j[1] for j in sample])):
+    for (name, job), it in zip(sample, pool_map(_measure_safe, [j[1] for j in sample])):
         if it:
             measured[(job[0], job[2])] = it
     invert = {}
@@ -433,8 +435,14 @@ def detect(rolls, pool_map=map, sample_map=None):
         invert[name] = score[True] >= POLARITY_MIN and score[True] > POLARITY_LEAD * score[False]
 
     jobs = [(name, (p, pitch, invert[name])) for name, (paths, pitch) in rolls.items() for p in paths]
+    todo = [j for j in jobs if (j[1][0], j[1][2]) not in measured]      # die Stichprobe ist schon gemessen
+    for (name, job), it in zip(todo, pool_map(_measure_safe, [j[1] for j in todo])):
+        if it:
+            measured[(job[0], job[2])] = it
     groups = {}             # (rolle, arbeitsgroesse) -> bilder: gemeinsam gemessen wird nur bei gleichem Raster
-    for (name, _), it in zip(jobs, pool_map(_measure_safe, [j[1] for j in jobs])):
+    for name, job in jobs:
+        progress()
+        it = measured.get((job[0], job[2]))
         if it:
             groups.setdefault((name, it["w"], it["h"]), []).append(it)
 
@@ -454,6 +462,7 @@ def detect(rolls, pool_map=map, sample_map=None):
 
     for (it, _), ev in zip(second, pool_map(remeasure, [s[1] for s in second])):
         it.update(ev)
+        progress()
 
     out = {}
     for name, (paths, _) in rolls.items():

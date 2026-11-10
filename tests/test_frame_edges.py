@@ -172,6 +172,13 @@ class RollTest(_Rolls):
         self.assertEqual(sorted(found), ["gut"])
         self.assertBox(found["gut"][0][0], *OFFSETS[0], FRAME_W, FRAME_H)
 
+    def test_roll_with_barely_fitting_scale_does_not_stop_the_others(self):
+        # Takt 1,22-fach: nur noch eine Handvoll Rahmengroessen passen in die Datei
+        good = self.write([scan(x, y, i) for i, (x, y) in enumerate(OFFSETS)], "gut")
+        bad = self.write([scan(x, y, i) for i, (x, y) in enumerate(OFFSETS)], "falsch")
+        found = fe.detect({"gut": (good, PITCH_FRAC), "falsch": (bad, 1.22 * PITCH_FRAC)})
+        self.assertEqual(sorted(found), ["gut"])
+
     def test_unreadable_file_does_not_stop_the_roll(self):
         paths = self.write([scan(x, y, i) for i, (x, y) in enumerate(OFFSETS)])
         broken = os.path.join(self.tmp, "Rolle", "kaputt.png")
