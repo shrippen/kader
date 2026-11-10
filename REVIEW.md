@@ -1,6 +1,6 @@
 # Review guide
 
-Every PR is reviewed before it is merged (rule in `agent.md`): by PR-Agent
+Every PR is reviewed before it is merged (rule in `RULES.md` and the skill `pr-review`): by PR-Agent
 (owner, 22.10.2026); a new Claude agent checks the **Wichtig** of earlier
 rounds, and reviews when PR-Agent fails. The
 reviewer knows nothing of the session that wrote the change: it gets the
@@ -35,7 +35,7 @@ matters is one that gives wrong crops or touches the user's files:
   results change.
 - Repeated code patterns (`agent.md`, "Gelernte Bugs"): a change that hit
   the wrong one of two similar blocks.
-- GUI rule: Kante as it is (`agent.md`), no raw colours or sizes.
+- GUI rule: Kante as it is (`RULES.md`), no raw colours or sizes.
 - Bug fixes: a test that failed before the fix, and the cause removed,
   not one case hidden.
 
@@ -61,5 +61,5 @@ matters is one that gives wrong crops or touches the user's files:
 - In a later round: say for each open **Wichtig** of the last round whether
   it is fixed, or whether its answer is accepted, with the reason. PR-Agent
   sees no earlier round: it reports only its own findings with their labels,
-  and a new Claude agent closes the open ones (`agent.md`).
+  and a new Claude agent closes the open ones (skill `pr-review`).
 - Findings in German, code names as they are.
