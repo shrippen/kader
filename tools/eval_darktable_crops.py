@@ -4,7 +4,11 @@
 Quelle der Referenz: review_data/darktable_crops.json (erzeugt von tools/convert_testphotos.py aus den
 Sidecar-XMPs). Der Crop steht dort als Bruchteil der Zeichenflaeche NACH `ashift`; bei Bildern mit Drehung wird er
 mit denselben Formeln wie in der Web-UI (companion/session.py) in das ungedrehte Bild zurueckgerechnet
-(Mitte zurueckdrehen, Groesse behalten). Kriterium wie in tools/eval.py: |dW| und |dH| < 60 px bei 2000 px langer Kante.
+(Mitte zurueckdrehen, Groesse behalten). Kriterium wie in tools/eval.py: alle vier Kanten < 25 px bei 2000 px langer Kante.
+
+Gedrehte Referenzen (30 %) sind fuer die Rahmenerkennung nur bedingt eine Wahrheit: der Crop liegt dort im gedrehten
+Bild und ist um den Keil kleiner als der Rahmen (gemessen: 9 px bei 0,3 Grad, 32 px bei 0,6-1 Grad, im Mittel genau
+Kantenlaenge x tan(Winkel)). Fuer die Guete der Erkennung zaehlt darum der Lauf mit --no-rotated.
 
 Achtung: Das sind aeltere Handarbeiten, keine bestaetigte Wahrheit (die liegt in review_data/reviews.json). Ein
 Fehltreffer kann daher auch eine Referenz sein, die anders geschnitten wurde. Bilder, die schon in reviews.json stehen

@@ -216,6 +216,8 @@ function renderToolbar() {
     </div></div>`;
 }
 
+const GUIDE_LANGS = ['en', 'de'];
+const GUIDE_RULES = ['guide_fill', 'guide_border', 'guide_holes', 'guide_roll'];
 const FORMATS_FALLBACK = ['35mm', '6x6', '6x7', '6x9', '4x5'];
 function renderSettings() {
   const s = store.s, st = s.settings;
@@ -410,6 +412,10 @@ function wire() {
     if (e.target.id === 'st-green' || e.target.id === 'st-yellow') { updateZones(); saveThresholds(); }
   });
   $('log-summary').innerHTML = T('log');
+  $('guide-summary').innerHTML = T('guide_title');
+  $('guide-body').innerHTML = `<p>${T('guide_intro')}</p>
+    ${GUIDE_LANGS.map((l) => `<img class="guide-img" lang="${l}" src="/static/howto-anatomy-${l}.svg" alt="${esc(S('guide_alt'))}">`).join('')}
+    <ul>${GUIDE_RULES.map((k) => `<li>${T(k)}</li>`).join('')}</ul>`;
   $('logbox').addEventListener('toggle', loadLog);
 }
 

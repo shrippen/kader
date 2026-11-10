@@ -115,6 +115,10 @@ if [ -f "$SCRIPT_DIR/kader.py" ]; then
         cp "$SCRIPT_DIR/film_scale.py" "$PLUGIN_DIR/"
         echo "  ✓ ${PLUGIN_DIR}/film_scale.py"
     fi
+    if [ -f "$SCRIPT_DIR/frame_edges.py" ]; then
+        cp "$SCRIPT_DIR/frame_edges.py" "$PLUGIN_DIR/"
+        echo "  ✓ ${PLUGIN_DIR}/frame_edges.py"
+    fi
 else
     echo "  ✗ kader.py nicht gefunden"
     exit 1

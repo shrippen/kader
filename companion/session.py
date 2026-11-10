@@ -125,8 +125,6 @@ def crop_to_pixels(crop, img_w, img_h):
             "height": int(round(b * img_h)) - y}
 
 
-PITCH_MM = 4.7625                  # Lochabstand 35-mm-Film (siehe film_scale.py)
-SCALE_AGREE_MAX = 0.02             # Takt-Uebereinstimmung der zwei Rollenhaelften (wie SCALE_CFG["agree_max"])
 MAX_STRAIGHTEN_DEG = 10.0
 AUTO_STRAIGHTEN_MIN_DEG = 0.3      # ab diesem gemessenen Tilt wird standardmaessig geradegestellt
 AUTO_STRAIGHTEN_MIN_CONF = 0.4
@@ -713,52 +711,6 @@ class Session:
                 self.save()
             return n
 
-    def _learn_convention(self):
-        """Handcrops dieser Sitzung in die gespeicherte Konvention (mm) einfliessen lassen, hoechstens einmal je Stand."""
-        try:
-            import film_scale
-            conv = self.learned_convention()
-            if conv and conv != self.state.get("convention_learned"):
-                if film_scale.update_convention(conv):
-                    self.state["convention_learned"] = conv
-        except Exception:      # noqa: BLE001 - Lernen darf das Abschliessen nie verhindern
-            pass
-
-    def learned_convention(self):
-        """Crop-Groesse in mm aus den von Hand gesetzten Crops dieser Sitzung (Median), oder None.
-
-        Nur Rollen mit verlaesslich gemessenem Perforationstakt und nur echte Handarbeit (keine abgeleiteten Crops).
-        Verlaesslich heisst: die Rolle hat ihren Takt auf beiden Haelften bestaetigt (``agree``, siehe
-        ``film_scale.measure_roll_pitch``); eine Fehlmessung wuerde die gelernte mm-Konvention sonst um ihren
-        eigenen Fehler verschieben. Wo keine Uebereinstimmung vorliegt (aeltere Sitzungen), zaehlt der Score.
-        Ergebnis: {"long_mm", "short_mm", "n"}; wird von ``kader`` als Voreinstellung gelesen."""
-        longs, shorts = [], []
-        for img in self.state["images"].values():
-            man, size = img.get("manual"), img.get("export_size")
-            sc = (self.state.get("film_scales") or {}).get(img["film"])
-            if not man or man.get("derived") or not size or not sc:
-                continue
-            agree = sc.get("agree")
-            if agree is None:
-                if sc.get("score", 0) < 0.4:
-                    continue
-            elif agree > SCALE_AGREE_MAX:
-                continue
-            mm_px = sc["pitch_frac"] * max(size) / PITCH_MM
-            c = man["crop"]
-            if man.get("deg"):
-                c = crop_from_straight(c, size, man["deg"])
-            w, h = (c[2] - c[0]) * size[0] / mm_px, (c[3] - c[1]) * size[1] / mm_px
-            if 0.6 < max(w, h) / max(min(w, h), 1e-6) < 2.0 and max(w, h) > 30:   # nur 35-mm-artige Rahmen
-                longs.append(max(w, h))
-                shorts.append(min(w, h))
-        if len(longs) < 3:
-            return None
-        longs.sort()
-        shorts.sort()
-        return {"long_mm": round(longs[len(longs) // 2], 2), "short_mm": round(shorts[len(shorts) // 2], 2),
-                "n": len(longs)}
-
     def undo(self, scope="session", ids=None):
         """Macht die letzte Aenderung rueckgaengig: 'session' = letzte Aktion,
         'selection' = letzte Aktion, die eines der Bilder in ``ids`` betraf
@@ -823,7 +775,7 @@ class Session:
             if film_aspects:
                 self.state.setdefault("film_aspects", {}).update(film_aspects)
             if film_scales:
-                # nur was fuer die Konvention gebraucht wird: Takt als Bruchteil der langen Bildkante und seine Guete
+                # Takt als Bruchteil der langen Bildkante und seine Guete
                 self.state.setdefault("film_scales", {}).update(
                     {f: {"pitch_frac": v["pitch_frac"], "score": v.get("score", 0.0), "agree": v.get("agree")}
                      for f, v in film_scales.items() if v.get("pitch_frac")})
@@ -957,7 +909,6 @@ class Session:
             atomic_write_json(self.path("plan.json"), plan)
             self.state["phase"] = "locked"
             self.history.clear()
-            self._learn_convention()
             self.save()
             summary = self._summary()
             target = self.target

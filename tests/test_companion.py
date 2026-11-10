@@ -327,6 +327,14 @@ class ServerTest(unittest.TestCase):
         for vendored in ("shrippen.css", "shrippen.js", "fonts.css", "VERSION", "fonts/Rajdhani-700.ttf"):
             self.assertEqual(self.call("GET", "/static/vendor/" + vendored, token=False)[0], 200, vendored)
 
+    def test_scan_guide_drawing_matches_landing_page(self):
+        for lang in ("en", "de"):
+            name = f"howto-anatomy-{lang}.svg"
+            st, raw = self.call("GET", "/static/" + name, token=False)
+            self.assertEqual(st, 200, name)
+            with open(os.path.join(ROOT, "docs", name), "rb") as f:
+                self.assertEqual(raw, f.read(), name)
+
     def test_session_payload(self):
         st, data = self.js("GET", "/api/session")
         self.assertEqual(st, 200)
@@ -633,9 +641,10 @@ class AnalysisTest(unittest.TestCase):
             self.assertTrue(0 <= l < r <= 1 and 0 <= t < b <= 1)
             self.assertGreater((r - l) * (b - t), 0.3)         # ein Bildrahmen, kein Fussel
             parts = img["detected"].get("conf_parts")
-            if parts:                    # Konfidenz = (50 % Groesse + 50 % Kante) x Belichtung x Rollen-Verlaesslichkeit
-                expect = (0.5 * parts["size_agree"] + 0.5 * parts["edge_score"]) * parts["exposure_factor"] * parts.get("roll_factor", 1.0)
-                self.assertAlmostEqual(img["detected"]["confidence"], min(1.0, max(0.0, expect)), delta=0.002)
+            self.assertEqual(img["detected"]["method"], "frame_edges")
+            parts = img["detected"]["conf_parts"]                # Konfidenz = schwaechste der vier Rahmenkanten
+            self.assertEqual(sorted(parts), ["edge_bottom", "edge_left", "edge_right", "edge_top"])
+            self.assertAlmostEqual(img["detected"]["confidence"], min(parts.values()), delta=0.002)
         first = next(iter(s.state["images"]))
         self.assertTrue(an.candidates(first))
 

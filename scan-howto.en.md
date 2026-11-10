@@ -6,6 +6,22 @@ This guide summarizes what makes the algorithm (`kader.py`,
 Background and measurements: `bericht-erkennung-2026-09-22.md` (German),
 `roadmap.md` (German).
 
+## Terms: what the capture shows
+
+![File, image area, film border, perforation and neighbouring frame](docs/howto-anatomy-en.svg)
+
+- **File:** the whole capture of the camera.
+- **Image area:** the exposed picture on the film. This is the "frame" Kader looks
+  for, and the crop goes here.
+- **Film border:** the unexposed film around the image area, including the gap
+  between two frames. The line between film border and image area is the edge the
+  detection measures (`frame_edges.py`).
+- **Perforation:** the rows of holes. Their spacing gives the scale of the roll.
+- **Neighbouring frame:** may be cut off in the capture.
+
+The film holder does not have to be in the picture. Only the film border on all
+four sides of the image area and at least one row of holes are needed.
+
 ## The one rule that matters most: scan the perforation too
 
 The algorithm's most important trick is that the hole spacing of 35 mm film
@@ -16,31 +32,27 @@ look. But this only works **if the perforation is in the scan at all.**
 - Leave a visible margin with the holes on at least one side (top or bottom,
   in the film's transport direction) when scanning. One or two millimeters of
   air is enough; more doesn't hurt.
-- **Don't** scan tight to the image content, even though it looks cleaner. Six
-  rolls in the test data so far had no perforation in the scan at all — for
-  those, the algorithm can only estimate the roll size by comparison with
-  other rolls, with a clearly worse hit rate (around 41% instead of around
-  93%, see the report).
+- **Don't** scan tight to the image content, even though it looks cleaner.
+  Without perforation the scale is missing, and the frame size has to come from
+  the edges alone.
 - The algorithm looks for the perforation in the outer 24% of the short image
   edge (`EDGE_FRAC` in `film_scale.py`). It doesn't have to be centered in the
   frame — but it must be findable in that margin strip, not cropped away
   entirely.
 
-## Frame the negative neither too tight nor too loose
+## Frame the image area neither too tight nor too loose
 
-The algorithm expects the negative frame to fill roughly 80–95% of the scan
-file (the pitch then falls between 7.0% and 13.5% of the long image edge,
-`PITCH_REL` in `film_scale.py`). Two failure modes in opposite directions:
+The image area should fill about 70–90% of the file width. Then all four edges of
+the image area and both rows of holes are safely in the file, and there is room
+left when the film lies crooked.
 
-- **Too tight** (only the image itself, no frame and no perforation): the
-  perforation is missing entirely, see above.
-- **Too loose** (lots of black margin, film holder, neighboring frames in the
-  scan): the pitch can still be measured, but the relationship between pixel
-  size and roll size becomes less stable, and the algorithm has to guess more
-  about where the actual image content starts.
-
-A good rule of thumb: the frame plus a narrow black margin with the
-perforation should fill the file, without a lot of empty space around it.
+- **Too tight** (image area above about 90% of the width): a slightly shifted
+  film already cuts off an edge, and the rows of holes fall out of the file. The
+  detection cannot find an edge that is not in the file; the image is then not
+  green.
+- **Too loose** (image area below about 55% of the width): the hole spacing lies
+  outside the range it is searched in (`PITCH_REL` in `film_scale.py`), and
+  resolution is lost for nothing.
 
 ## Keep the film holder clean
 
@@ -108,7 +120,7 @@ sharp enough.
 ## In short
 
 1. Scan the perforation — on at least one edge, preferably both.
-2. Frame neither edge-to-edge tight nor surrounded by a lot of empty space.
+2. Image area at about 70–90% of the file width, all four edges in the file.
 3. Keep the film holder clean and free of its own periodic pattern in the
    scanned area.
 4. Scan a whole roll with the same scanner setting and similar framing,
@@ -119,8 +131,6 @@ sharp enough.
 6. For standalone scans without a roll: capture both edges, scan sharp and
    with good contrast.
 
-Following these points puts a roll in practice into the group whose pitch
-measurement confirms itself reliably — there, the current hit rate is around
-93% and the precision of the automatically applied ("green") results is
-96%, compared to clearly weaker numbers for rolls without a usable
-perforation.
+Following these points gives the detection what it can measure: four visible
+edges per image and a confirmed scale per roll. Measurements are in
+`bericht-erkennung-2026-11-10.md` (German).

@@ -42,6 +42,15 @@ die Crop-Koordinaten als JSON.
 - **Rest-MISS (6):** Alles Grenzfaelle (Delta 57-85px, Schwelle 50/100).
   Kein systematischer Fehler mehr.
 
+## Erkennung seit November 2026: Rahmenkanten je Rolle
+- Kleinbild laeuft ueber `frame_edges.py` (Kantenevidenz je Bild, Rahmengroesse aus der Rolle, Konfidenz =
+  schwaechste Kante). Die Drei-Phasen-Pipeline unten gilt nur noch fuer andere Formate und Rollen ohne
+  Kantenpaare. Messung und Befunde: `bericht-erkennung-2026-11-10.md`.
+- RAW-Eingabe: die Erkennung misst auf einem Dichtebild aus dem RAW (`companion/rawdetect.py`), nicht auf dem
+  bearbeiteten Export; Ergebnisse werden auf den Export umgerechnet. Referenz dafuer: `review_data/reviews_raw.json`.
+- Kriterium: alle vier Kanten < 25 px (`tools/eval.py`). Nur Groesse zu pruefen uebersieht Lagefehler.
+- Gedrehte darktable-Referenzen sind im gedrehten Bild eingepasst, also kleiner als der Rahmen: `--no-rotated`.
+
 ## Architektur: Drei-Phasen-Pipeline
 1. **Pass A** (`--measure-aspect`): Misst Bild-Aspect pro Bild OHNE
    Ziel-Vorurteil. Polaritaets-adaptive Span-Suche, ~1s/Bild.

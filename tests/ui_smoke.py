@@ -157,13 +157,12 @@ def main():
             sk_deg = (ed_img.get("skew") or {}).get("deg")
             if ed_img.get("straighten") is None and (sk_deg is None or abs(sk_deg) < 0.01):
                 assert pg.locator(tog).is_disabled(), f"Tilt-Schalter aktiv, obwohl Bild {ed_id} keine Schraeglage hat ({sk_deg})"
-            # das Umschalten an einem Bild mit Schraeglage pruefen: mit ] weiter, bis der Schalter frei ist
-            moved = 0
-            for _ in range(a.n):
+            # das Umschalten an einem Bild mit Schraeglage pruefen: mit ] weiter, bis der Schalter frei ist;
+            # steht das Bild am Ende der Reihe (z. B. nach Rot gezogen), mit [ zurueck
+            for key in ["]"] * a.n + ["["] * (2 * a.n):
                 if not pg.locator(tog).is_disabled():
                     break
-                pg.keyboard.press("]")
-                moved += 1
+                pg.keyboard.press(key)
                 pg.wait_for_timeout(400)
             assert not pg.locator(tog).is_disabled(), "kein Bild mit Schraeglage im Film"
             if not pg.locator(tog).is_disabled():
@@ -175,9 +174,8 @@ def main():
                     # s = Winkel der Ansicht als Zahl ("s=0.1" enthaelt auch "s=0", daher nicht als Text vergleichen)
                     s_deg = float(dict(kv.split("=", 1) for kv in pg.get_attribute("#ed-img", "src").split("?", 1)[1].split("&")).get("s", "0"))
                     assert (s_deg == 0) == (want == "false"), f"Bildansicht folgt dem Schalter nicht (s={s_deg}, an={want})"
-            for _ in range(moved):                       # zurueck zum Bild, an dem die naechsten Schritte arbeiten
-                pg.keyboard.press("[")
-                pg.wait_for_timeout(400)
+            pg.click(f"#ed-strip button[data-id='{ed_id}']")   # zurueck zum Bild, an dem die naechsten Schritte arbeiten
+            pg.wait_for_timeout(400)
             assert pg.evaluate("document.querySelector('#ed-strip button[aria-current=\"true\"]')?.dataset.id") == str(ed_id), "nicht zurueck beim Ausgangsbild"
             shot("2-editor.png")
             h = pg.locator("#ed-crop .handle[data-h='se']")

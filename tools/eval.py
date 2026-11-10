@@ -6,7 +6,8 @@ ordner mit manuellen Referenz-Crops und vergleicht das Ergebnis mit
 review_data/reviews.json.
 
 Ausgabe:
-  - Trefferquote gesamt + pro Film (Kriterium: |dW| < TOL und |dH| < TOL)
+  - Trefferquote gesamt + pro Film (Kriterium: alle vier Kanten naeher als EDGE_TOL_PX an der Referenz)
+  - zum Vergleich mit aelteren Laeufen die Groessen-Trefferquote (|dW| < TOL und |dH| < TOL)
   - systematischer Bias (Median dx/dy/dw/dh)
   - 3-Wege-Klassifikation gruen/gelb/rot gegen "Treffer"
   - ROC-Sweep fuer die gruen-Schwelle
@@ -36,8 +37,11 @@ FEEDBACK_GT = os.path.join(PROJECT_DIR, "review_data", "feedback_gt.json")   # t
 SPLITS = os.path.join(PROJECT_DIR, "tools", "splits.json")
 BASELINE = os.path.join(PROJECT_DIR, "tools", "eval_baseline.json")
 
-# Ein automatischer Crop gilt als Treffer, wenn Breite UND Hoehe weniger
-# als TOL_PX von der manuellen Referenz abweichen (Nutzer-Vorgabe).
+# Ein automatischer Crop gilt als Treffer, wenn jede seiner vier Kanten weniger als EDGE_TOL_PX von der manuellen
+# Referenz entfernt liegt (bei 2000 px langer Kante, gut 1 %). Bis November 2026 zaehlte nur die Groesse (Breite UND
+# Hoehe naeher als TOL_PX): ein Crop richtiger Groesse an falscher Stelle galt als Treffer, auf den 209 Handcrops bei
+# 89 der 198 "Treffer" (Film 31: 12 von 12 getroffen, im Median 133 px daneben).
+EDGE_TOL_PX = 25
 TOL_PX = 60
 
 IMG_EXT = (".jpg", ".jpeg", ".tif", ".tiff", ".png")
@@ -76,10 +80,9 @@ def run_pipeline(image_paths):
         out_path = os.path.join(tmp, "out.json")
         cmd = [python_bin(), SCRIPT, "--batch", *image_paths,
                "--confidence-threshold", "0.0"]
-        env = dict(os.environ, KADER_CONVENTION="")   # Messung unabhaengig von der gelernten Nutzer-Konvention
         tty = sys.stderr.isatty()
         with open(out_path, "w") as out_f:
-            proc = subprocess.Popen(cmd, cwd=tmp, stdout=out_f, env=env,
+            proc = subprocess.Popen(cmd, cwd=tmp, stdout=out_f,
                                     stderr=subprocess.PIPE, text=True)
             for line in proc.stderr:
                 if not line.startswith("PROGRESS"):
@@ -114,22 +117,28 @@ def collect_deltas(results, reviews):
         if not r or r.get("x") is None:
             rows.append({"key": key, "film": film, "missing": True})
             continue
+        dx, dy = r["x"] - mc["x"], r["y"] - mc["y"]
+        dw, dh = r["width"] - mc["width"], r["height"] - mc["height"]
         rows.append({
             "key": key, "film": film, "missing": False,
-            "dx": r["x"] - mc["x"], "dy": r["y"] - mc["y"],
-            "dw": r["width"] - mc["width"], "dh": r["height"] - mc["height"],
+            "dx": dx, "dy": dy, "dw": dw, "dh": dh,
+            "edge_err": max(abs(dx), abs(dy), abs(dx + dw), abs(dy + dh)),   # groesster Fehler der vier Kanten
             "conf": r["confidence"],
         })
     return rows
 
 
 def is_hit(row):
+    return not row["missing"] and row["edge_err"] < EDGE_TOL_PX
+
+
+def is_size_hit(row):
     return (not row["missing"]
             and abs(row["dw"]) < TOL_PX and abs(row["dh"]) < TOL_PX)
 
 
 def print_per_film(rows):
-    print(f"\n=== Treffer pro Film (|dW|,|dH| < {TOL_PX}px) ===")
+    print(f"\n=== Treffer pro Film (alle vier Kanten < {EDGE_TOL_PX}px) ===")
     by_film = defaultdict(list)
     for row in rows:
         by_film[row["film"]].append(row)
@@ -144,6 +153,10 @@ def print_per_film(rows):
         tail = ("  " + " ".join(miss_keys)) if miss_keys else ""
         print(f"  {film:<10} {hits:2d}/{len(items):<2d}{tail}")
     print(f"  {'GESAMT':<10} {total_hit:2d}/{len(rows)}")
+    ok = [r for r in rows if not r["missing"]]
+    for tol in (15, 40, 60):
+        print(f"  Kanten < {tol:2d}px: {sum(r['edge_err'] < tol for r in ok)}/{len(rows)}")
+    print(f"  nur Groesse (|dW|,|dH| < {TOL_PX}px, altes Kriterium): {sum(is_size_hit(r) for r in rows)}/{len(rows)}")
     return total_hit, per_film
 
 
@@ -211,8 +224,8 @@ def print_roc(rows):
 
 
 def check_baseline(total_hit, total, per_film, update):
-    current = {"total_hits": total_hit, "total": total,
-               "tolerance_px": TOL_PX, "per_film": per_film}
+    current = {"total_hits": total_hit, "total": total, "criterion": "edges",
+               "tolerance_px": EDGE_TOL_PX, "per_film": per_film}
     if update:
         with open(BASELINE, "w") as f:
             json.dump(current, f, indent=2)
@@ -223,6 +236,9 @@ def check_baseline(total_hit, total, per_film, update):
         return 0
     with open(BASELINE) as f:
         base = json.load(f)
+    if base.get("criterion") != "edges":
+        print("\nBaseline stammt vom Groessen-Kriterium. Mit --update-baseline neu anlegen.")
+        return 0
 
     # Nur die tatsaechlich gelaufenen Filme mit der Baseline vergleichen,
     # damit Teillaeufe (--films) nicht faelschlich als Regression zaehlen.
@@ -394,7 +410,7 @@ def print_weak(rows, weak_rows):
     ok = [r for r in weak_rows if not r["missing"]]
     hits = sum(is_hit(r) for r in ok)
     print(f"\n=== Schwache Referenz: Uebereinstimmung mit dem akzeptierten Crop ===")
-    print(f"  {hits}/{len(ok)} innerhalb {TOL_PX}px (nur Konsistenz; kein Beleg fuer Richtigkeit)")
+    print(f"  {hits}/{len(ok)} innerhalb {EDGE_TOL_PX}px (nur Konsistenz; kein Beleg fuer Richtigkeit)")
     by = defaultdict(list)
     for r in ok:
         by[r["film"]].append(r)

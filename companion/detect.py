@@ -129,6 +129,29 @@ def _candidates_worker(item):
     return out
 
 
+DETECT_DIR = "detect"
+RAW_KINDS = {"neg": "Negativ", "pos": "Dia"}
+BOX_KEYS = (("x", 0), ("y", 1), ("width", 0), ("height", 1))
+
+
+def _to_export(r, export, kind):
+    """Rechnet ein Ergebnis vom Erkennungsbild auf den Export um (gleiches Seitenverhaeltnis)."""
+    size = image_size(export)
+    if r.get("x") is not None:
+        scale = (size[0] / r["_img_w"], size[1] / r["_img_h"])
+        for key, axis in BOX_KEYS:
+            r[key] = int(round(r[key] * scale[axis]))
+    r["_img_w"], r["_img_h"] = size
+    r["input_file"] = export
+    r.setdefault("reasons", []).append(f"Erkennung auf dem RAW ({kind})")
+
+
+def _pool_map(fn, items):
+    """Verteilt ``fn`` ueber die Erkennungs-Prozesse, Ergebnisse in Reihenfolge der ``items``."""
+    with _acn()._process_pool(len(items)) as ex:
+        yield from ex.map(fn, items)
+
+
 def film_slug(name, used):
     """Ordnername je Filmrolle; zwei verschiedene Rollen mit gleichem Namen bleiben getrennt."""
     base = re.sub(r"[^\w.\- ]+", "_", name).strip() or "film"
@@ -252,6 +275,61 @@ class Analyzer:
                 paths[os.path.abspath(p)] = iid
         return paths
 
+    def _raw_detect_paths(self, paths):
+        """Erkennungsbilder aus dem RAW (``rawdetect``). -> {abs_export_path: (erkennungsbild, polung)}
+
+        Ein Bild, das sich nicht umrechnen laesst (Export im RAW-Entwickler gedreht, RAW unlesbar), fehlt im
+        Ergebnis und wird auf dem Export gemessen."""
+        from . import rawdetect
+        s = self.session
+        if not rawdetect.available():
+            return {}
+        rolls = collections.defaultdict(list)       # Export-Ordner -> [(export, raw, basis)]
+        for export, iid in paths.items():
+            img = s.image(iid)
+            if not exp.is_raw(img["path"]):
+                continue
+            folder = os.path.dirname(export)
+            base = s.path(os.path.join(DETECT_DIR, os.path.basename(folder),
+                                       os.path.splitext(os.path.basename(export))[0]))
+            rolls[folder].append((export, img["path"], base))
+        todo = [(raw, export, base) for items in rolls.values() for export, raw, base in items
+                if not rawdetect.cached(base, raw)]
+        if todo:
+            self._stage("detect", 0, len(todo))
+            for n, _ in enumerate(_pool_map(rawdetect.write, todo), 1):
+                self.report(f"PROGRESS {n}/{len(todo)}")
+        out = {}
+        for folder, items in rolls.items():
+            items = [it for it in items if rawdetect.cached(it[2], it[1])]
+            pol = rawdetect.settle([base for _, _, base in items])
+            name = os.path.basename(folder)
+            if pol is None:
+                self.report(f"RAW-Erkennungsbild fuer {name} nicht moeglich, nutze den Export")
+                continue
+            self.report(f"Erkennung auf dem RAW: {name} als {RAW_KINDS[pol]}, {len(items)} von {len(rolls[folder])} Bildern")
+            for export, _, base in items:
+                out[export] = (os.path.abspath(rawdetect.path_for(base, pol)), pol)
+        return out
+
+    def _batch(self, paths, fmt, units):
+        """``compute_batch`` ueber die Erkennungsbilder; Ergebnisse in Pixeln des Exports. -> (batch, {id: ergebnis})"""
+        s = self.session
+        # nur Kleinbild: dort ist das Erkennungsbild gemessen, andere Formate laufen wie bisher ueber den Export
+        raw = self._raw_detect_paths(paths) if fmt == _acn().EDGES_FORMAT else {}
+        used = {raw[p][0] if p in raw else p: p for p in paths}     # Erkennungsbild -> Export
+        self._stage("detect", 0, units)
+        batch = _acn().compute_batch(list(used), s.state["settings"]["t_yellow"], False, fmt, report=self.report)
+        results = {}
+        for r in batch["results"]:
+            export = used.get(os.path.abspath(r["input_file"]))
+            if export is None:
+                continue
+            if export in raw:
+                _to_export(r, export, RAW_KINDS[raw[export][1]])
+            results[paths[export]] = r
+        return batch, results
+
     def _analyze(self, ids):
         s = self.session
         if not ids:
@@ -259,15 +337,8 @@ class Analyzer:
             return
         acn = _acn()
         paths = self._prepare_paths(ids)
-        self._stage("detect", 0, 2 * max(len(paths), 1))
         st = s.state["settings"]
-        batch = acn.compute_batch(list(paths), st["t_yellow"], False,
-                                  st.get("format", "35mm"), report=self.report)
-        results = {}
-        for r in batch["results"]:
-            iid = paths.get(os.path.abspath(r["input_file"]))
-            if iid is not None:
-                results[iid] = r
+        batch, results = self._batch(paths, st.get("format", "35mm"), 2 * max(len(paths), 1))
         for path, iid in paths.items():
             results.setdefault(iid, {"error": "Erkennung lieferte kein Ergebnis"})
         aspects = {k: v["aspect_ratio"] for k, v in batch["film_aspects"].items()}
@@ -285,9 +356,9 @@ class Analyzer:
         overrides = any(settings.get(k) not in (None, False, "")
                         for k in ("aspect_ratio", "film_border_level",
                                   "no_aspect_penalty", "skip_refine"))
-        self._stage("detect", 0, max(len(paths), 1))
         results = {}
         if overrides:
+            self._stage("detect", 0, max(len(paths), 1))
             fmt = settings.get("format") or s.state["settings"].get("format", "35mm")
             items = []
             for path, iid in paths.items():
@@ -313,12 +384,7 @@ class Analyzer:
                         results[paths[path]] = {"error": str(e)}
         else:
             fmt = settings.get("format") or s.state["settings"].get("format", "35mm")
-            batch = acn.compute_batch(list(paths), s.state["settings"]["t_yellow"],
-                                      False, fmt, report=self.report)
-            for r in batch["results"]:
-                iid = paths.get(os.path.abspath(r["input_file"]))
-                if iid is not None:
-                    results[iid] = r
+            results = self._batch(paths, fmt, max(len(paths), 1))[1]
         measure_skews(results, paths)
         s.set_proposals(results, settings)
 

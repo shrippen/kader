@@ -20,7 +20,7 @@ tui = ["rich"]            # Terminal-Statusanzeige (--tui), fuer SSH/NAS-Sitzung
 kader = "companion.__main__:main"
 
 [tool.setuptools]
-py-modules = ["kader", "film_scale"]
+py-modules = ["kader", "film_scale", "frame_edges"]
 packages = [
     "companion",
     "companion.targets",
