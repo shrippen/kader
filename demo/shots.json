@@ -46,6 +46,17 @@
           "sleep": 1200
         }
       ]
+    },
+    {
+      "name": "edges",
+      "actions": [
+        {
+          "eval": "document.querySelector('#ed-side .cp').scrollIntoView({block: 'center'})"
+        },
+        {
+          "sleep": 600
+        }
+      ]
     }
   ],
   "page": {
