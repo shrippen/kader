@@ -1,0 +1,907 @@
+{
+  "22.07.2014 - Zwiebelmarkt/20250228_0320.jpg": {
+    "manual_crop": {
+      "x": 83,
+      "y": 25,
+      "width": 1887,
+      "height": 1260
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0321.jpg": {
+    "manual_crop": {
+      "x": 54,
+      "y": 33,
+      "width": 1889,
+      "height": 1263
+    },
+    "tilt_deg": -0.57,
+    "manual_crop_straight": {
+      "crop": [
+        0.0302,
+        0.03146,
+        0.96829,
+        0.96558
+      ],
+      "size": [
+        2013,
+        1353
+      ]
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0322.jpg": {
+    "manual_crop": {
+      "x": 96,
+      "y": 43,
+      "width": 1891,
+      "height": 1282
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0323.jpg": {
+    "manual_crop": {
+      "x": 50,
+      "y": 31,
+      "width": 1888,
+      "height": 1271
+    },
+    "tilt_deg": 0.54,
+    "manual_crop_straight": {
+      "crop": [
+        0.02818,
+        0.02999,
+        0.96628,
+        0.96985
+      ],
+      "size": [
+        2012,
+        1352
+      ]
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0324.jpg": {
+    "manual_crop": {
+      "x": 55,
+      "y": 12,
+      "width": 1885,
+      "height": 1281
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0325.jpg": {
+    "manual_crop": {
+      "x": 54,
+      "y": 48,
+      "width": 1266,
+      "height": 1924
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0327.jpg": {
+    "manual_crop": {
+      "x": 30,
+      "y": 64,
+      "width": 1236,
+      "height": 1852
+    },
+    "tilt_deg": 0.5,
+    "manual_crop_straight": {
+      "crop": [
+        0.02858,
+        0.03488,
+        0.94356,
+        0.95569
+      ],
+      "size": [
+        1350,
+        2012
+      ]
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0328.jpg": {
+    "manual_crop": {
+      "x": 23,
+      "y": 52,
+      "width": 1289,
+      "height": 1889
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0329.jpg": {
+    "manual_crop": {
+      "x": 6,
+      "y": 64,
+      "width": 1286,
+      "height": 1845
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0331.jpg": {
+    "manual_crop": {
+      "x": 68,
+      "y": 42,
+      "width": 1887,
+      "height": 1262
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0332.jpg": {
+    "manual_crop": {
+      "x": 52,
+      "y": 33,
+      "width": 1886,
+      "height": 1263
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0337.jpg": {
+    "manual_crop": {
+      "x": 59,
+      "y": 37,
+      "width": 1897,
+      "height": 1278
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0338.jpg": {
+    "manual_crop": {
+      "x": 61,
+      "y": 21,
+      "width": 1893,
+      "height": 1263
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0339.jpg": {
+    "manual_crop": {
+      "x": 57,
+      "y": 39,
+      "width": 1874,
+      "height": 1262
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0340.jpg": {
+    "manual_crop": {
+      "x": 41,
+      "y": 50,
+      "width": 1895,
+      "height": 1273
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0341.jpg": {
+    "manual_crop": {
+      "x": 62,
+      "y": 61,
+      "width": 1892,
+      "height": 1250
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0343.jpg": {
+    "manual_crop": {
+      "x": 112,
+      "y": 35,
+      "width": 1886,
+      "height": 1274
+    },
+    "tilt_deg": -0.63,
+    "manual_crop_straight": {
+      "crop": [
+        0.05898,
+        0.03441,
+        0.99518,
+        0.9746
+      ],
+      "size": [
+        2015,
+        1355
+      ]
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0344.jpg": {
+    "manual_crop": {
+      "x": 46,
+      "y": 30,
+      "width": 1881,
+      "height": 1272
+    },
+    "tilt_deg": -0.31,
+    "manual_crop_straight": {
+      "crop": [
+        0.02472,
+        0.02651,
+        0.96165,
+        0.97286
+      ],
+      "size": [
+        2007,
+        1344
+      ]
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0345.jpg": {
+    "manual_crop": {
+      "x": 16,
+      "y": 28,
+      "width": 1841,
+      "height": 1270
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0346.jpg": {
+    "manual_crop": {
+      "x": 27,
+      "y": 48,
+      "width": 1289,
+      "height": 1897
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0347.jpg": {
+    "manual_crop": {
+      "x": 46,
+      "y": 29,
+      "width": 1888,
+      "height": 1281
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0348.jpg": {
+    "manual_crop": {
+      "x": 33,
+      "y": 33,
+      "width": 1883,
+      "height": 1257
+    },
+    "tilt_deg": -0.58,
+    "manual_crop_straight": {
+      "crop": [
+        0.0196,
+        0.03146,
+        0.95507,
+        0.96093
+      ],
+      "size": [
+        2013,
+        1353
+      ]
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0349.jpg": {
+    "manual_crop": {
+      "x": 50,
+      "y": 36,
+      "width": 1838,
+      "height": 1276
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0350.jpg": {
+    "manual_crop": {
+      "x": 25,
+      "y": 41,
+      "width": 1887,
+      "height": 1277
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0351.jpg": {
+    "manual_crop": {
+      "x": 112,
+      "y": 44,
+      "width": 1888,
+      "height": 1275
+    },
+    "tilt_deg": -0.68,
+    "manual_crop_straight": {
+      "crop": [
+        0.0603,
+        0.04182,
+        0.99698,
+        0.98138
+      ],
+      "size": [
+        2016,
+        1357
+      ]
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0354.jpg": {
+    "manual_crop": {
+      "x": 29,
+      "y": 37,
+      "width": 1290,
+      "height": 1888
+    },
+    "is_problem": true
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0355.jpg": {
+    "manual_crop": {
+      "x": 51,
+      "y": 27,
+      "width": 1896,
+      "height": 1283
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0356.jpg": {
+    "manual_crop": {
+      "x": 62,
+      "y": 37,
+      "width": 1888,
+      "height": 1256
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0357.jpg": {
+    "manual_crop": {
+      "x": 57,
+      "y": 32,
+      "width": 1883,
+      "height": 1268
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0358.jpg": {
+    "manual_crop": {
+      "x": 62,
+      "y": 37,
+      "width": 1885,
+      "height": 1261
+    }
+  },
+  "22.07.2014 - Zwiebelmarkt/20250228_0359.jpg": {
+    "manual_crop": {
+      "x": 43,
+      "y": 32,
+      "width": 1897,
+      "height": 1282
+    }
+  },
+  "Film 10/20250403_0003.jpg": {
+    "manual_crop": {
+      "x": 101,
+      "y": 48,
+      "width": 1823,
+      "height": 1200
+    }
+  },
+  "Film 10/20250403_0004.jpg": {
+    "manual_crop": {
+      "x": 47,
+      "y": 106,
+      "width": 1235,
+      "height": 1831
+    }
+  },
+  "Film 10/20250403_0005.jpg": {
+    "manual_crop": {
+      "x": 129,
+      "y": 52,
+      "width": 1815,
+      "height": 1202
+    },
+    "tilt_deg": 0.32,
+    "manual_crop_straight": {
+      "crop": [
+        0.06609,
+        0.04295,
+        0.97023,
+        0.93662
+      ],
+      "size": [
+        2007,
+        1344
+      ]
+    }
+  },
+  "Film 10/20250403_0006.jpg": {
+    "manual_crop": {
+      "x": 96,
+      "y": 47,
+      "width": 1812,
+      "height": 1198
+    }
+  },
+  "Film 10/20250403_0007.jpg": {
+    "manual_crop": {
+      "x": 95,
+      "y": 107,
+      "width": 1195,
+      "height": 1822
+    },
+    "tilt_deg": 0.53,
+    "manual_crop_straight": {
+      "crop": [
+        0.0775,
+        0.05599,
+        0.96177,
+        0.96175
+      ],
+      "size": [
+        1351,
+        2012
+      ]
+    }
+  },
+  "Film 10/20250403_0008.jpg": {
+    "manual_crop": {
+      "x": 124,
+      "y": 49,
+      "width": 1815,
+      "height": 1202
+    }
+  },
+  "Film 10/20250403_0009.jpg": {
+    "manual_crop": {
+      "x": 112,
+      "y": 56,
+      "width": 1813,
+      "height": 1203
+    }
+  },
+  "Film 10/20250403_0010.jpg": {
+    "manual_crop": {
+      "x": 100,
+      "y": 45,
+      "width": 1829,
+      "height": 1209
+    }
+  },
+  "Film 10/20250403_0011.jpg": {
+    "manual_crop": {
+      "x": 107,
+      "y": 39,
+      "width": 1809,
+      "height": 1210
+    }
+  },
+  "Film 10/20250403_0012.jpg": {
+    "manual_crop": {
+      "x": 136,
+      "y": 45,
+      "width": 1810,
+      "height": 1205
+    }
+  },
+  "Film 10/20250403_0013.jpg": {
+    "manual_crop": {
+      "x": 75,
+      "y": 31,
+      "width": 1817,
+      "height": 1188
+    }
+  },
+  "Film 10/20250403_0014.jpg": {
+    "manual_crop": {
+      "x": 136,
+      "y": 38,
+      "width": 1819,
+      "height": 1199
+    }
+  },
+  "Film 10/20250403_0017.jpg": {
+    "manual_crop": {
+      "x": 70,
+      "y": 48,
+      "width": 1820,
+      "height": 1196
+    }
+  },
+  "Film 10/20250403_0018.jpg": {
+    "manual_crop": {
+      "x": 205,
+      "y": 79,
+      "width": 1795,
+      "height": 1188
+    },
+    "is_problem": true
+  },
+  "Film 10/20250403_0019.jpg": {
+    "manual_crop": {
+      "x": 134,
+      "y": 43,
+      "width": 1805,
+      "height": 1171
+    }
+  },
+  "Film 10/20250403_0020.jpg": {
+    "manual_crop": {
+      "x": 153,
+      "y": 52,
+      "width": 1810,
+      "height": 1170
+    }
+  },
+  "Film 10/20250403_0021.jpg": {
+    "manual_crop": {
+      "x": 97,
+      "y": 41,
+      "width": 1802,
+      "height": 1215
+    },
+    "is_problem": true
+  },
+  "Film 10/20250403_0022.jpg": {
+    "manual_crop": {
+      "x": 82,
+      "y": 117,
+      "width": 1212,
+      "height": 1824
+    }
+  },
+  "Film 10/20250403_0023.jpg": {
+    "manual_crop": {
+      "x": 90,
+      "y": 73,
+      "width": 1219,
+      "height": 1804
+    }
+  },
+  "Film 10/20250403_0024.jpg": {
+    "manual_crop": {
+      "x": 31,
+      "y": 44,
+      "width": 1862,
+      "height": 1213
+    }
+  },
+  "Film 10/20250403_0025.jpg": {
+    "manual_crop": {
+      "x": 187,
+      "y": 54,
+      "width": 1797,
+      "height": 1199
+    }
+  },
+  "Film 10/20250403_0026.jpg": {
+    "manual_crop": {
+      "x": 117,
+      "y": 56,
+      "width": 1813,
+      "height": 1201
+    },
+    "tilt_deg": 0.35,
+    "manual_crop_straight": {
+      "crop": [
+        0.06001,
+        0.04593,
+        0.96319,
+        0.93865
+      ],
+      "size": [
+        2008,
+        1345
+      ]
+    },
+    "is_problem": true
+  },
+  "Film 10/20250403_0027.jpg": {
+    "manual_crop": {
+      "x": 80,
+      "y": 93,
+      "width": 1215,
+      "height": 1828
+    }
+  },
+  "Film 10/20250403_0028.jpg": {
+    "manual_crop": {
+      "x": 120,
+      "y": 29,
+      "width": 1829,
+      "height": 1210
+    }
+  },
+  "Film 10/20250403_0029.jpg": {
+    "manual_crop": {
+      "x": 91,
+      "y": 56,
+      "width": 1822,
+      "height": 1201
+    },
+    "tilt_deg": 0.35,
+    "manual_crop_straight": {
+      "crop": [
+        0.0474,
+        0.04593,
+        0.95461,
+        0.93891
+      ],
+      "size": [
+        2008,
+        1345
+      ]
+    }
+  },
+  "Film 10/20250403_0031.jpg": {
+    "manual_crop": {
+      "x": 99,
+      "y": 60,
+      "width": 1813,
+      "height": 1192
+    }
+  },
+  "Film 10/20250403_0032.jpg": {
+    "manual_crop": {
+      "x": 120,
+      "y": 33,
+      "width": 1806,
+      "height": 1199
+    }
+  },
+  "Film 10/20250403_0033.jpg": {
+    "manual_crop": {
+      "x": 93,
+      "y": 46,
+      "width": 1816,
+      "height": 1203
+    }
+  },
+  "Film 10/20250403_0034.jpg": {
+    "manual_crop": {
+      "x": 96,
+      "y": 53,
+      "width": 1820,
+      "height": 1200
+    },
+    "is_problem": true
+  },
+  "Film 10/20250403_0035.jpg": {
+    "manual_crop": {
+      "x": 85,
+      "y": 84,
+      "width": 1204,
+      "height": 1825
+    },
+    "is_problem": true
+  },
+  "Film 10/20250403_0036.jpg": {
+    "manual_crop": {
+      "x": 105,
+      "y": 43,
+      "width": 1816,
+      "height": 1198
+    }
+  },
+  "Film 10/20250403_0037.jpg": {
+    "manual_crop": {
+      "x": 100,
+      "y": 49,
+      "width": 1816,
+      "height": 1193
+    }
+  },
+  "Film 10/20250403_0038.jpg": {
+    "manual_crop": {
+      "x": 78,
+      "y": 51,
+      "width": 1815,
+      "height": 1205
+    }
+  },
+  "Film 10/20250403_0039.jpg": {
+    "manual_crop": {
+      "x": 135,
+      "y": 34,
+      "width": 1828,
+      "height": 1206
+    }
+  },
+  "Film 10/20250403_0040.jpg": {
+    "manual_crop": {
+      "x": 31,
+      "y": 70,
+      "width": 1817,
+      "height": 1201
+    },
+    "is_problem": true
+  },
+  "Film 15/20250403_0268.jpg": {
+    "manual_crop": {
+      "x": 74,
+      "y": 39,
+      "width": 1838,
+      "height": 1199
+    },
+    "tilt_deg": -0.55,
+    "manual_crop_straight": {
+      "crop": [
+        0.04026,
+        0.03554,
+        0.9532,
+        0.92228
+      ],
+      "size": [
+        2013,
+        1352
+      ]
+    }
+  },
+  "Film 15/20250403_0269.jpg": {
+    "manual_crop": {
+      "x": 153,
+      "y": 35,
+      "width": 1814,
+      "height": 1208
+    },
+    "tilt_deg": -0.68,
+    "manual_crop_straight": {
+      "crop": [
+        0.07998,
+        0.0354,
+        0.98012,
+        0.92514
+      ],
+      "size": [
+        2016,
+        1357
+      ]
+    }
+  },
+  "Film 15/20250403_0270.jpg": {
+    "manual_crop": {
+      "x": 76,
+      "y": 50,
+      "width": 1850,
+      "height": 1198
+    },
+    "tilt_deg": -0.3,
+    "manual_crop_straight": {
+      "crop": [
+        0.03988,
+        0.04098,
+        0.96164,
+        0.9327
+      ],
+      "size": [
+        2007,
+        1343
+      ]
+    }
+  },
+  "Film 15/20250403_0271.jpg": {
+    "manual_crop": {
+      "x": 215,
+      "y": 46,
+      "width": 1768,
+      "height": 1194
+    }
+  },
+  "Film 15/20250403_0296.jpg": {
+    "manual_crop": {
+      "x": 88,
+      "y": 81,
+      "width": 1200,
+      "height": 1860
+    },
+    "tilt_deg": -0.47,
+    "manual_crop_straight": {
+      "crop": [
+        0.07107,
+        0.04318,
+        0.96049,
+        0.96802
+      ],
+      "size": [
+        1349,
+        2011
+      ]
+    }
+  },
+  "Film 15/20250403_0297.jpg": {
+    "manual_crop": {
+      "x": 91,
+      "y": 73,
+      "width": 1211,
+      "height": 1829
+    }
+  },
+  "Film 15/20250403_0298.jpg": {
+    "manual_crop": {
+      "x": 86,
+      "y": 43,
+      "width": 1843,
+      "height": 1184
+    },
+    "tilt_deg": -0.38,
+    "manual_crop_straight": {
+      "crop": [
+        0.04488,
+        0.0366,
+        0.96268,
+        0.91611
+      ],
+      "size": [
+        2009,
+        1346
+      ]
+    }
+  },
+  "Film 15/20250403_0299.jpg": {
+    "manual_crop": {
+      "x": 81,
+      "y": 43,
+      "width": 1838,
+      "height": 1193
+    },
+    "tilt_deg": -0.62,
+    "manual_crop_straight": {
+      "crop": [
+        0.04374,
+        0.03963,
+        0.95626,
+        0.92072
+      ],
+      "size": [
+        2014,
+        1355
+      ]
+    }
+  },
+  "Film 15/20250403_0300.jpg": {
+    "manual_crop": {
+      "x": 98,
+      "y": 127,
+      "width": 1190,
+      "height": 1760
+    },
+    "tilt_deg": -0.41,
+    "manual_crop_straight": {
+      "crop": [
+        0.0782,
+        0.06561,
+        0.9614,
+        0.94153
+      ],
+      "size": [
+        1347,
+        2009
+      ]
+    },
+    "is_problem": true
+  },
+  "Film 15/20250403_0301.jpg": {
+    "manual_crop": {
+      "x": 97,
+      "y": 64,
+      "width": 1789,
+      "height": 1169
+    }
+  },
+  "Film 15/20250403_0302.jpg": {
+    "manual_crop": {
+      "x": 99,
+      "y": 84,
+      "width": 1790,
+      "height": 1194
+    },
+    "tilt_deg": -0.33,
+    "manual_crop_straight": {
+      "crop": [
+        0.05119,
+        0.06707,
+        0.94299,
+        0.95479
+      ],
+      "size": [
+        2008,
+        1344
+      ]
+    }
+  },
+  "Film 15/20250403_0303.jpg": {
+    "manual_crop": {
+      "x": 75,
+      "y": 52,
+      "width": 1821,
+      "height": 1185
+    },
+    "tilt_deg": -0.75,
+    "manual_crop_straight": {
+      "crop": [
+        0.04167,
+        0.04735,
+        0.94428,
+        0.91946
+      ],
+      "size": [
+        2017,
+        1359
+      ]
+    }
+  }
+}

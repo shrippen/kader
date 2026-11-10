@@ -25,6 +25,11 @@ try:
 except ImportError:  # alte Installation ohne film_scale.py: Erkennung laeuft ohne Massstab
     film_scale = None
 
+try:
+    import frame_edges
+except ImportError:  # alte Installation ohne frame_edges.py: Erkennung ueber die Kandidaten-Strategien
+    frame_edges = None
+
 ASPECT_RATIOS = {
     "35mm": 3 / 2,
     "6x6": 1 / 1,
@@ -1921,9 +1926,113 @@ def apply_film_consensus(results, load_paths, report=None, film_scales=None):
             f"(n={p['n']}, MAD {int(p['mad_long'])}/{int(p['mad_short'])})")
 
 
+# ─── Rahmenkanten je Rolle (frame_edges.py) ───────────────────────────────────
+# Kleinbild-Rollen bekommen ihren Rahmen aus der aufsummierten Kantenevidenz der Rolle. Gemessen gegen die Referenzen
+# (alle vier Kanten naeher als 25 px bei 2000 px langer Kante, tools/eval.py): Handcrops 109 -> 167 von 209,
+# darktable-Crops ohne Drehung 779 -> 945 von 1164; von den Gruenen (>= 0.5) liegen 98 % bzw. 96 % so genau statt
+# 70 % bzw. 79 %. Die Konfidenz ist die schwaechste der vier Kanten: eine ungesehene Kante genuegt fuer einen
+# verschobenen Crop (Vergleich mit Mittelwerten je Achse: AUC 0,93 gegen 0,85).
+EDGES_FORMAT = "35mm"
+EDGES_MIN_ROLL = 0.3                # ohne Massstab: Rollen mit schwaecherer Evidenz gehen an die Kandidaten-Strategien
+EDGES_INSET = 0.005                 # Crop liegt um diesen Anteil der langen Rahmenkante innerhalb der Kante (9 px bei
+                                    # 1820 px): die Handcrops liegen im Median 2 px weiter aussen, die darktable-Crops
+                                    # 10 px weiter innen als die Kante; mit 9 px bleibt kein Filmrand im Crop
+EDGE_NAMES = ("links", "oben", "rechts", "unten")
+EDGE_PARTS = ("edge_left", "edge_top", "edge_right", "edge_bottom")
+
+
+def _inset_box(res, inset):
+    """Rahmen um den Abstand verkleinern; eine Kante am Dateirand bleibt dort."""
+    x0, y0 = res["x"], res["y"]
+    x1, y1 = x0 + res["width"], y0 + res["height"]
+    landscape = res["width"] >= res["height"]
+    dx, dy = inset if landscape else inset[::-1]
+
+    if x0 > 0:
+        x0 += dx
+    if x1 < res["img_w"]:
+        x1 -= dx
+    if y0 > 0:
+        y0 += dy
+    if y1 < res["img_h"]:
+        y1 -= dy
+    x0, y0 = int(round(x0)), int(round(y0))
+    return x0, y0, int(round(x1)) - x0, int(round(y1)) - y0
+
+
+def _edge_result(film, path, res, info):
+    """Ergebnis eines Bildes aus der Rahmenkanten-Erkennung im Format der Batch-Ausgabe."""
+    inset = EDGES_INSET * info["long_px"]
+    x, y, w, h = _inset_box(res, (inset, inset))
+    edges = res["edges"]
+    weakest = min(range(4), key=lambda i: edges[i])
+    aspect = info["W"] / max(info["H"], 1)
+
+    size = f"Rahmen der Rolle {info['long_px']:.0f}x{info['short_px']:.0f} px"
+    if info.get("long_mm"):
+        size += f" ({info['long_mm']:.1f} x {info['short_mm']:.1f} mm)"
+    reasons = [f"{size}, n={info['n']}",
+               f"Schwächste Kante: {EDGE_NAMES[weakest]} ({edges[weakest]:.2f})"]
+    if res["from_roll"]:
+        reasons.append("Keine Kante zu sehen, Lage aus der Rolle übernommen (" + ", ".join(res["from_roll"]) + ")")
+    if max(abs(d) for d in res["size_dev"]) > frame_edges.SIZE_SLACK:
+        reasons.append("Rahmen weicht von der Rolle ab (%+d x %+d px bei 2000 px), beide Kanten klar"
+                       % tuple(res["size_dev"]))
+
+    return {
+        "x": x, "y": y, "width": w, "height": h,
+        "confidence": float(round(min(edges), 3)),
+        "method": "frame_edges",
+        "orientation": "Portrait" if h > w else "Landscape",
+        "reasons": reasons,
+        "input_file": os.path.abspath(path), "film": film, "filename": os.path.basename(path),
+        "film_aspect": round(aspect, 4), "target_aspect_ratio": round(aspect, 4),
+        "_img_w": res["img_w"], "_img_h": res["img_h"],
+        "_conf_parts": dict(zip(EDGE_PARTS, edges)),
+        "conf_formula": "edges-min-v1",
+    }
+
+
+def _edges_pass(paths_by_film, load_paths, film_scales, report, tick):
+    """Rahmenkanten-Erkennung fuer alle Rollen. -> ({film: [ergebnis je Bild]}, {film: aspect-eintrag})
+
+    Rollen, fuer die sie nichts Tragfaehiges findet (kein Massstab und kaum Kantenpaare, etwa Mittelformat), fehlen im
+    Ergebnis und laufen ueber die Kandidaten-Strategien."""
+    rolls, back = {}, {}
+    for film, paths in paths_by_film.items():
+        sc = film_scales.get(film)
+        pitch = sc["pitch_frac"] if _scale_accepted(sc, len(paths)) else None
+        loads = [load_paths.get(p, p) for p in paths]
+        back.update(zip(loads, paths))
+        rolls[film] = (loads, pitch)
+
+    n = sum(len(v[0]) for v in rolls.values())
+    report(f"BATCHINFO frame_edges={n}")
+    with _process_pool(n) as ex:
+        def pool_map(fn, items):
+            for out in ex.map(fn, items, chunksize=1):
+                tick()
+                yield out
+        found = frame_edges.detect(rolls, pool_map)
+
+    results, aspects = {}, {}
+    for film, (res, info) in found.items():
+        if not info.get("mm_px") and max(info["score_w"], info["score_h"]) < EDGES_MIN_ROLL:
+            report(f"BATCHINFO frame_edges film={film!r} zu wenig Evidenz "
+                   f"({info['score_w']:.2f}/{info['score_h']:.2f}) -> Kandidaten-Strategien")
+            continue
+        report(f"BATCHINFO frame_edges film={film!r} format={info['format']} {info['long_px']:.0f}x{info['short_px']:.0f}px"
+               f" evidenz={info['score_w']:.2f}/{info['score_h']:.2f}")
+        results[film] = [_edge_result(film, back[r["path"]], r, info) for r in res]
+        aspects[film] = {"aspect_ratio": round(info["W"] / max(info["H"], 1), 4), "n_valid": info["n"],
+                         "source": "edges"}
+    return results, aspects
+
+
 def compute_batch(image_paths, confidence_threshold, debug, default_format,
                   report=None):
-    """Reine Rechen-Pipeline: Pass A -> Film-Aspect -> Pass B -> Film-Konsens.
+    """Reine Rechen-Pipeline: Massstab -> Rahmenkanten je Rolle; was dort nicht aufgeht, laeuft ueber
+    Pass A -> Film-Aspect -> Pass B -> Film-Konsens.
 
     Ohne Seiteneffekte (keine Queue, kein stdout). ``report(msg)`` erhaelt
     Fortschritts-/Info-Zeilen; Default schreibt sie nach stderr, wie es das
@@ -1953,7 +2062,7 @@ def compute_batch(image_paths, confidence_threshold, debug, default_format,
                    "im PATH gefunden")
 
     # Fortschritt fuer Darktable-Lua-Job (stderr -> io.popen-Pipe):
-    # RAW-Export + Pass A + Pass B
+    # RAW-Export + zwei Durchlaeufe je Bild
     total_units = 2 * max(len(image_paths), 1) + n_export
 
     if export_dir:
@@ -1961,26 +2070,49 @@ def compute_batch(image_paths, confidence_threshold, debug, default_format,
         load_paths = export_raws_via_darktable(
             dt_cli, raw_paths, export_dir, total_units)
 
-    done_units = n_export
+    progress = {"done": n_export}
+
+    def tick():
+        # Rollen, die beide Wege durchlaufen, zaehlen nicht doppelt
+        progress["done"] = min(progress["done"] + 1, total_units)
+        report(f"PROGRESS {progress['done']}/{total_units}")
+
     report(f"BATCHINFO total={len(image_paths)}")
 
-    # === Pass A: Aspekte messen (parallel ueber Bilder) ===
-    measurements = []
-    pass_a_items = []
+    # Ein Ordner = eine Filmrolle
+    paths_by_film = defaultdict(list)
     for path in image_paths:
         if not os.path.exists(path):
-            done_units += 1
-            report(f"PROGRESS {done_units}/{total_units}")
+            tick()
+            tick()
             report(f"WARN: missing: {path}")
             continue
-        pass_a_items.append((path, load_paths.get(path, path)))
+        film = os.path.basename(os.path.dirname(os.path.abspath(path)))
+        paths_by_film[film].append(os.path.abspath(path))
+
+    # === Massstab je Rolle aus der Perforation (optional; ohne film_scale.py oder ohne Takt geht es ohne) ===
+    film_scales = {}
+    if film_scale is not None and SCALE_CFG["enabled"]:
+        scale_items = [(f, _sample_paths([load_paths.get(p, p) for p in ps])) for f, ps in paths_by_film.items()]
+        if scale_items:
+            with _process_pool(len(scale_items)) as ex:
+                film_scales = dict(ex.map(_scale_worker, scale_items))
+
+    # === Rahmenkanten je Rolle ===
+    edge_results, film_aspects = {}, {}
+    if frame_edges is not None and default_format == EDGES_FORMAT and paths_by_film:
+        edge_results, film_aspects = _edges_pass(paths_by_film, load_paths, film_scales, report, tick)
+    results = [r for rs in edge_results.values() for r in rs]
+
+    # === Uebrige Rollen: Pass A, Aspekte messen (parallel ueber Bilder) ===
+    measurements = []
+    pass_a_items = [(p, load_paths.get(p, p)) for f, ps in paths_by_film.items() if f not in edge_results for p in ps]
 
     if pass_a_items:
         with _process_pool(len(pass_a_items)) as ex:
             futures = {ex.submit(_pass_a_worker, it): it for it in pass_a_items}
             for fut in as_completed(futures):
-                done_units += 1
-                report(f"PROGRESS {done_units}/{total_units}")
+                tick()
                 try:
                     measurements.append(fut.result())
                 except Exception as e:
@@ -1997,7 +2129,6 @@ def compute_batch(image_paths, confidence_threshold, debug, default_format,
                 "contrast": abs(m.get("contrast", 0)),
             })
 
-    film_aspects = {}
     MIN_VALIDE = 3
     CONSENSUS_TOL = 0.10
     for film, items in by_film.items():
@@ -2020,7 +2151,7 @@ def compute_batch(image_paths, confidence_threshold, debug, default_format,
             }
 
     # === Pass B: Volle Erkennung mit Film-Aspects (parallel ueber Bilder) ===
-    results = []
+    old_results = []
     pass_b_items = []
     for meas in measurements:
         film = meas["film"]
@@ -2036,10 +2167,9 @@ def compute_batch(image_paths, confidence_threshold, debug, default_format,
         with _process_pool(len(pass_b_items)) as ex:
             futures = {ex.submit(_pass_b_worker, it): it for it in pass_b_items}
             for fut in as_completed(futures):
-                done_units += 1
-                report(f"PROGRESS {done_units}/{total_units}")
+                tick()
                 try:
-                    results.append(fut.result())
+                    old_results.append(fut.result())
                 except Exception as e:
                     report(f"WARN: {futures[fut][1]}: {e}")
 
@@ -2047,22 +2177,8 @@ def compute_batch(image_paths, confidence_threshold, debug, default_format,
     # Annahme: ein Ordner = eine Filmrolle, gleiche Kamera/Abstand -> die
     # Crop-Groesse (lange/kurze Kante) ist ueber die Rolle nahezu konstant
     # (gemessen: MAD ~10px). Der robuste Median ueberlebt >50% Fehldetektion.
-    # Massstab je Rolle aus der Perforation (optional; ohne film_scale.py oder ohne Takt bleibt alles wie zuvor)
-    film_scales = {}
-    if film_scale is not None:
-        conv = film_scale.load_convention()     # aus den Handcrops der Web-UI gelernt (film_scale.update_convention)
-        if conv:
-            SCALE_CFG["crop_mm"] = (conv["long_mm"], conv["short_mm"])
-            report(f"BATCHINFO convention {conv['long_mm']}x{conv['short_mm']} mm (n={conv['n']})")
-    if film_scale is not None and SCALE_CFG["enabled"]:
-        paths_by_film = defaultdict(list)
-        for meas in measurements:
-            paths_by_film[meas["film"]].append(load_paths.get(meas["path"], meas["path"]))
-        scale_items = [(f, _sample_paths(ps)) for f, ps in paths_by_film.items() if ps]
-        if scale_items:
-            with _process_pool(len(scale_items)) as ex:
-                film_scales = dict(ex.map(_scale_worker, scale_items))
-    apply_film_consensus(results, load_paths, report=report, film_scales=film_scales)
+    apply_film_consensus(old_results, load_paths, report=report, film_scales=film_scales)
+    results.extend(old_results)
 
     for r in results:
         r["needs_review"] = r["confidence"] < confidence_threshold

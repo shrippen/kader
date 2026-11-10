@@ -8,6 +8,10 @@ Regression auf denselben vier Faktoren gegen das tatsaechliche Ergebnis
 (Treffer/Fehltreffer bei 60px Toleranz) und schlaegt kalibrierte
 Gewichte + Gruen/Gelb-Schwellen vor.
 
+Gilt fuer die Kandidaten-Strategien (Rollen, die nicht ueber frame_edges.py laufen, etwa Mittelformat). Die
+Rahmenkanten-Erkennung hat keine Gewichte: ihre Konfidenz ist die schwaechste der vier Kanten; solche Ergebnisse
+werden hier uebersprungen.
+
 Kein sklearn im Projekt -> Gradientenabstieg von Hand (4 Features, 98
 Punkte, das ist trivial).
 
@@ -50,7 +54,7 @@ def collect_samples():
         _, fname = key.split("/", 1)
         r = by_name.get(fname)
         parts = r.get("_conf_parts") if r else None
-        if not r or r.get("x") is None or not parts:
+        if not r or r.get("x") is None or not parts or FEATURES[0] not in parts:
             continue
         hit = (abs(r["width"] - mc["width"]) < TOL_PX
                and abs(r["height"] - mc["height"]) < TOL_PX)
@@ -150,7 +154,7 @@ def load_rows(data):
             continue
         res = by[d["key"].split("/", 1)[1]]
         parts = res.get("_conf_parts")
-        if not parts:
+        if not parts or FEATURES[0] not in parts:      # Rahmenkanten-Erkennung: Konfidenz = schwaechste Kante, nichts zu fitten
             continue
         rows.append({"key": d["key"], "film": d["film"], "hit": is_hit(d), "conf": res["confidence"],
                      "x": [parts[f] for f in FEATURES]})

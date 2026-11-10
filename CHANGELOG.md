@@ -2,6 +2,72 @@
 
 ## [Unreleased]
 
+### English
+
+#### New
+
+- A scanning guide in the web UI, below the gallery: a labelled drawing shows what the camera should capture (file,
+  image area, film border, perforation) and where the crop belongs. The same drawing is in `scan-howto.en.md`, which
+  now recommends an image area of about 70–90 % of the file width so that all four edges stay in the file.
+
+#### Improved
+
+- The crop sits on the frame. Kader now measures, for every picture, how completely an edge from film border to
+  picture runs along the whole frame, and adds this up over the roll: the camera's frame window is the same for every
+  picture. On 209 hand-made crops all four edges are within about 1 % of the reference for 167 pictures instead of
+  109; before, a crop of the right size in the wrong place counted as found.
+- Green means more. The confidence is the weakest of the four edges, so one unseen edge keeps a picture out of green.
+  98 % of the green crops are that exact instead of 70 %, and more pictures are green.
+- A picture with a dark side keeps its frame: the unseen edge is placed by the roll's frame size from the edge that is
+  visible. A black picture takes the usual position of the roll and is marked for review.
+- A single picture in another scale keeps its own edges when both are clearly visible.
+- Dark pictures keep their edges when Kader gets the RAW files. A developed export can crush film border and
+  picture into the same black; Kader now measures on its own image from the RAW, where the two are still apart, and
+  tells negatives from slides by the roll. On three dark rolls all four edges are within about 1 % for 47 of 57
+  hand-made crops instead of 32. This needs the Python package `rawpy`; without it the export is measured as before.
+- The editor shows the four edges as the factors of the confidence.
+- A roll is analysed about twice as fast again.
+
+#### Note
+
+- Other formats than 35 mm and rolls without usable edges are detected as before.
+- Kader no longer learns a preferred crop size from hand-set crops. The crop sits 0.5 % of the frame's long side
+  inside the measured edge; a stored `convention.json` is no longer read.
+
+### Deutsch
+
+#### Neu
+
+- Eine Anleitung zum Scannen in der Web-Oberfläche, unter der Galerie: Eine beschriftete Zeichnung zeigt, was die
+  Kamera aufnehmen soll (Datei, Bildfeld, Filmrand, Perforation) und wo der Crop hingehört. Dieselbe Zeichnung steht
+  in `scan-howto.md`; dort gilt jetzt ein Bildfeld von etwa 70–90 % der Dateibreite als Richtwert, damit alle vier
+  Kanten in der Datei bleiben.
+
+#### Verbessert
+
+- Der Crop sitzt auf dem Rahmen. Kader misst jetzt für jedes Bild, wie geschlossen eine Kante vom Filmrand zum Bild
+  über den ganzen Rahmen läuft, und summiert das über die Rolle: das Bildfenster der Kamera ist für jedes Bild gleich.
+  Bei 209 Crops von Hand liegen bei 167 Bildern alle vier Kanten auf etwa 1 % genau statt bei 109; bisher galt auch
+  ein Crop richtiger Größe an falscher Stelle als gefunden.
+- Grün sagt mehr. Die Konfidenz ist die schwächste der vier Kanten, eine ungesehene Kante hält ein Bild also aus Grün
+  heraus. 98 % der grünen Crops sind so genau statt 70 %, und mehr Bilder sind grün.
+- Ein Bild mit dunkler Seite behält seinen Rahmen: die ungesehene Kante liegt um die Rahmengröße der Rolle neben der
+  sichtbaren. Ein schwarzes Bild bekommt die übliche Lage der Rolle und wird zur Prüfung markiert.
+- Ein einzelnes Bild in anderem Maßstab behält seine eigenen Kanten, wenn beide klar zu sehen sind.
+- Dunkle Bilder behalten ihre Kanten, wenn Kader die RAW-Dateien bekommt. Ein entwickelter Export kann Filmrand und
+  Bild ins selbe Schwarz drücken; Kader misst jetzt auf einem eigenen Bild aus dem RAW, in dem beide noch getrennt
+  sind, und unterscheidet Negativ und Dia an der Rolle. Auf drei dunklen Rollen liegen bei 47 von 57 Crops von Hand
+  alle vier Kanten auf etwa 1 % genau statt bei 32. Das braucht das Python-Paket `rawpy`; ohne es wird wie bisher
+  der Export gemessen.
+- Der Editor zeigt die vier Kanten als Faktoren der Konfidenz.
+- Eine Rolle wird noch einmal etwa doppelt so schnell analysiert.
+
+#### Hinweis
+
+- Andere Formate als Kleinbild und Rollen ohne brauchbare Kanten werden wie bisher erkannt.
+- Kader lernt keine bevorzugte Crop-Größe mehr aus von Hand gesetzten Crops. Der Crop liegt 0,5 % der langen
+  Rahmenkante innerhalb der gemessenen Kante; eine gespeicherte `convention.json` wird nicht mehr gelesen.
+
 ## [0.4.0] — 2026-11-09
 
 ### English

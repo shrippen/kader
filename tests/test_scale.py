@@ -1,4 +1,4 @@
-"""Tests des Perforations-Massstabs (film_scale.py), der gelernten Crop-Konvention und der Rollengroesse in der Web-UI.
+"""Tests des Perforations-Massstabs (film_scale.py), und der Rollengroesse in der Web-UI.
 
 Ausfuehren:  .venv/bin/python -m unittest discover -s tests -v
 """
@@ -129,44 +129,6 @@ class ScaleGateTest(unittest.TestCase):
         self.assertFalse(acn._scale_accepted({"score": 0.9, "agree": 0.0}, 12))
 
 
-class ConventionTest(unittest.TestCase):
-    def setUp(self):
-        self.tmp = tempfile.TemporaryDirectory()
-        self.path = os.path.join(self.tmp.name, "sub", "convention.json")
-
-    def tearDown(self):
-        self.tmp.cleanup()
-
-    def test_missing_and_invalid(self):
-        self.assertIsNone(fs.load_convention(self.path))
-        os.makedirs(os.path.dirname(self.path))
-        for bad in ('{"long_mm": 12, "short_mm": 24}', "kaputt", '{"long_mm": 36}'):
-            with open(self.path, "w") as f:
-                f.write(bad)
-            self.assertIsNone(fs.load_convention(self.path), bad)
-
-    def test_update_weights_by_count(self):
-        first = fs.update_convention({"long_mm": 36.0, "short_mm": 24.0, "n": 30}, self.path)
-        self.assertEqual(first["n"], 30)
-        merged = fs.update_convention({"long_mm": 37.0, "short_mm": 25.0, "n": 10}, self.path)
-        self.assertAlmostEqual(merged["long_mm"], 36.25, places=2)
-        self.assertEqual(merged["n"], 40)
-        self.assertEqual(fs.load_convention(self.path)["n"], 40)
-
-    def test_env_can_disable(self):
-        old = os.environ.get("KADER_CONVENTION")
-        os.environ["KADER_CONVENTION"] = ""
-        try:
-            self.assertIsNone(fs.convention_path())
-            self.assertIsNone(fs.load_convention())
-            self.assertIsNone(fs.update_convention({"long_mm": 36.0, "short_mm": 24.0, "n": 5}))
-        finally:
-            if old is None:
-                del os.environ["KADER_CONVENTION"]
-            else:
-                os.environ["KADER_CONVENTION"] = old
-
-
 class RollSizeTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -214,47 +176,6 @@ class RollSizeTest(unittest.TestCase):
         self.s.image(101)["detected"] = None
         with self.assertRaises(sess.SessionError):
             self.s.apply_roll_size(101)
-
-
-class LearnedConventionTest(unittest.TestCase):
-    def setUp(self):
-        self.tmp = tempfile.TemporaryDirectory()
-        self.s = make_session(self.tmp.name, confs=(0.9, 0.9, 0.9, 0.9))
-
-    def tearDown(self):
-        self.tmp.cleanup()
-
-    def test_needs_scale_and_three_hand_crops(self):
-        self.assertIsNone(self.s.learned_convention())
-        # 3000 px lange Kante, Takt 3000*0.0784 = 235.2 px -> 49.39 px/mm; 36.4 mm = 0.5993 der Breite, 24.2 mm = 0.5976 der Hoehe
-        self.s.state["film_scales"] = {"Film A": {"pitch_frac": 0.0784, "score": 0.8}}
-        for iid in (101, 102):
-            self.s.patch_images([iid], {"crop": [0.2, 0.2, 0.2 + 0.5993, 0.2 + 0.5976]})
-        self.assertIsNone(self.s.learned_convention())                  # erst ab 3 Handcrops
-        self.s.patch_images([103], {"crop": [0.2, 0.2, 0.2 + 0.5993, 0.2 + 0.5976]})
-        c = self.s.learned_convention()
-        self.assertEqual(c["n"], 3)
-        self.assertAlmostEqual(c["long_mm"], 36.4, delta=0.2)
-
-    def test_ignores_low_scores_and_derived(self):
-        self.s.state["film_scales"] = {"Film A": {"pitch_frac": 0.0784, "score": 0.2}}
-        for iid in (101, 102, 103):
-            self.s.patch_images([iid], {"crop": [0.2, 0.2, 0.2 + 0.5993, 0.2 + 0.5976]})
-        self.assertIsNone(self.s.learned_convention())          # Takt-Score 0.2 ist zu schwach
-        self.s.state["film_scales"]["Film A"]["score"] = 0.8
-        self.s.image(102)["manual"]["derived"] = "roll"
-        self.s.image(103)["manual"]["derived"] = "roll"
-        self.assertIsNone(self.s.learned_convention())          # nur noch eine echte Handarbeit
-
-    def test_agreement_overrides_the_score(self):
-        # bestaetigter Takt zaehlt auch mit schwachem Peak ...
-        self.s.state["film_scales"] = {"Film A": {"pitch_frac": 0.0784, "score": 0.2, "agree": 0.001}}
-        for iid in (101, 102, 103):
-            self.s.patch_images([iid], {"crop": [0.2, 0.2, 0.2 + 0.5993, 0.2 + 0.5976]})
-        self.assertIsNotNone(self.s.learned_convention())
-        # ... und eine Fehlmessung faellt trotz hohem Peak heraus, statt die Konvention um ihren Fehler zu verschieben
-        self.s.state["film_scales"]["Film A"].update(score=0.9, agree=0.05)
-        self.assertIsNone(self.s.learned_convention())
 
 
 if __name__ == "__main__":

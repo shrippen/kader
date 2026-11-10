@@ -195,12 +195,15 @@ function renderStrip() {
 
 // Die Faktoren der Konfidenz (siehe roadmap.md): zeigt bei einem falschen "gruenen"
 // Ergebnis sofort, welcher Faktor die Fehleinschaetzung verursacht hat.
+const PARTS_EDGES = ['edge_left', 'edge_top', 'edge_right', 'edge_bottom'];   // Rahmenkanten je Rolle (frame_edges.py)
 const PARTS = ['size_agree', 'edge_score', 'exposure_factor', 'roll_factor'];
 const PARTS_OLD = ['size_agree', 'edge_score', 'film_trust', 'exposure_factor'];   // Sitzungen vor der Rollen-Verlaesslichkeit
 function confPartsHtml(img) {
   const cp = img.conf_parts;
   if (!cp) return `<div><div class="h-label" role="heading" aria-level="3">${T('conf_parts')}</div><p class="field-hint">${T('cp_none')}</p></div>`;
-  const vals = (typeof cp.roll_factor === 'number' ? PARTS : PARTS_OLD).filter((k) => typeof cp[k] === 'number');
+  const edges = typeof cp.edge_left === 'number';
+  const keys = edges ? PARTS_EDGES : typeof cp.roll_factor === 'number' ? PARTS : PARTS_OLD;
+  const vals = keys.filter((k) => typeof cp[k] === 'number');
   const min = Math.min(...vals.map((k) => cp[k]));
   const rows = vals.map((k) => {
     const v = cp[k];
@@ -208,7 +211,7 @@ function confPartsHtml(img) {
     return `<div class="progress"><div class="progress-head"><span>${T('cp_' + k)}${weak ? ` · ${T('cp_weakest')}` : ''}</span><span>${v.toFixed(2)}</span></div>
       <div class="progress-bar"><i data-label="${v >= 0.7 ? 'green' : v >= 0.4 ? 'yellow' : 'red'}" style="--p:${Math.round(clamp(v) * 100)}%"></i></div></div>`;
   }).join('');
-  return `<div><div class="h-label" role="heading" aria-level="3">${T('conf_parts')}</div><div class="cp">${rows}</div><p class="field-hint">${T('conf_parts_h')}</p></div>`;
+  return `<div><div class="h-label" role="heading" aria-level="3">${T('conf_parts')}</div><div class="cp">${rows}</div><p class="field-hint">${T(edges ? 'conf_edges_h' : 'conf_parts_h')}</p></div>`;
 }
 
 function targetSkipHtml(img) {

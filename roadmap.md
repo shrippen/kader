@@ -415,6 +415,15 @@ Ein Durchgang mit dem Ziel, die Trefferquote zu heben, hat vor allem gezeigt, da
   *Freibad 3*, *Prag 3*) liefern gar keinen Takt. Die Sichtprüfung der Scans zeigt: die Perforation ist dort nicht mit
   digitalisiert, der Rahmen füllt die Datei. Diese Rollen brauchen einen Neu-Scan mit Rand.
 
+## Nachtrag: Rahmenkanten je Rolle (2026-11-10)
+
+**Übernommen: `frame_edges.py`.** Das ist das zweite, unabhängige Signal aus Phase 2: statt Kandidaten-Boxen je Bild wird
+die Kantenevidenz gemessen und über die Rolle aufsummiert; die Rahmengröße ist damit eine Messung, die Konfidenz die
+schwächste der vier Kanten. Zugleich neues Kriterium in `tools/eval.py`: alle vier Kanten näher als 25 px (das alte sah nur
+die Größe, 89 der 198 „Treffer“ lagen falsch). Handcrops 109 → 167 von 209, darktable-Crops ohne Drehung 779 → 945 von
+1164, Grüne zu 98 % / 96 % richtig statt 70 % / 79 %. Einzelheiten, Befunde (zwei Kameras statt zwei Gewohnheiten,
+gedrehte Referenzen) und Verworfenes: `bericht-erkennung-2026-11-10.md`.
+
 ## Priorisierung
 
 Phase 0 ist zwingend zuerst (ohne Daten kein Fortschritt). Danach hat

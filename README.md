@@ -52,7 +52,33 @@ korrigierst du die Vorschläge, sortiert nach Sicherheit (🟢 grün / 🟡 gelb
 Die Erkennung und die Web-UI sind werkzeugneutral. Nur die beiden Enden sind austauschbare Adapter: ein
 **RAW-Konverter** auf der Eingabeseite (nur für RAW-Dateien) und ein **Ziel** auf der Ausgabeseite.
 
-### Erkennungsstrategien
+### Erkennung
+
+Bilder im selben Ordner gelten als eine **Filmrolle**. Für Kleinbild läuft die Erkennung über die Rolle
+(`frame_edges.py`):
+
+1. **Maßstab** – der Perforationstakt (4,7625 mm) liefert px/mm der Rolle (`film_scale.py`).
+2. **Kantenevidenz** – je Bild und Position: wie geschlossen läuft ein Sprung vom Filmrand zum Bild über die ganze
+   Kantenlänge? Bildinhalt erzeugt Sprünge in einzelnen Abschnitten, die Rahmenkante in allen.
+3. **Rahmengröße der Rolle** – das Bildfenster der Kamera ist für alle Bilder gleich; die Größe liegt dort, wo sich
+   Kantenpaare über die Rolle aufsummieren (Seitenverhältnis 3:2 oder quadratisch, mit Maßstab im mm-Fenster).
+4. **Lage je Bild** – das Kantenpaar dieser Größe. Ist nur eine Kante zu sehen, liegt die andere um die Rollengröße
+   daneben; ist keine zu sehen, gilt die übliche Lage der Rolle. Der Crop liegt 0,5 % innerhalb der Kante.
+
+Die Konfidenz ist die schwächste der vier Kanten. Gemessen an 209 Handcrops liegen bei 167 alle vier Kanten näher
+als 25 px (bei 2000 px langer Kante), von den Grünen 98 % (`tools/eval.py`).
+
+**RAW-Eingabe:** Liegt zu einem Bild das RAW vor und ist `rawpy` installiert, misst die Erkennung nicht auf dem
+Export, sondern auf einem eigenen Erkennungsbild aus dem RAW (`companion/rawdetect.py`): linear entwickelt,
+logarithmiert und ab dem Filmrand gestreckt. In bearbeiteten Exporten dunkler Bilder liegen Filmrand und Bild beide
+im Schwarz; im RAW sind sie getrennt. Ob Negativ oder Dia, entscheidet die Rolle (die Polung mit den geschlosseneren
+Kanten). Lage und Seitenverhältnis kommen vom Export, der Crop gilt also für ihn. Auf drei dunklen Rollen liegen damit
+bei 47 von 57 Handcrops alle vier Kanten näher als 25 px, auf den Exporten bei 32. Ein Bild, dessen Export einen
+anderen Ausschnitt zeigt (im RAW-Entwickler gedreht oder entzerrt), wird wie bisher auf dem Export gemessen; ohne
+`rawpy` gilt das für alle.
+
+Rollen, bei denen das nichts Tragfähiges findet (kein Maßstab und kaum Kantenpaare, etwa Mittelformat), und jedes
+andere Format als Kleinbild laufen über die **Kandidaten-Strategien**:
 
 1. **Konturenanalyse** – Sucht Rechteck-Konturen nach Schwellwert-Binarisierung
 2. **Canny + Hough** – Kantenerkennung und Liniensuche für klare Filmränder
@@ -60,7 +86,7 @@ Die Erkennung und die Web-UI sind werkzeugneutral. Nur die beiden Enden sind aus
 4. **Helligkeitsmaske** – Findet den größten zusammenhängenden Bereich (für unterbelichtete Bilder)
 
 Alle Strategien laufen parallel, und die Ergebnisse werden zusammengeführt. Übereinstimmungen erhalten einen Konfidenz-Boost.
-Bilder im selben Ordner gelten als eine **Filmrolle**; die Rolle liefert Größe und Maßstab (Perforation) für alle ihre Bilder.
+Die Rolle liefert auch hier Größe und Maßstab für alle ihre Bilder. Im Crop-Editor stehen die Kandidaten immer zur Auswahl.
 
 ### Unsicherheitsbehandlung
 
@@ -414,8 +440,10 @@ saubere Ende (benötigt `rich`, sonst übersprungen).
 |-------|-------------|
 | `kader.py` | Erkennung: Bildanalyse und Crop-Erkennung (Kern) |
 | `film_scale.py` | Maßstab einer Rolle aus der Perforation |
+| `frame_edges.py` | Rahmen je Rolle aus aufsummierter Kantenevidenz (Kleinbild) |
 | `companion/` | Companion: lokaler Server, Sitzungen, Web-Oberfläche (`static/`), CLI (`__main__.py`) |
 | `companion/converters.py` | RAW-Konverter (Eingabe-Adapter): darktable, RawTherapee, rawpy |
+| `companion/rawdetect.py` | Erkennungsbild aus dem RAW (Dichtebild, Polung Negativ/Dia je Rolle) |
 | `companion/targets/` | Ziele (Ausgabe-Adapter): darktable, reviews, json, copies, xmp, rawtherapee, darktable_xmp |
 | `companion/programs.py` | darktable/RawTherapee finden (auch Windows-Installationsordner) und starten |
 | `companion/dtconfig.py`, `companion/dtplugin.py` | darktables Konfiguration lesen; Plugin aus der App einrichten |
