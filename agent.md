@@ -113,6 +113,6 @@ is published, so the owner confirms it in words.
 ## Repository (this project)
 
 - CI runs on the GitHub mirror (`.github/workflows/ci.yml`, since 16.10.2026) and reports back to Gitea as the commit status `github / test`.
-- The merge waits for: CI is green on the PR's latest commit: the newest `github / test` status there (`.github/workflows/ci.yml` on the GitHub mirror: the tests in `tests/` and the demo rolls, on every push, no path filter) is success. The browser smoke test (`tests/ui_smoke.py`) is not in CI; run it locally when the PR changes the review UI.
+- The merge waits for: CI is green on the PR's latest commit: the newest `github / test` status there (`.github/workflows/ci.yml` on the GitHub mirror: the structure limits (`tools/structure-check.py`), the tests in `tests/` and the demo rolls, on every push, no path filter) is success. The browser smoke test (`tests/ui_smoke.py`) is not in CI; run it locally when the PR changes the review UI.
 - The owner also confirms: a PR that changes `packaging/`.
 - Everything else: `RULES.md` (Repository) and the skill `pr-review`.
