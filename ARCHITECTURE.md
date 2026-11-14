@@ -15,7 +15,7 @@ through the Lua plug-in.
 
 | Path | Its one task |
 |---|---|
-| `kader.py`, `frame_edges.py`, `film_scale.py` | The detection: finding the frame (frame edges per roll for 35 mm, the older search for other formats), skew, the vote over a whole roll, the scale from the perforation; In the target one file per step. |
+| `kader.py`, `frame_edges.py`, `film_scale.py` | The detection: finding the frame (frame edges per roll for 35 mm, the older search for other formats), skew, the vote over a whole roll, the scale from the perforation. In the target one file per step. |
 | The detection's command line (today in `kader.py`) | A way in of its own: runs a batch and speaks the plug-in's protocol (queue file, progress and result lines). |
 | `kader_wrapper.py` | Starts the detection's command line or the companion with the Python of the virtual environment; what the Lua plug-in calls. |
 | `kader.lua` | The darktable plug-in: starts detection or companion for the selected pictures and writes crop and rotation into darktable. |
@@ -28,7 +28,7 @@ through the Lua plug-in.
 | `companion/__main__.py`, `launcher.py`, `window.py`, `tui.py`, `kante_tokens.py` | Start of the companion: command line, the small start window, the terminal front, their colours (generated from Kante). |
 | `companion/dtplugin.py`, `dtconfig.py` | Installing the Lua plug-in into darktable; reading darktable's configuration. |
 | `tests/` | Tests of detection, companion and Lua (through `lua_harness.lua`). |
-| `start_review_gui.sh`, `review_data/` | The test run: the detection over the test photos, shown in the web interface; the hand crops it saves (`reviews.json`, `reviews_raw.json`) are the reference. |
+| `start_review_gui.sh`, `review_data/` | The test run: the detection over the test photos, shown in the web interface; the hand crops it saves (`reviews.json`) and those from the users' feedback (`feedback_gt.json`) are the reference. |
 | `tools/` | Measuring the detection against that reference (`eval.py`, `calibrate.py` and others; they need local test photos), Kante sync, the structure check (synced copy). |
 | `packaging/`, `install.sh`, `scripts/`, `demo/`, `docs/` | AppImage and Windows build; installing; release notes; the demo rolls for screenshots; landing page. |
 
@@ -42,8 +42,8 @@ through the Lua plug-in.
                  │                          │              │
                  │                          ▼              ▼
                  │                    detect.py ──► session.py ──► targets/ ─► files,
-                 │                    rawdetect.py  (state)        darktable, sidecars
-                 │                          │
+                 ▼                    rawdetect.py  (state)        darktable, sidecars
+         the command line                   │
                  │                          ├──► programs, export, converters ─► darktable-cli,
                  ▼                          ▼                                    RawTherapee
         the detection: kader.py, frame_edges.py, film_scale.py   (pictures in, crops out)
