@@ -1,0 +1,100 @@
+# What is over a structure limit today (tools/structure-check.py). An entry may shrink,
+# never grow; a raised or new entry needs its reason in the PR. Rewrite with --update.
+# Lines: exclude<TAB>glob | path<TAB>function or - for the file<TAB>metric=value ...
+analyze_manual_crops.py	main	ccn=29 length=127
+batch_test.py	_apply_film_consistency	ccn=28 length=89
+batch_test.py	_run_two_pass	ccn=23 length=123
+batch_test.py	main	ccn=40 length=142
+companion/__main__.py	_open	ccn=23
+companion/dtconfig.py	imported	nesting=5
+companion/server.py	_api	ccn=53 length=100
+companion/session.py	-	lines=1054
+companion/session.py	patch_images	ccn=30 nesting=5
+companion/sources.py	folder_job	ccn=33
+companion/static/app.js	onAction	ccn=16
+companion/static/app.js	renderNotice	ccn=25
+companion/static/editor.js	dragCrop	ccn=24 nesting=6
+companion/static/editor.js	onClick	ccn=23 nesting=8
+companion/static/editor.js	onKey	ccn=26
+companion/static/editor.js	renderSide	ccn=19
+companion/static/editor.js	skewHtml	ccn=22
+companion/static/gallery.js	onGlobalKey	ccn=26
+companion/static/gallery.js	updateTile	ccn=30
+companion/static/ui.js	guard	nesting=5
+companion/targets/darktable_xmp.py	update_xmp	ccn=33
+companion/window.py	snapshot	ccn=16
+diagnose.py	diagnose	length=95
+film_analysis.py	analyze_film	ccn=27 length=89
+film_scale.py	measure_roll_pitch	ccn=18
+frame_edges.py	detect	ccn=37
+frame_edges.py	roll_size	ccn=19
+kader.lua	(anonymous)	nesting=7
+kader.lua	(anonymous)#2	nesting=16
+kader.lua	(anonymous)#3	nesting=6
+kader.lua	(anonymous)#4	nesting=13
+kader.lua	-	lines=1546
+kader.lua	applied_rotation_ids	nesting=5
+kader.lua	apply_crop	nesting=10
+kader.lua	apply_crop_style	nesting=18
+kader.lua	apply_current	nesting=10
+kader.lua	check_batch	ccn=32 length=113 nesting=12
+kader.lua	companion_apply	ccn=38 length=105 nesting=10
+kader.lua	companion_command	nesting=15
+kader.lua	companion_open	nesting=9
+kader.lua	companion_start	nesting=17
+kader.lua	companion_stop	nesting=15
+kader.lua	crop_style_xml	nesting=14
+kader.lua	darktable_pid	nesting=17
+kader.lua	detect_and_queue	length=103 nesting=11
+kader.lua	file_size	nesting=9
+kader.lua	fmt	nesting=11
+kader.lua	kill_pid	nesting=10
+kader.lua	last_session	nesting=12
+kader.lua	log	nesting=20
+kader.lua	log_rotate	nesting=19
+kader.lua	open_url	nesting=12
+kader.lua	parse_number	nesting=9
+kader.lua	parse_value	nesting=10
+kader.lua	pid_alive	nesting=6
+kader.lua	pid_alive_cheap	nesting=8
+kader.lua	read_server_info	nesting=5
+kader.lua	refresh_server_status	nesting=9
+kader.lua	reset_clicked	nesting=5
+kader.lua	safe_check_batch	nesting=13
+kader.lua	spawn_background	nesting=15
+kader.lua	spawn_companion	nesting=16
+kader.lua	tmp_path	nesting=13
+kader.lua	undo_crop_all	nesting=8
+kader.lua	undo_crop_images	nesting=6
+kader.lua	undo_crop_selected	nesting=7
+kader.lua	wait_for_server	nesting=12
+kader.lua	write_atomic	nesting=10
+kader.py	-	lines=2425
+kader.py	_resolve_format	ccn=16
+kader.py	_run_batch_pipeline	length=89
+kader.py	apply_film_consensus	ccn=93 length=352
+kader.py	compute_batch	ccn=42 length=159
+kader.py	find_best_crop	length=128
+kader.py	main	length=122
+kader.py	measure_crop_evidence	ccn=18 length=83
+kader.py	measure_image_aspect	length=82
+kader.py	measure_skew	ccn=25
+kader.py	refine_to_image_content	ccn=47 length=207 nesting=6
+kader.py	score_candidate	ccn=18 length=92
+review_gui.py	_build_ui	length=139
+tests/test_companion.py	-	lines=1338
+tests/test_standalone.py	-	lines=1050
+tests/ui_smoke.py	main	ccn=44 length=217
+tools/build_feedback_gt.py	build	ccn=16
+tools/calibrate.py	loo_compare	ccn=26
+tools/convert_testphotos.py	convert_one	ccn=17
+tools/convert_testphotos.py	main	ccn=31 length=101
+tools/convert_testphotos.py	read_darktable_crop	ccn=19
+tools/eval.py	holdout_contact_sheet	ccn=17
+tools/eval.py	main	ccn=19
+tools/eval_darktable_crops.py	main	ccn=19
+tools/feedback_report.py	collect	ccn=19
+tools/feedback_report.py	load_sessions	nesting=5
+tools/feedback_report.py	print_report	ccn=18
+tools/feedback_report.py	summarize	ccn=22
+tools/signal_probe.py	main	ccn=30
