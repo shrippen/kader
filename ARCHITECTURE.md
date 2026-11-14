@@ -15,8 +15,9 @@ through the Lua plug-in.
 
 | Path | Its one task |
 |---|---|
-| `kader.py`, `frame_edges.py`, `film_scale.py` | The detection: finding the frame (frame edges per roll for 35 mm, the older search for other formats), skew, the vote over a whole roll, the scale from the perforation; the command line and the run over a batch. In the target one file per step. |
-| `kader_wrapper.py` | Starts the detection or the companion with the Python of the virtual environment; what the Lua plug-in calls. |
+| `kader.py`, `frame_edges.py`, `film_scale.py` | The detection: finding the frame (frame edges per roll for 35 mm, the older search for other formats), skew, the vote over a whole roll, the scale from the perforation; In the target one file per step. |
+| The detection's command line (today in `kader.py`) | A way in of its own: runs a batch and speaks the plug-in's protocol (queue file, progress and result lines). |
+| `kader_wrapper.py` | Starts the detection's command line or the companion with the Python of the virtual environment; what the Lua plug-in calls. |
 | `kader.lua` | The darktable plug-in: starts detection or companion for the selected pictures and writes crop and rotation into darktable. |
 | `companion/session.py` | The state of one review: pictures, crops, decisions, colours. |
 | `companion/detect.py`, `rawdetect.py` | Running the detection for a session in the background; the density image from a RAW file the detection measures on. |
@@ -24,10 +25,11 @@ through the Lua plug-in.
 | `companion/sources.py`, `thumbs.py`, `orientation.py` | What a folder contains; thumbnails and image sizes; how a file is stored rotated. |
 | `companion/targets/` | One file per output (copies, list, darktable, darktable sidecar, RawTherapee, XMP, reviews). |
 | `companion/server.py`, `companion/static/` | The local HTTP API and the web interface in the browser (`api.js` is its one way to the server). `static/vendor/` is synced, never edited here. |
-| `companion/__main__.py`, `launcher.py`, `window.py`, `tui.py` | Start of the companion: command line, the small start window, the terminal front. |
+| `companion/__main__.py`, `launcher.py`, `window.py`, `tui.py`, `kante_tokens.py` | Start of the companion: command line, the small start window, the terminal front, their colours (generated from Kante). |
 | `companion/dtplugin.py`, `dtconfig.py` | Installing the Lua plug-in into darktable; reading darktable's configuration. |
 | `tests/` | Tests of detection, companion and Lua (through `lua_harness.lua`). |
-| `tools/` | Measuring the detection against the owner's hand crops (`eval.py`, `calibrate.py` and others; they need local test photos), Kante sync, the structure check (synced copy). |
+| `start_review_gui.sh`, `review_data/` | The test run: the detection over the test photos, shown in the web interface; the hand crops it saves (`reviews.json`, `reviews_raw.json`) are the reference. |
+| `tools/` | Measuring the detection against that reference (`eval.py`, `calibrate.py` and others; they need local test photos), Kante sync, the structure check (synced copy). |
 | `packaging/`, `install.sh`, `scripts/`, `demo/`, `docs/` | AppImage and Windows build; installing; release notes; the demo rolls for screenshots; landing page. |
 
 ## Layers
@@ -36,7 +38,7 @@ through the Lua plug-in.
  darktable ─► kader.lua                 browser: companion/static/ (through api.js)
                  │ starts                          │ HTTP
                  ▼                                 ▼
-        kader_wrapper.py ─────────────► companion: server.py
+        kader_wrapper.py ─────────────► companion: __main__.py, server.py
                  │                          │              │
                  │                          ▼              ▼
                  │                    detect.py ──► session.py ──► targets/ ─► files,
@@ -49,9 +51,11 @@ through the Lua plug-in.
 
 - The detection knows nothing of the companion, the plug-in or an output. It takes
   pictures and returns crops with their confidence. The companion uses its named
-  public functions only.
+  public functions only. What the plug-in needs of a batch run (queue file,
+  progress and result lines) belongs to the command line, a file of its own.
 - A rule stands once, in Python: when a crop counts as a hit, the colour of a picture
-  and its thresholds, the list of film formats, the RAW file endings. The plug-in and
+  and its thresholds, from which angle it counts as skewed, the list of film
+  formats, the RAW file endings. The plug-in and
   the web interface get the result; they do not compute it again.
 - What must exist in Lua and in Python (how darktable stores crop and rotation) is
   held equal by a test.
@@ -71,8 +75,8 @@ through the Lua plug-in.
 | Change | Touch |
 |---|---|
 | A change to how the frame is found | The file of its step in the detection, a test in `tests/`; then `tools/eval.py` on the test photos |
-| A new film format | The list of formats in the detection; nothing else keeps a list |
-| A new output | A file in `companion/targets/`, its entry in `companion/targets/__init__.py`, a test |
+| A new film format | The list of formats in the detection; until the browser's own list is gone, also `companion/static/app.js` |
+| A new output | A file in `companion/targets/`, its entry in `companion/targets/__init__.py`, a test; its texts in both languages in `companion/static/i18n.js`, its limit in `companion/static/app.js` |
 | A new way to convert RAW files | `companion/converters.py`, the program in `companion/programs.py` |
 | A new call of the web interface | `companion/server.py`, `companion/static/api.js`, the page's file in `static/` |
 | A new threshold or rating | Once in Python; `tools/calibrate.py` finds its value |
@@ -85,7 +89,7 @@ through the Lua plug-in.
 - The hit rule stands three times and differs: measuring tool, web interface,
   feedback report (`AUDIT.md`, finding 1).
 - An older way of working lies beside the real one: batch script, film analysis, Tk
-  interface, two analysis scripts, their data (`AUDIT.md`, finding 2).
+  interface, two analysis scripts, their result files (`AUDIT.md`, finding 2).
 - Converting RAW files with darktable-cli is built twice, in the detection and in
   the companion, with two lists of endings (`AUDIT.md`, finding 3).
 - `companion/session.py` holds state, crop arithmetic and file helpers; the targets
@@ -96,3 +100,7 @@ through the Lua plug-in.
 - How darktable stores crop and rotation stands in Lua and in Python without a test;
   the version numbers differ (`AUDIT.md`, finding 6).
 - Colours and thresholds are computed in three places (`AUDIT.md`, finding 7).
+- The browser keeps a list of film formats of its own, which differs already, and
+  decides itself from which angle a picture counts as skewed (not in `AUDIT.md`).
+- The batch run with the plug-in's protocol stands inside `kader.py`, among the
+  detection (not in `AUDIT.md`).

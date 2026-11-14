@@ -21,12 +21,8 @@ die Crop-Koordinaten als JSON.
    Im Zweifel: groben Bias korrigieren, nicht einzelne Bilder optimieren.
 4. Validierung per Delta-Kriterien: ΔHeight <100px, ΔWidth <50px = OK
 
-## Pipeline
-- `kader.py` – Stage 1 (Filmstreifen-Erkennung) + Stage 2 (Bildinhalt)
-- `film_analysis.py` – Filmweites Seitenverhältnis + Bildgröße aus Pass-1-Daten
-- `batch_test.py` – `--two-pass`: Pass 1 → Film-Analyse → Pass 2 (mit Film-Metadaten)
-- `start_review_gui.sh` – interaktive Analyseauswahl + GUI-Start
-- `review_gui.py` – Bild-Review, Crop-Editor, Export
+## Aufbau
+Der Soll-Aufbau (Bausteine, Schichten, wo Neues hingehört) steht in `ARCHITECTURE.md`.
 
 ## Bekannte Fehlerklassen (Stand: 98 manuelle Korrekturen, 92/98 OK = 94%)
 - **Geloest: Film-Aspect-Erkennung** via Pass A (measure_image_aspect):
