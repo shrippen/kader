@@ -47,6 +47,11 @@ CODE_SUFFIXES = {
 # QML carries its logic as JavaScript; lizard reads it under that name.
 READ_AS = {".qml": ".js"}
 
+# lizard closes a nested block only at `}` or `;`, never at Lua's `end`: the sixth Lua
+# function with one `if` reads as nesting 6, and the count runs on into the next file.
+# Lua is therefore read without the nesting measure.
+NO_NESTING = {".lua"}
+
 FOREIGN_DIRS = {"vendor", "node_modules", "third_party", "3rdparty"}
 
 BASELINE_HEAD = """\
@@ -89,20 +94,23 @@ def is_measured(path, excludes):
     return not any(fnmatch.fnmatch(path, glob) for glob in excludes)
 
 
-def function_values(path, code, analyzer):
+def function_values(path, code, analyzers):
     """Yields (function name, line, {metric: value}) for each function lizard finds."""
     suffix = Path(path).suffix
     name = path + READ_AS.get(suffix, "")
+    nested = suffix not in NO_NESTING
+    analyzer = analyzers[nested]
 
     if lizard.get_reader_for(name) is None:
         return
 
     for func in analyzer.analyze_source_code(name, code).function_list:
-        yield func.name, func.start_line, {
-            "ccn": func.cyclomatic_complexity,
-            "length": func.length,
-            "nesting": func.max_nested_structures,
-        }
+        values = {"ccn": func.cyclomatic_complexity, "length": func.length}
+
+        if nested:
+            values["nesting"] = func.max_nested_structures
+
+        yield func.name, func.start_line, values
 
 
 def measure(root, paths):
@@ -111,13 +119,17 @@ def measure(root, paths):
     Functions of one name in a file are numbered in file order, so each needs its own
     baseline entry. Example: "(anonymous)", "(anonymous)#2".
     """
-    analyzer = lizard.FileAnalyzer(lizard.get_extensions(["ns"]))
+    # One analyzer with the nesting measure ("ns"), one without it.
+    analyzers = {
+        True: lizard.FileAnalyzer(lizard.get_extensions(["ns"])),
+        False: lizard.FileAnalyzer(lizard.get_extensions([])),
+    }
     over = {}
 
     for path in paths:
         code = (root / path).read_text(encoding="utf-8", errors="replace")
         found = [(FILE_ENTRY, 1, {"lines": code.count("\n")})]
-        found.extend(function_values(path, code, analyzer))
+        found.extend(function_values(path, code, analyzers))
 
         seen = collections.Counter()
 
