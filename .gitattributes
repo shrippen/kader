@@ -6,3 +6,4 @@
 /tools/structure-check.py export-ignore
 /structure.baseline export-ignore
 /AUDIT.md export-ignore
+/ARCHITECTURE.md export-ignore
